@@ -289,17 +289,18 @@ const PHONE_W = 480;
 const PHONE_H = 1010;
 const SCREEN_W = PHONE_W - 28;
 const SCREEN_H = PHONE_H - 28;
-const BASE = 1.3; // phone scale during the product beats
-const PHONE_CY = 420 + (PHONE_H * BASE) / 2;
+const BASE = 1.25; // phone scale during the product beats
+const PHONE_TOP = 470;
+const PHONE_CY = PHONE_TOP + (PHONE_H * BASE) / 2;
 
 /** Frame position of a point on the screen when the phone sits at its base framing. */
 const onScreen = (sx: number, sy: number) => ({ x: 540 + (14 + sx - PHONE_W / 2) * BASE, y: PHONE_CY + (14 + sy - PHONE_H / 2) * BASE });
 
 const SECTIONS = [
-  { at: 0, num: "01", title: "Set the session.", focus: onScreen(SCREEN_W / 2, 400) },
-  { at: HELD - PHONE, num: "02", title: "Noise waits.", focus: onScreen(SCREEN_W / 2, 640) },
-  { at: WEEK - PHONE, num: "03", title: "Build the habit.", focus: onScreen(SCREEN_W / 2, 470) },
-  { at: SUMMARY - PHONE, num: "04", title: "Close the day.", focus: onScreen(SCREEN_W / 2, 720), zoom: 1.5 },
+  { at: 0, num: "01", title: "Set the session.", focus: onScreen(SCREEN_W / 2, 400), closeY: 1040 },
+  { at: HELD - PHONE, num: "02", title: "Noise waits.", focus: onScreen(SCREEN_W / 2, 560), closeY: 1060, zoom: 1.6 },
+  { at: WEEK - PHONE, num: "03", title: "Build the habit.", focus: onScreen(SCREEN_W / 2, 500), closeY: 960, zoom: 1.5 },
+  { at: SUMMARY - PHONE, num: "04", title: "Close the day.", focus: onScreen(SCREEN_W / 2, 720), closeY: 1230, zoom: 1.5 },
 ];
 const TRI = TRIPTYCH - PHONE;
 const MOR = MORPH - PHONE;
@@ -318,19 +319,22 @@ const PhoneAct: React.FC = () => {
   if (f < TRI) {
     const zoomed = local >= CUT_IN;
     const z = "zoom" in sec ? (sec.zoom as number) : 1.8;
-    k = zoomed ? z * (1 + 0.05 * ((local - CUT_IN) / (SECTION - CUT_IN))) : 1 + 0.05 * (local / CUT_IN);
-    const target = zoomed ? { x: 540, y: 1000 } : sec.focus;
-    tx = target.x - sec.focus.x * k;
-    ty = target.y - sec.focus.y * k;
+    k = zoomed ? z * (1 + 0.04 * ((local - CUT_IN) / (SECTION - CUT_IN))) : 1 + 0.04 * (local / CUT_IN);
+    const pivot = zoomed ? sec.focus : { x: 540, y: PHONE_TOP };
+    const target = zoomed ? { x: 540, y: sec.closeY } : pivot;
+    tx = target.x - pivot.x * k;
+    ty = target.y - pivot.y * k;
   }
 
   return (
     <AbsoluteFill>
       {f < TRI ? (
-        <AbsoluteFill style={{ transform: `translate(${tx}px, ${ty}px) scale(${k})`, transformOrigin: "0 0" }}>
-          <PhoneFrame cx={540} cy={PHONE_CY + (1 - enter) * 1400} scale={BASE}>
-            <Screens f={f} />
-          </PhoneFrame>
+        <AbsoluteFill style={local >= CUT_IN ? { maskImage: "linear-gradient(180deg, transparent 0px, transparent 150px, black 300px)" } : undefined}>
+          <AbsoluteFill style={{ transform: `translate(${tx}px, ${ty}px) scale(${k})`, transformOrigin: "0 0" }}>
+            <PhoneFrame cx={540} cy={PHONE_CY + (1 - enter) * 1400} scale={BASE}>
+              <Screens f={f} />
+            </PhoneFrame>
+          </AbsoluteFill>
         </AbsoluteFill>
       ) : (
         <Triptych f={f - TRI} />
@@ -343,7 +347,7 @@ const PhoneAct: React.FC = () => {
 /** Section caption on a signage rail: slides in from the left, leaves to the right. */
 const RailCaption: React.FC<{ f: number; at: number; until: number; num: string; text: string }> = ({ f, at, until, num, text }) => {
   if (f < at || f > until) return null;
-  const delay = at === 0 ? 36 : 4;
+  const delay = at === 0 ? 20 : 4;
   const inP = m(f, at + delay, at + delay + 15);
   const outP = m(f, until - 14, until, 0, 1, ease.quintInOut);
   const x = 80 + (inP - 1) * 1100 + outP * 1100;
@@ -707,7 +711,7 @@ const DIAL_OFFSET = (14 + 190 + 210 - PHONE_H / 2) * TRI_SCALE; // dial centre r
 
 const Triptych: React.FC<{ f: number }> = ({ f }) => {
   const settle = m(f, 0, 30);
-  const sideIn = m(f, 6, 36);
+  const sideIn = m(f, 0, 30);
   const morph = m(f, MOR - TRI, PAYOFF - PHONE - TRI, 0, 1, ease.quintInOut);
   const cyRest = 1060;
   const cyMorph = ICON_Y - DIAL_OFFSET;
@@ -720,7 +724,7 @@ const Triptych: React.FC<{ f: number }> = ({ f }) => {
   return (
     <AbsoluteFill>
       <PhoneFrame cx={side(-1)} cy={cyRest} scale={TRI_SCALE}>
-        <SummaryScreen lf={140} />
+        <HeldScreen lf={150} />
       </PhoneFrame>
       <PhoneFrame cx={side(1)} cy={cyRest} scale={TRI_SCALE}>
         <WeekScreen lf={140} />
@@ -738,7 +742,8 @@ const Triptych: React.FC<{ f: number }> = ({ f }) => {
 
 // ─── Payoff: the icon, ripples that settle, a split-flap tagline, the waterline returns ──────
 
-const RIPPLES = [0, 22, 67];
+const RIPPLES = [0, 22, 67, 130];
+const RIPPLE_OPACITY = [0.6, 0.42, 0.26, 0.16];
 const LINE_BACK = 90; // sweeps down from the top, lands on beat 54 as the icon's horizon
 
 const Payoff: React.FC = () => {
@@ -769,7 +774,7 @@ const Payoff: React.FC = () => {
               height: r * 2,
               borderRadius: "50%",
               border: `2px solid ${P.accent}`,
-              opacity: (1 - p) * (0.6 - i * 0.18),
+              opacity: (1 - p) * RIPPLE_OPACITY[i],
             }}
           />
         );
@@ -800,12 +805,12 @@ const Payoff: React.FC = () => {
           </defs>
           <circle cx={130} cy={130} r={84} fill="none" stroke={P.accent} strokeWidth={14} clipPath="url(#above)" />
           <circle cx={130} cy={130} r={84} fill="none" stroke={P.accent} strokeWidth={14} opacity={0.28} clipPath="url(#below)" />
-          <rect x={26} y={128} width={208} height={5} fill={P.ink} />
+          <rect x={0} y={128} width={260} height={4} fill={P.accent} />
         </svg>
       </div>
       <div style={{ position: "absolute", top: 950, left: 0, right: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
         <FlapWord text="MAKE IT" start={18} tileWidth={96} height={156} fontFamily={T.display} fontSize={140} fontWeight={900} color={P.ink} tile={P.surface} seam={SEAM} />
-        <FlapWord text="QUIET." start={26} tileWidth={96} height={156} fontFamily={T.display} fontSize={140} fontWeight={900} color={P.accent} tile={P.surface} seam={SEAM} />
+        <FlapWord text="QUIET. " start={26} tileWidth={96} height={156} fontFamily={T.display} fontSize={140} fontWeight={900} color={P.accent} tile={P.surface} seam={SEAM} />
       </div>
       <div
         style={{
@@ -817,7 +822,7 @@ const Payoff: React.FC = () => {
           fontFamily: T.mono,
           fontSize: 40,
           color: P.muted,
-          letterSpacing: "0.12em",
+          letterSpacing: `${0.12 + 0.06 * m(f, 99, END - PAYOFF, 0, 1, (t) => t)}em`,
         }}
       >
         STILLWATER · COMING SOON
@@ -839,8 +844,8 @@ const SoundDesign: React.FC = () => (
     <Sfx name="swish-reverse" at={LINE_IN - 18} volume={0.4} />
     <Sfx name="whoosh" at={LINE_IN} volume={0.6} />
     <Sfx name="sub-drop" at={LINE_IN + 4} volume={0.6} />
-    <Sequence from={TITLE} durationInFrames={STILLWATER_DURATION - TITLE}>
-      <Music file="ambient-glass-80.m4a" durationInFrames={STILLWATER_DURATION - TITLE} volume={0.5} fadeIn={15} fadeOut={END_CARD_FRAMES} />
+    <Sequence from={TITLE + 22} durationInFrames={STILLWATER_DURATION - TITLE - 22}>
+      <Music file="ambient-glass-80.m4a" durationInFrames={STILLWATER_DURATION - TITLE - 22} volume={0.34} fadeIn={20} fadeOut={END_CARD_FRAMES} />
     </Sequence>
     <Sfx name="shimmer" at={TITLE + 4} volume={0.3} />
     <Sfx name="whoosh-short" at={PHONE} volume={0.45} />
