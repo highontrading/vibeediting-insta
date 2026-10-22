@@ -2,6 +2,7 @@
 // Usage: npm run ig:post -- --video out/video.mp4 --caption "Hello" [--caption-file caption.txt] [--no-feed] [--thumb-offset 1500] [--dry-run]
 //        npm run ig:post -- --video out/video.mp4 --host-only   (only host it; prints the public URL)
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 import { loadInstagramConfig } from "../config.js";
@@ -48,7 +49,8 @@ if (values["dry-run"]) {
 if (values["host-only"]) {
   // Just put the file at a public URL (used when a video is produced ahead of its post date).
   const url = isUrl ? video : hostOnGitHub(video);
-  console.log(`RESULT ${JSON.stringify({ videoUrl: url })}`);
+  const sha256 = isUrl ? null : createHash("sha256").update(readFileSync(video)).digest("hex");
+  console.log(`RESULT ${JSON.stringify({ videoUrl: url, sha256 })}`);
   process.exit(0);
 }
 
