@@ -49,18 +49,18 @@ const SCENES = {
 
 export const CuriosityNotInformation: React.FC = () => (
   <AbsoluteFill style={{ background: P.bg, color: P.ink, fontFamily: DISPLAY }}>
-    <Scene range={SCENES.hook} smash={false}><Hook /></Scene>
-    <Scene range={SCENES.viewers} dir={-1}><Viewers /></Scene>
-    <Scene range={SCENES.everywhere} dir={1}><Everywhere /></Scene>
+    <Scene range={SCENES.hook} cut="none"><Hook /></Scene>
+    <Scene range={SCENES.viewers} dir={-1} out="left"><Viewers /></Scene>
+    <Scene range={SCENES.everywhere} cut="left"><Everywhere /></Scene>
     <Scene range={SCENES.cheap}><Cheap /></Scene>
-    <Scene range={SCENES.curiosity}><Curiosity /></Scene>
+    <Scene range={SCENES.curiosity} bg={P.ink}><Curiosity /></Scene>
     <Scene range={SCENES.gap} dir={-1}><Gap /></Scene>
     <Scene range={SCENES.know} dir={1}><Know /></Scene>
     <Scene range={SCENES.loop}><Loop /></Scene>
-    <Scene range={SCENES.timeline} dir={-1}><Timeline /></Scene>
-    <Scene range={SCENES.second} dir={1}><Second /></Scene>
-    <Scene range={SCENES.forget} dir={-1}><Forget /></Scene>
-    <Scene range={SCENES.findOut}><FindOut /></Scene>
+    <Scene range={SCENES.timeline} dir={-1} out="up"><Timeline /></Scene>
+    <Scene range={SCENES.second} cut="up" bg={P.ink} out="left"><Second /></Scene>
+    <Scene range={SCENES.forget} cut="left" out="up"><Forget /></Scene>
+    <Scene range={SCENES.findOut} cut="up" origin="80px 1000px"><FindOut /></Scene>
     <Sequence from={FINAL_HOLD_END}>
       <EndCard system={S} align="left" wordmarkSize={170} motif={<EndEye />} />
     </Sequence>
@@ -68,19 +68,39 @@ export const CuriosityNotInformation: React.FC = () => (
   </AbsoluteFill>
 );
 
-/** Wraps a scene: absolute-frame children, a 6-frame smash-zoom on the cut, and a slow drift. */
-const Scene: React.FC<{ range: readonly [number, number]; smash?: boolean; dir?: -1 | 0 | 1; children: React.ReactNode }> = ({
-  range,
-  smash = true,
-  dir = 0,
-  children,
-}) => {
+/** Frames a push transition takes; the outgoing scene keeps rendering this long past its end. */
+const PUSH = 9;
+type Push = "left" | "up";
+const pushOffset = (d: Push, t: number) => (d === "left" ? `translateX(${t * 1080}px)` : `translateY(${t * 1920}px)`);
+
+/**
+ * Wraps a scene: absolute-frame children on an opaque background, a slow drift, and a cut-in.
+ * `cut="smash"` is a 6-frame smash-zoom; `cut="left" | "up"` is a hard grid push (Swiss Signal's
+ * signature), paired with `out` of the same direction on the previous scene.
+ */
+const Scene: React.FC<{
+  range: readonly [number, number];
+  cut?: "smash" | "none" | Push;
+  out?: Push;
+  dir?: -1 | 0 | 1;
+  bg?: string;
+  /** Pivot of the slow drift; pin it to the left margin when type sits on it. */
+  origin?: string;
+  children: React.ReactNode;
+}> = ({ range, cut = "smash", out, dir = 0, bg = P.bg, origin = "50% 50%", children }) => {
   const f = useCurrentFrame();
-  if (f < range[0] || f >= range[1]) return null;
+  const end = out ? range[1] + PUSH : range[1];
+  if (f < range[0] || f >= end) return null;
   const local = f - range[0];
-  const hit = smash ? m(local, 0, 7, 1, 0, ease.expoOut) : 0;
-  const drift = 1 + 0.04 * (local / (range[1] - range[0]));
-  return <AbsoluteFill style={{ transform: `translateX(${hit * dir * 70}px) scale(${(1 + hit * 0.07) * drift})` }}>{children}</AbsoluteFill>;
+  const hit = cut === "smash" ? m(local, 0, 7, 1, 0, ease.expoOut) : 0;
+  const drift = 1 + 0.04 * Math.min(1, local / (range[1] - range[0]));
+  const pushIn = cut === "left" || cut === "up" ? pushOffset(cut, 1 - m(local, 0, PUSH, 0, 1, ease.quintInOut)) : "";
+  const pushOut = out && f >= range[1] ? pushOffset(out, -m(f, range[1], range[1] + PUSH, 0, 1, ease.quintInOut)) : "";
+  return (
+    <AbsoluteFill style={{ background: bg, transform: `${pushIn} ${pushOut}`, overflow: "hidden" }}>
+      <AbsoluteFill style={{ transform: `translateX(${hit * dir * 36}px) scale(${(1 + hit * 0.05) * drift})`, transformOrigin: origin }}>{children}</AbsoluteFill>
+    </AbsoluteFill>
+  );
 };
 
 // ─── Shared pieces ───────────────────────────────────────────────────────────────────────────
@@ -112,7 +132,8 @@ const Hit: React.FC<{
   if (f < at) return <div style={{ height: size * 0.92 }} />;
   const enter = from === "below" ? `translateY(${(1 - p) * 100}%)` : `translateX(${(p - 1) * 105}%)`;
   return (
-    <div style={{ clipPath: from === "below" ? "inset(0 -120px)" : "inset(-20px -120px -20px 0)", height: size * 0.92, ...style }}>
+    // the mask only exists while the line is rising, so letters can later fall out of it
+    <div style={{ clipPath: p >= 1 ? undefined : from === "below" ? "inset(0 -120px)" : "inset(-20px -120px -20px 0)", height: size * 0.92, ...style }}>
       <div
         style={{
           fontFamily: DISPLAY,
@@ -298,20 +319,22 @@ const Cheap: React.FC = () => {
       </AbsoluteFill>
     );
   }
-  const word = "FORGETTABLE.";
   return (
     <AbsoluteFill style={{ justifyContent: "center", padding: "0 80px" }}>
       <Grid />
-      <div style={{ display: "flex", fontFamily: DISPLAY, fontWeight: 900, fontSize: 116, letterSpacing: "-0.045em", lineHeight: 1 }}>
-        {Array.from(word).map((ch, i) => {
-          const gone = m(f, forgetAt + 20 + i * 2, forgetAt + 32 + i * 2, 0, 1, (t) => t * t);
-          return (
-            <span key={i} style={{ display: "inline-block", opacity: 1 - gone, transform: `translateY(${gone * 140}px) rotate(${gone * (i % 2 ? 14 : -10)}deg)` }}>
-              {ch}
-            </span>
-          );
-        })}
-      </div>
+      {["FORGET-", "TABLE."].map((row, ri) => (
+        <Hit key={row} at={forgetAt - 2 + ri * 3} size={210}>
+          {Array.from(row).map((ch, i) => {
+            const k = ri * 7 + i;
+            const gone = m(f, forgetAt + 18 + k * 2, forgetAt + 30 + k * 2, 0, 1, (t) => t * t);
+            return (
+              <span key={i} style={{ display: "inline-block", opacity: 1 - gone, transform: `translateY(${gone * 160}px) rotate(${gone * (i % 2 ? 14 : -10)}deg)` }}>
+                {ch}
+              </span>
+            );
+          })}
+        </Hit>
+      ))}
     </AbsoluteFill>
   );
 };
@@ -323,7 +346,7 @@ const Curiosity: React.FC = () => {
   const look: [number, number] = [Math.sin((f - at) / 9) * 0.6, 0.1];
   return (
     <AbsoluteFill style={{ background: P.ink, color: P.bg, justifyContent: "center", padding: "0 80px", paddingBottom: 80 }}>
-      <Hit at={SCENES.curiosity[0]} size={90} weight={300} color={P.bg}>They stay for</Hit>
+      <Hit at={SCENES.curiosity[0] - LEAD} size={90} weight={300} color={P.bg}>They stay for</Hit>
       <div style={{ position: "relative", marginTop: 26, fontFamily: DISPLAY, fontWeight: 900, fontSize: 250, lineHeight: 0.9, letterSpacing: "-0.05em", color: P.accent }}>
         {/* the hook's redaction bar returns as one bar per line, then wipes away line by line */}
         {[
@@ -332,7 +355,7 @@ const Curiosity: React.FC = () => {
         ].map((bar) => {
           const sx =
             f < at + bar.delay
-              ? m(f, SCENES.curiosity[0] + 4 + bar.delay, SCENES.curiosity[0] + 14 + bar.delay, 0, 1, ease.expoOut)
+              ? m(f, SCENES.curiosity[0] - LEAD + bar.delay, SCENES.curiosity[0] + 8 + bar.delay, 0, 1, ease.expoOut)
               : 1 - m(f, at + bar.delay, at + bar.delay + 7, 0, 1, ease.expoOut);
           return sx < 0.02 ? null : (
           <div
@@ -366,12 +389,11 @@ const Curiosity: React.FC = () => {
 const Gap: React.FC = () => {
   const f = useCurrentFrame();
   const open = m(f, w("l05", 3) - 4, w("l05", 3) + 12, 0, 1, ease.expoOut);
-  const gapPx = open * 160;
+  const gapPx = open * 124;
   return (
     <AbsoluteFill style={{ justifyContent: "center", padding: "0 80px" }}>
       <Grid />
-      <Hit at={w("l05", 0) - LEAD} size={70} weight={300} style={{ marginBottom: 30 }}>curiosity is a</Hit>
-      <div style={{ display: "flex", alignItems: "flex-end", fontFamily: DISPLAY, fontWeight: 900, fontSize: 148, letterSpacing: "-0.05em", lineHeight: 0.9 }}>
+      <div style={{ display: "flex", alignItems: "flex-end", fontFamily: DISPLAY, fontWeight: 900, fontSize: 156, letterSpacing: "-0.05em", lineHeight: 0.9 }}>
         <span>CURIO</span>
         <div style={{ width: gapPx, position: "relative", height: 140 }}>
           {open > 0.05 && (
@@ -379,7 +401,7 @@ const Gap: React.FC = () => {
               <div style={{ position: "absolute", left: 8, right: 8, top: 66, height: 4, background: P.accent }} />
               <div style={{ position: "absolute", left: 8, top: 46, width: 4, height: 44, background: P.accent }} />
               <div style={{ position: "absolute", right: 8, top: 46, width: 4, height: 44, background: P.accent }} />
-              <Label style={{ position: "absolute", top: 98, left: 0, right: 0, textAlign: "center", opacity: open }}>gap</Label>
+              <Label style={{ position: "absolute", top: 104, left: 0, right: 0, textAlign: "center", opacity: open }}>gap</Label>
             </>
           )}
         </div>
@@ -474,7 +496,7 @@ const Timeline: React.FC = () => {
       <div style={{ position: "absolute", left: x0 + 0.06 * (x1 - x0) - 40, top: 650, fontFamily: DISPLAY, fontWeight: 900, fontSize: 470, lineHeight: 0.9, color: P.accent, transform: `scale(${q * (1 + 0.08 * m(f, qAt + 10, LINE_START.l09, 0, 1, ease.sineInOut))})`, transformOrigin: "30% 100%" }}>
         ?
       </div>
-      <div style={{ position: "absolute", left: x0 + 0.94 * (x1 - x0) - 110, top: 650, fontFamily: DISPLAY, fontWeight: 900, fontSize: 470, lineHeight: 0.9, color: P.ink, transform: `scale(${bang})`, transformOrigin: "50% 100%" }}>
+      <div style={{ position: "absolute", left: x0 + 0.94 * (x1 - x0) - 135, top: 650, fontFamily: DISPLAY, fontWeight: 900, fontSize: 470, lineHeight: 0.9, color: P.ink, transform: `scale(${bang})`, transformOrigin: "50% 100%" }}>
         !
       </div>
       <div style={{ position: "absolute", left: x0, width: x1 - x0, top: 1160, height: 6, background: `${P.ink}33` }} />
@@ -571,7 +593,7 @@ const Forget: React.FC = () => {
               })}
         </Hit>
       ))}
-      <Label color={P.muted} style={{ marginTop: 40, opacity: m(f, FORGET_DROP + 24, FORGET_DROP + 32) }}>…forgotten.</Label>
+      <Label color={P.muted} style={{ marginTop: 40, opacity: m(f, FORGET_DROP + 44, FORGET_DROP + 52) }}>…forgotten.</Label>
     </AbsoluteFill>
   );
 };
@@ -583,13 +605,13 @@ const FindOut: React.FC = () => {
   const wink = blink(f, [1125]);
   const lid = Math.max(eyeOpen, wink);
   const look: [number, number] = f < outAt + 12 ? [-0.7, -0.5] : f < 1095 ? [0.6, 0.2] : [0, 0];
-  const push = 1 + 0.12 * m(f, outAt, FINAL_HOLD_END, 0, 1, ease.sineInOut);
+  const push = 1 + 0.03 * m(f, outAt, FINAL_HOLD_END, 0, 1, ease.sineInOut);
   return (
-    <AbsoluteFill style={{ padding: "320px 80px 0", transform: `scale(${push})`, transformOrigin: "178px 1057px" }}>
+    <AbsoluteFill style={{ padding: "320px 80px 0", transform: `scale(${push})`, transformOrigin: "80px 1000px" }}>
       <Grid />
       {/* "They remember" lands big on the cut, then settles into its slot as the line continues */}
-      <div style={{ transform: `scale(${m(f, w("l12", 1), w("l12", 2) + 4, 1.25, 1, ease.quintInOut)})`, transformOrigin: "0% 0%" }}>
-        <Hit at={LINE_START.l12 - LEAD} size={96} weight={300}>They remember</Hit>
+      <div style={{ transform: `scale(${m(f, w("l12", 1), w("l12", 2) + 4, 1.1, 1, ease.quintInOut)})`, transformOrigin: "0% 0%" }}>
+        <Hit at={LINE_START.l12 - LEAD} size={104} weight={800}>They remember</Hit>
       </div>
       <Hit at={w("l12", 2)} size={140} style={{ marginTop: 24 }}>what they</Hit>
       <Hit at={w("l12", 4)} size={140}>had to</Hit>
