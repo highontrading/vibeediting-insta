@@ -100,3 +100,38 @@ These all came up while shipping *Stillwater*, which took 5 rounds to go from 6.
   under about 3s.
 - **Use real grids.** Split-flap rows share one tile grid (pad with blank tiles), and lines that should join use the same colour.
 - **Frame 0 is the thumbnail.** It must be a full, striking composition, and nothing should start at opacity 0.
+
+## Fast-paced edits (the default pace for the page)
+
+- Cut every 0.5–1.5s and land each cut on a beat (120 BPM: a beat is 15 frames). Something must change on
+  every beat: a cut, a type hit, a camera move or a colour flip.
+- Short punches (1–3 words) can hold for just 0.5s, but anything over 3 words needs `words/3 + 0.3`s.
+- Speed comes from editing, not from chaos. Keep one focal point per shot and one motion language.
+- Speed ramps, whip-pans, smash zooms, match cuts and frame-accurate type hits are the toolkit. Pair every hit with an SFX.
+
+## Narration
+
+- Generate it with `npm run tts -- <spec.json>` (Kokoro, open source). Voices: British male `bm_george` for
+  dramatic or cinematic pieces, American female `af_heart` for explainers. One voice per piece.
+- Write it for the ear: short sentences, 2.6–3 words per second, and no line longer than about 12 words.
+  Each line is a separate clip. Place lines with `<Sequence>` and lock cuts to the line starts in `timings.json`.
+- Duck the music to about 0.2 under narration and bring it back up in the gaps.
+- On-screen text supports the narration and doesn't duplicate it word for word, except for deliberate type hits.
+  Word-by-word captions can use the word times in `timings.json`.
+
+## Assets and licensing
+
+- Get real images and footage from `npm run assets -- get <nasa|met|loc|archive|openverse> "<query>" --comp <Id>`.
+  It downloads only commercial-safe files and logs each one in `public/assets/<Id>/credits.json`.
+- **Never** use Google Images, Pinterest, Instagram, YouTube or any file without a clear commercial license.
+- Credit CC BY creators in the caption (`Images: <creator> via Openverse/Flickr, CC BY`).
+- Cut-outs: `npm run assets -- cutout <file>` makes a transparent PNG. Then treat it: duotone, halftone,
+  posterise, paper edge or drop shadow, so stock never looks like stock.
+- Avoid recognisable real people (likeness rights) and real brands.
+
+## 3D
+
+- `@remotion/three` (three.js) renders through ANGLE in headless Chromium. It's good for clay
+  (`meshStandardMaterial`, roughness about 0.9, warm key light, noise-displaced geometry), product turntables,
+  3D type and camera moves.
+- Stop-motion feel: step the frame (`Math.floor(frame / 2) * 2`) and add a 1–2px per-step jitter.

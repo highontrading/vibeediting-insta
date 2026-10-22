@@ -16,19 +16,28 @@ export function hostOnGitHub(filePath: string): string {
     .match(/github\.com[/:]([^/]+\/[^/]+?)(?:\.git)?$/)?.[1];
   if (!repo) throw new Error("Couldn't work out the GitHub repo from `origin`; set VIDEO_HOST_REPO=owner/repo.");
 
-  let parent: string | undefined;
-  try {
-    git(["fetch", "--quiet", "origin", BRANCH], undefined, true);
-    parent = git(["rev-parse", "FETCH_HEAD"]);
-  } catch {
-    // Branch doesn't exist yet; the first commit starts it.
-  }
-
   const name = `${Date.now()}-${basename(filePath)}`;
   const blob = git(["hash-object", "-w", filePath]);
   const tree = git(["mktree"], `100644 blob ${blob}\t${name}\n`);
-  const commit = git(["commit-tree", tree, ...(parent ? ["-p", parent] : []), "-m", `Host ${name} for Instagram`]);
-  git(["push", "--quiet", "origin", `${commit}:refs/heads/${BRANCH}`]);
+
+  // Several productions may host at once: rebuild on the latest tip and retry if the push races.
+  let commit = "";
+  for (let attempt = 1; ; attempt++) {
+    let parent: string | undefined;
+    try {
+      git(["fetch", "--quiet", "origin", BRANCH], undefined, true);
+      parent = git(["rev-parse", "FETCH_HEAD"]);
+    } catch {
+      // Branch doesn't exist yet; the first commit starts it.
+    }
+    commit = git(["commit-tree", tree, ...(parent ? ["-p", parent] : []), "-m", `Host ${name} for Instagram`]);
+    try {
+      git(["push", "--quiet", "origin", `${commit}:refs/heads/${BRANCH}`]);
+      break;
+    } catch (err) {
+      if (attempt >= 4) throw err;
+    }
+  }
 
   return `https://raw.githubusercontent.com/${repo}/${commit}/${name}`;
 }

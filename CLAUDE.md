@@ -52,6 +52,11 @@ npm run render -- <CompositionId> out/<id>.mp4     # render (cloud Chromium is a
 npm run ig:post -- --video out/<id>.mp4 --host-only               # host only → prints RESULT {"videoUrl":…}
 npm run ig:post -- --video <https url> --caption-file <file>      # publish → prints RESULT {"mediaId":…,"permalink":…}
 npm run typecheck
+npm run setup:python                               # Python tools (narration + cutouts); once per fresh session
+npm run tts -- <spec.json>                         # narration (Kokoro) → public/voice/<Id>/*.wav + timings.json
+npm run assets -- get <nasa|met|loc|archive|openverse> "<query>" --comp <Id>   # licensed images/footage + credits
+npm run assets -- cutout <file>                    # background removal → transparent PNG
+npm run master -- out/<id>.mp4                     # audio limiter (always after render)
 ```
 
 `ig:post` and `ig:post --host-only` print one machine-readable line starting with `RESULT `. Parse that line.

@@ -12,6 +12,7 @@ Read first, every time: `CLAUDE.md`, `docs/CONTENT_STRATEGY.md`, `docs/CRAFT.md`
 
 ```bash
 [ -d node_modules ] || npm ci
+[ -x .venv/bin/python ] && [ -s models/kokoro/kokoro-v1.0.onnx ] || npm run setup:python   # narration + cutouts
 npm run ig:check
 ```
 
@@ -22,7 +23,8 @@ If `ig:check` fails with code 190, stop and report that the token expired.
 Query `collection://08cdc86b-d366-4e63-b6f8-5f7d102fb484` for rows where:
 
 - **Post date** is before *now + 3 days* (overdue rows included), and
-- **Status** is `Idea`, or `Failed`/`Producing` with an empty **Video URL**, and
+- **Status** is `Idea`, or `Failed` with an empty **Video URL**, or `Producing` with an empty **Video URL**
+  whose **Started at** is more than 4 hours ago (otherwise another session is still working on it), and
 - **Attempts** is empty or less than 3.
 
 Never touch `Hold`, `Review` or `Posted` rows. Sort by Post date ascending and take at most **2** rows
@@ -32,7 +34,7 @@ Also read the **Design system** of the 3 most recent rows that have one, so you 
 
 ## 3. For each row: work like a studio
 
-1. Set **Status** = `Producing`.
+1. Set **Status** = `Producing` and **Started at** = now.
 2. Read the whole row: Topic, Series, Brief, **Notes for Claude**, the page body and its comments.
    The owner's notes override everything else.
 3. **Treatment.** Follow docs/CRAFT.md step 1 and write the treatment into the row's page body (replace
@@ -45,6 +47,11 @@ Also read the **Design system** of the 3 most recent rows that have one, so you 
    - Use the kit where it helps (`MaskReveal`, `Stagger`, `Typewriter`, `SystemTexture`, `Sfx`, `Music`,
      `EndCard`, `ease.of(system)`), but build the visuals bespoke for this piece.
    - Add a music bed with `<Music>` and an SFX layer with `<Sfx>` per the treatment.
+   - **Narration** (if the brief asks for it): write the script for the ear, generate it with `npm run tts`
+     (spec in `scripts/tts.py`), and build the edit around `public/voice/<Id>/timings.json` (CRAFT.md → Narration).
+   - **Real images or footage** (if the piece needs them): `npm run assets -- get …` and `cutout` (CRAFT.md →
+     Assets). Commit `public/assets/<Id>/` and `public/voice/<Id>/` with the composition.
+   - **Pace:** fast by default (CRAFT.md → Fast-paced edits).
 5. **Styleframes first.** `npm run typecheck`, then `npm run review -- <Id> --frames <hook>,<beat1>,…,<payoff> --scale 0.5`.
    Read every PNG. Fix composition, type and colour until the stills could be posters. Repeat as needed.
 6. **Render.** `npm run render -- <Id> out/<Id>.mp4` (run it in the background; it takes minutes).
