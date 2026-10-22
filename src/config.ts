@@ -1,6 +1,10 @@
 import { existsSync } from "node:fs";
+import { EnvHttpProxyAgent, setGlobalDispatcher } from "undici";
 
 if (existsSync(".env")) process.loadEnvFile(".env");
+
+// Node's built-in fetch ignores HTTPS_PROXY; route through it when one is configured (e.g. cloud sessions).
+if (process.env.HTTPS_PROXY || process.env.https_proxy) setGlobalDispatcher(new EnvHttpProxyAgent());
 
 export type LoginType = "instagram" | "facebook";
 

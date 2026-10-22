@@ -28,7 +28,7 @@ export interface PublishingLimit {
 
 export interface PublishReelOptions {
   caption: string;
-  /** Local .mp4 path (uploaded directly to Meta) or a public https URL Meta can fetch. */
+  /** Public https URL Meta can fetch, or a local .mp4 path (Facebook Login only — uploaded directly to Meta). */
   video: string;
   shareToFeed?: boolean;
   /** Public URL of a cover image; otherwise Instagram uses the frame at thumbOffsetMs. */
@@ -128,8 +128,12 @@ export class InstagramClient {
 
   /** Create a Reel container, upload the video, wait for processing, and publish it. */
   async publishReel(opts: PublishReelOptions): Promise<PublishedMedia> {
-    const userId = await this.getUserId();
     const isUrl = /^https?:\/\//i.test(opts.video);
+    if (!isUrl && this.config.loginType === "instagram") {
+      // graph.instagram.com rejects upload_type=resumable ("The parameter video_url is required").
+      throw new Error("Instagram Login tokens can't upload local files. Host the video at a public https URL and pass that instead.");
+    }
+    const userId = await this.getUserId();
     const log = opts.onStatus ?? (() => {});
 
     const params: Record<string, string> = {
