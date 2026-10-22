@@ -26,28 +26,28 @@ const VO: { id: string; at: number; dur: number }[] = [
   { id: "l02", at: beat(5), dur: 99 }, // The world outside appears on the wall, upside down.
   { id: "l03", at: beat(12), dur: 74 }, // People knew this two thousand years ago.
   { id: "l04", at: beat(18), dur: 60 }, // But nobody could keep the picture.
-  { id: "l05", at: beat(23), dur: 105 }, // Eighteen thirty-nine. [47] Paris announces the daguerreotype.
-  { id: "l06", at: beat(31), dur: 94 }, // An image fixed on silver. [57] Sit still for minutes.
-  { id: "l07", at: beat(39), dur: 118 }, // Eighteen eighty-eight. [42] A box camera with a hundred shots inside.
-  { id: "l08", at: beat(48), dur: 64 }, // You press the button. [37] We do the rest.
-  { id: "l09", at: beat(54), dur: 121 }, // Then thirty-five millimetre film. [70] A camera for your coat pocket.
-  { id: "l10", at: beat(64), dur: 146 }, // Nineteen seventy-five. [57] Steven Sasson builds a digital camera at Kodak.
-  { id: "l11", at: beat(74), dur: 138 }, // Eight pounds. [30] Ten thousand pixels. [76] Twenty-three seconds to save each one.
-  { id: "l12", at: beat(85), dur: 78 }, // By two thousand, [37] phones take photos.
-  { id: "l13", at: beat(91), dur: 73 }, // Today, we take over a trillion a year.
-  { id: "l14", at: beat(98), dur: 97 }, // Look closer. [27] It's still a tiny hole [71] and a dark room.
-  { id: "l15", at: beat(106), dur: 62 }, // Just small enough [36] for your pocket.
+  { id: "l05", at: beat(25), dur: 105 }, // Eighteen thirty-nine. [47] Paris announces the daguerreotype.
+  { id: "l06", at: beat(33), dur: 94 }, // An image fixed on silver. [57] Sit still for minutes.
+  { id: "l07", at: beat(41), dur: 118 }, // Eighteen eighty-eight. [42] A box camera with a hundred shots inside.
+  { id: "l08", at: beat(50), dur: 64 }, // You press the button. [37] We do the rest.
+  { id: "l09", at: beat(56), dur: 121 }, // Then thirty-five millimetre film. [70] A camera for your coat pocket.
+  { id: "l10", at: beat(66), dur: 146 }, // Nineteen seventy-five. [57] Steven Sasson builds a digital camera at Kodak.
+  { id: "l11", at: beat(76), dur: 138 }, // Eight pounds. [30] Ten thousand pixels. [76] Twenty-three seconds to save each one.
+  { id: "l12", at: beat(87), dur: 78 }, // By two thousand, [37] phones take photos.
+  { id: "l13", at: beat(93), dur: 73 }, // Today, we take over a trillion a year.
+  { id: "l14", at: beat(100), dur: 97 }, // Look closer. [27] It's still a tiny hole [71] and a dark room.
+  { id: "l15", at: beat(108), dur: 62 }, // Just small enough [36] for your pocket.
 ];
 const at = (id: string) => VO.find((v) => v.id === id)!.at;
 
 // Sections (each starts on a beat; torn-paper wipes cover the cut 15 frames before the next line)
-const WIPE1 = beat(22); // obscura → 1839
-const WIPE2 = beat(38); // 1839 → 1888
-const WIPE3 = beat(53); // 1888 → 35mm
-const WIPE4 = beat(63); // 35mm → 1975
-const WIPE5 = beat(84); // 1975 → 2000
-const PAYOFF = beat(97);
-const END = beat(112);
+const WIPE1 = beat(24); // obscura → 1839
+const WIPE2 = beat(40); // 1839 → 1888
+const WIPE3 = beat(55); // 1888 → 35mm
+const WIPE4 = beat(65); // 35mm → 1975
+const WIPE5 = beat(86); // 1975 → 2000
+const PAYOFF = beat(99);
+const END = beat(114);
 export const CAMERA_HISTORY_PAPER_DURATION = END + END_CARD_FRAMES;
 
 // ─── Stop-motion helpers ───────────────────────────────────────────────────────────────────────────
@@ -588,7 +588,7 @@ const SceneObscura: React.FC = () => {
     );
   }
   const lf = f - L4;
-  const cloud = mv(lf, 6, 26, 0, 1, E);
+  const cloud = mv(lf, 6, 26, 0, 1, E) + Math.max(0, sf(lf) - 26) * 0.004; // keeps drifting through the silence
   const fall = Math.max(0, (sf(lf) - 32) / 26);
   return (
     <AbsoluteFill>
@@ -646,7 +646,7 @@ const Scene1839: React.FC = () => {
   const f = useCurrentFrame();
   const L5 = at("l05");
   const L6 = at("l06");
-  const PORTRAIT = beat(29); // on the beat inside "daguerreotype"
+  const PORTRAIT = beat(31); // on the beat inside "daguerreotype"
   if (f < PORTRAIT) {
     return (
       <AbsoluteFill>
@@ -737,7 +737,7 @@ const Scene1888: React.FC = () => {
   const f = useCurrentFrame();
   const L7 = at("l07");
   const L8 = at("l08");
-  const CAM = beat(42);
+  const CAM = beat(44);
   if (f < CAM) {
     return (
       <AbsoluteFill>
@@ -748,10 +748,11 @@ const Scene1888: React.FC = () => {
   }
   if (f < L8) {
     const p = mv(f, CAM, CAM + 10, 0, 1, E);
-    const k = 1.2 + 0.05 * (sf(f - CAM) / (L8 - CAM));
+    const cutIn = f >= beat(47); // cut in on the beat as the VO says "a hundred shots"
+    const k = cutIn ? 1.6 + 0.05 * ((sf(f) - beat(47)) / (L8 - beat(47))) : 1.2 + 0.04 * (sf(f - CAM) / (beat(47) - CAM));
     return (
       <AbsoluteFill>
-        <Stage k={k} fx={540} fy={1030} ty={1030 + (1 - p) * 320}>
+        <Stage k={k} fx={540} fy={1030} ty={cutIn ? 1060 : 1030 + (1 - p) * 320}>
           <BoxCamera f={f} press={0} flash={0} />
         </Stage>
         <Words text={"A box\ncamera."} f={f} at={CAM + 2} x={80} y={300} size={150} seed={14} lh={0.9} />
@@ -860,7 +861,7 @@ const Pocket: React.FC<{ f: number; front?: boolean; y?: number }> = ({ f, front
 const Scene35: React.FC = () => {
   const f = useCurrentFrame();
   const L9 = at("l09");
-  const POCKET = beat(58);
+  const POCKET = beat(60);
   if (f < POCKET) {
     const lf = f - L9;
     // the film advances one frame per beat, like a winding lever
@@ -916,9 +917,9 @@ const Scene1975: React.FC = () => {
   const f = useCurrentFrame();
   const L10 = at("l10");
   const L11 = at("l11");
-  const PROTO = beat(67);
+  const PROTO = beat(69);
   const PIX = L11 + 30;
-  const SECS = beat(79);
+  const SECS = beat(81);
   if (f < PROTO) {
     return (
       <AbsoluteFill>
@@ -929,10 +930,11 @@ const Scene1975: React.FC = () => {
   }
   if (f < L11) {
     const p = mv(f, PROTO, PROTO + 10, 0, 1, E);
-    const k = 1 + 0.04 * (sf(f - PROTO) / (L11 - PROTO));
+    const deck = f >= beat(73); // cut in on the cassette the pictures were saved to
+    const k = deck ? 1.4 + 0.04 * ((sf(f) - beat(73)) / (L11 - beat(73))) : 1 + 0.04 * (sf(f - PROTO) / (beat(73) - PROTO));
     return (
       <AbsoluteFill>
-        <Stage k={k} fx={540} fy={940} ty={940 + (1 - p) * 320}>
+        <Stage k={k} fx={deck ? 700 : 540} fy={deck ? 820 : 940} ty={deck ? 960 : 940 + (1 - p) * 320}>
           <Prototype f={f} />
         </Stage>
         <Words text={"The first\ndigital\ncamera."} f={f} at={PROTO + 4} x={80} y={250} size={128} seed={19} lh={0.9} pinkWord={2} />
@@ -1081,10 +1083,10 @@ const SceneNow: React.FC = () => {
           </Paper>
         );
       })}
-      <Paper x={50} y={220} w={980} h={520} color={P.bg} seed={330} torn="b" lift={1} rot={-1} amp={7}>
+      {lf >= 26 && <Paper x={50} y={220 - (1 - mv(lf, 26, 33, 0, 1, E)) * 700} w={980} h={520} color={P.bg} seed={330} torn="b" lift={1 + (1 - mv(lf, 26, 33, 0, 1, E)) * 2} rot={-1} amp={7}>
         <Words text={"Over a\ntrillion"} f={f} at={L13 + 30} x={30} y={30} size={170} seed={23} lh={0.88} pinkWord={2} />
         <Words text="PHOTOS A YEAR" f={f} at={L13 + 57} x={34} y={366} size={56} font={T.mono!} weight={700} tracking={0.04} seed={24} />
-      </Paper>
+      </Paper>}
     </AbsoluteFill>
   );
 };
@@ -1107,7 +1109,7 @@ const ScenePayoff: React.FC = () => {
   const L14 = at("l14");
   const L15 = at("l15");
   const PUSH = L14 + 21;
-  const INSIDE = beat(100);
+  const INSIDE = beat(102);
   if (f < INSIDE) {
     const lf = f - PAYOFF;
     const enter = 1; // revealed by the torn-paper wipe, already in place
@@ -1131,7 +1133,7 @@ const ScenePayoff: React.FC = () => {
     const k = 1.0 + 0.1 * (sf(lf) / (L15 - INSIDE)); // a steady push into the room
     return (
       <AbsoluteFill style={{ background: P.ink }}>
-        <AbsoluteFill style={{ clipPath: `circle(${iris * 1150}px at 540px 960px)`, background: P.bg }}>
+        <AbsoluteFill style={{ clipPath: `circle(${iris * 1010}px at 540px 940px)`, background: P.bg }}>
           <Stage k={k} fx={540} fy={900} ty={900}>
             <Diorama f={f} light={mv(lf, 2, 14, 0, 1, OUT)} pic={1} />
           </Stage>
@@ -1248,11 +1250,11 @@ const SoundDesign: React.FC = () => (
     <Sfx name="tear" at={at("l04") + 32} volume={0.4} />
     {/* wipes */}
     {[WIPE1, WIPE2, WIPE3, WIPE4, WIPE5, PAYOFF - WIPE_SWAP].map((w) => (
-      <Sfx key={w} name="tear" at={w + 2} volume={0.55} />
+      <Sfx key={w} name="tear" at={w + 2} volume={w === WIPE1 ? 0.22 : 0.55} />
     ))}
     {/* 1839 */}
     {[0, 1, 2, 3].map((i) => (
-      <Sfx key={`a${i}`} name={i === 0 ? "impact" : "pop"} at={at("l05") + i * 2.5} volume={i === 0 ? 0.55 : 0.3} />
+      <Sfx key={`a${i}`} name={i === 0 ? "impact" : "pop"} at={at("l05") + i * 2.5} volume={i === 0 ? 0.8 : 0.32} />
     ))}
     <Sfx name="paper" at={at("l05") + 47} volume={0.4} />
     <Sfx name="paper" at={at("l05") + 52} volume={0.45} />
