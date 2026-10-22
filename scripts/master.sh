@@ -1,9 +1,22 @@
 #!/usr/bin/env bash
-# Masters a rendered video's audio in place: brick-wall limiter at about -2 dBFS so stacked SFX never clip.
+# Masters a rendered video's audio in place: brick-wall limiter so stacked SFX never clip.
+# The AAC encoder can overshoot the limiter by ~2-3 dB on sharp transients, so the encoded peak is
+# measured and the ceiling lowered until the final file peaks below -1 dBFS.
 # Usage: npm run master -- out/<Id>.mp4
 set -euo pipefail
 in="$1"
 tmp="${in%.mp4}.mastering.mp4"
-ffmpeg -v error -y -i "$in" -c:v copy -af "alimiter=limit=0.79:attack=3:release=60:level=disabled" -c:a aac -b:a 192k "$tmp"
+src="${in%.mp4}.premaster.mp4"
+cp "$in" "$src"
+ceiling=-2.0
+for attempt in 1 2 3 4; do
+  limit=$(python3 -c "print(round(10 ** ($ceiling / 20), 4))")
+  ffmpeg -v error -y -i "$src" -c:v copy -af "alimiter=limit=$limit:attack=3:release=60:level=disabled" -c:a aac -b:a 192k "$tmp"
+  peak=$(ffmpeg -hide_banner -i "$tmp" -af volumedetect -f null - 2>&1 | sed -n 's/.*max_volume: \(-\?[0-9.]*\) dB.*/\1/p')
+  echo "ceiling ${ceiling} dB → encoded peak ${peak} dB"
+  if python3 -c "import sys; sys.exit(0 if $peak <= -1.0 else 1)"; then break; fi
+  ceiling=$(python3 -c "print(round($ceiling - ($peak + 1.0) - 0.3, 2))")
+done
 mv "$tmp" "$in"
+rm -f "$src"
 ffmpeg -hide_banner -i "$in" -af volumedetect -f null - 2>&1 | grep -E "mean_volume|max_volume" | sed 's/.*\] //'
