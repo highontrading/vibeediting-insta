@@ -21,17 +21,21 @@ export const Sfx: React.FC<{ name: SfxName; at: number; volume?: number }> = ({ 
   </Sequence>
 );
 
-/** Background music bed from public/music, faded in and out. */
-export const Music: React.FC<{ file: string; durationInFrames: number; volume?: number; fade?: number; startFrom?: number }> = ({
-  file,
-  durationInFrames,
-  volume = 0.5,
-  fade = 20,
-  startFrom = 0,
-}) => (
+/**
+ * Background music bed from public/music. Place it inside a <Sequence> to start it later;
+ * `durationInFrames` is how long it plays from there. Fades are in frames.
+ */
+export const Music: React.FC<{
+  file: string;
+  durationInFrames: number;
+  volume?: number;
+  fadeIn?: number;
+  fadeOut?: number;
+  startFrom?: number;
+}> = ({ file, durationInFrames, volume = 0.5, fadeIn = 15, fadeOut = 60, startFrom = 0 }) => (
   <Audio
     src={staticFile(`music/${file}`)}
     startFrom={startFrom}
-    volume={(f) => volume * Math.min(1, f / fade, (durationInFrames - f) / fade)}
+    volume={(f) => volume * Math.max(0, Math.min(1, f / fadeIn, (durationInFrames - f) / fadeOut))}
   />
 );
