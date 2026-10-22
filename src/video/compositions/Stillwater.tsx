@@ -24,7 +24,7 @@ const SUMMARY = beat(36); // 810
 const TRIPTYCH = beat(44); // 990
 const MORPH = beat(48); // 1080
 const PAYOFF = beat(49); // 1103
-const END = beat(61); // 1373
+const END = beat(57); // 1283
 export const STILLWATER_DURATION = END + END_CARD_FRAMES;
 
 const SECTION = 180; // 8 beats per product beat
@@ -109,11 +109,16 @@ const NOTES = [
   { app: "Calendar", msg: "Standup moved to 9:15", x: 450, y: 470, r: 3, z: 1.02, at: 0 },
   { app: "News", msg: "Breaking: everything, again", x: 560, y: 760, r: -3, z: 0.8, at: 12 },
   { app: "Shop", msg: "Your cart misses you", x: 600, y: 990, r: -6, z: 0.8, at: 16 },
-  { app: "Team chat", msg: "17 new in #general", x: 430, y: 1190, r: 5, z: 1.06, at: 0 },
+  { app: "Team chat", msg: "17 new in #general", x: 400, y: 1190, r: 5, z: 1.06, at: 0 },
   { app: "Social", msg: "You have 43 new likes", x: 40, y: 1290, r: 2, z: 0.82, at: 20 },
   { app: "Mail", msg: "Last chance: 40% off", x: 440, y: 1390, r: -4, z: 1.0, at: 0 },
+  { app: "Calendar", msg: "Reminder: reply to Sam", x: 120, y: 560, r: 4, z: 0.95, at: 26 },
+  { app: "Mail", msg: "You have 212 unread", x: 430, y: 640, r: -5, z: 1.04, at: 32 },
+  { app: "Social", msg: "Live now: don't miss it", x: 60, y: 1080, r: -3, z: 1.0, at: 38 },
+  { app: "News", msg: "Alert: something happened", x: 500, y: 900, r: 6, z: 0.92, at: 44 },
+  { app: "Team chat", msg: "@channel urgent!!", x: 300, y: 1450, r: -2, z: 1.03, at: 50 },
 ];
-const POPS = [0, 4, 8, 12, 16, 20];
+const POPS = [0, 4, 8, 12, 16, 20, 26, 32, 38, 44, 50];
 
 const Hook: React.FC = () => {
   const frame = useCurrentFrame();
@@ -221,7 +226,7 @@ const Title: React.FC = () => {
   const f = useCurrentFrame();
   const word = "STILLWATER";
   const pushUp = m(f, PHONE - TITLE, PHONE - TITLE + 36, 0, 1, E) * 1300;
-  const sub = m(f, 46, 70);
+  const sub = m(f, 46, 70) * (1 - m(f, 140, 152));
   const size = 196;
   const cap = size * 0.86;
 
@@ -293,8 +298,8 @@ const onScreen = (sx: number, sy: number) => ({ x: 540 + (14 + sx - PHONE_W / 2)
 const SECTIONS = [
   { at: 0, num: "01", title: "Set the session.", focus: onScreen(SCREEN_W / 2, 400) },
   { at: HELD - PHONE, num: "02", title: "Noise waits.", focus: onScreen(SCREEN_W / 2, 640) },
-  { at: WEEK - PHONE, num: "03", title: "Build the habit.", focus: onScreen(SCREEN_W / 2, 400) },
-  { at: SUMMARY - PHONE, num: "04", title: "Close the day.", focus: onScreen(SCREEN_W / 2, 690) },
+  { at: WEEK - PHONE, num: "03", title: "Build the habit.", focus: onScreen(SCREEN_W / 2, 470) },
+  { at: SUMMARY - PHONE, num: "04", title: "Close the day.", focus: onScreen(SCREEN_W / 2, 720), zoom: 1.5 },
 ];
 const TRI = TRIPTYCH - PHONE;
 const MOR = MORPH - PHONE;
@@ -312,7 +317,8 @@ const PhoneAct: React.FC = () => {
   let ty = 0;
   if (f < TRI) {
     const zoomed = local >= CUT_IN;
-    k = zoomed ? 1.8 + 0.09 * ((local - CUT_IN) / (SECTION - CUT_IN)) : 1 + 0.05 * (local / CUT_IN);
+    const z = "zoom" in sec ? (sec.zoom as number) : 1.8;
+    k = zoomed ? z * (1 + 0.05 * ((local - CUT_IN) / (SECTION - CUT_IN))) : 1 + 0.05 * (local / CUT_IN);
     const target = zoomed ? { x: 540, y: 1000 } : sec.focus;
     tx = target.x - sec.focus.x * k;
     ty = target.y - sec.focus.y * k;
@@ -337,11 +343,12 @@ const PhoneAct: React.FC = () => {
 /** Section caption on a signage rail: slides in from the left, leaves to the right. */
 const RailCaption: React.FC<{ f: number; at: number; until: number; num: string; text: string }> = ({ f, at, until, num, text }) => {
   if (f < at || f > until) return null;
-  const inP = m(f, at + 4, at + 19);
+  const delay = at === 0 ? 36 : 4;
+  const inP = m(f, at + delay, at + delay + 15);
   const outP = m(f, until - 14, until, 0, 1, ease.quintInOut);
   const x = 80 + (inP - 1) * 1100 + outP * 1100;
   return (
-    <div style={{ position: "absolute", left: x, top: 214, width: 920 }}>
+    <div style={{ position: "absolute", left: x, top: 240, width: 920 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
         <div style={{ width: 54, height: 6, background: P.accent }} />
         <div style={{ fontFamily: T.mono, fontSize: 40, color: P.accent, letterSpacing: "0.12em" }}>{num} / 04</div>
@@ -637,7 +644,7 @@ const WeekScreen: React.FC<{ lf: number }> = ({ lf }) => {
       </div>
       <div style={{ position: "absolute", top: 768, left: 46, right: 30, display: "flex", alignItems: "center", gap: 10 }}>
         {DAYS.map((_, i) => {
-          const on = i <= TODAY && lf > 46 + i * 6;
+          const on = i <= TODAY && lf > CUT_IN + 6 + i * 6;
           return <div key={i} style={{ width: 22, height: 22, borderRadius: 11, flexShrink: 0, background: on ? P.accent : `${P.muted}33` }} />;
         })}
         <div style={{ fontSize: 30, fontWeight: 600, marginLeft: 10, whiteSpace: "nowrap" }}>5-day streak</div>
@@ -654,7 +661,7 @@ const SUMMARY_ROWS: [string, string][] = [
 ];
 
 const SummaryScreen: React.FC<{ lf: number }> = ({ lf }) => {
-  const check = m(lf, 56, 84);
+  const check = m(lf, CUT_IN + 6, CUT_IN + 28);
   return (
     <AbsoluteFill>
       <ScreenHeader title="Today" sub="FRI 23 OCT" />
@@ -663,7 +670,7 @@ const SummaryScreen: React.FC<{ lf: number }> = ({ lf }) => {
           const p = m(lf, 6 + i * 6, 28 + i * 6);
           return (
             <div key={k} style={{ opacity: p, transform: `translateX(${(1 - p) * 60}px)` }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", padding: "18px 4px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", padding: "12px 4px" }}>
                 <span style={{ fontSize: 30, color: P.muted }}>{k}</span>
                 <span style={{ fontFamily: T.display, fontWeight: 900, fontSize: 62 }}>{v}</span>
               </div>
@@ -672,7 +679,7 @@ const SummaryScreen: React.FC<{ lf: number }> = ({ lf }) => {
           );
         })}
       </div>
-      <div style={{ position: "absolute", top: 610, left: 0, right: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 14 }}>
+      <div style={{ position: "absolute", top: 670, left: 0, right: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 14 }}>
         <svg width={84} height={84} viewBox="0 0 84 84">
           <circle cx={42} cy={42} r={38} fill="none" stroke={P.accent} strokeWidth={4} strokeDasharray={240} strokeDashoffset={240 * (1 - check)} transform="rotate(-90 42 42)" />
           <path
@@ -683,10 +690,10 @@ const SummaryScreen: React.FC<{ lf: number }> = ({ lf }) => {
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeDasharray={50}
-            strokeDashoffset={50 * (1 - m(lf, 78, 92))}
+            strokeDashoffset={50 * (1 - m(lf, CUT_IN + 22, CUT_IN + 34))}
           />
         </svg>
-        <div style={{ fontSize: 32, fontWeight: 600, opacity: m(lf, 84, 98) }}>Day complete. Rest well.</div>
+        <div style={{ fontSize: 32, fontWeight: 600, opacity: m(lf, CUT_IN + 28, CUT_IN + 40) }}>Day complete. Rest well.</div>
       </div>
     </AbsoluteFill>
   );
@@ -732,16 +739,21 @@ const Triptych: React.FC<{ f: number }> = ({ f }) => {
 // ─── Payoff: the icon, ripples that settle, a split-flap tagline, the waterline returns ──────
 
 const RIPPLES = [0, 22, 67];
-const LINE_BACK = 200;
+const LINE_BACK = 90; // sweeps down from the top, lands on beat 54 as the icon's horizon
 
 const Payoff: React.FC = () => {
   const f = useCurrentFrame();
   const settle = m(f, 0, 16, 0.96, 1);
   const small = m(f, 84, 99);
-  const line = m(f, LINE_BACK, LINE_BACK + 28, 0, 1, ease.quintInOut);
+  const lineY = m(f, LINE_BACK, LINE_BACK + 22, 220, ICON_Y - 1, ease.quintInOut);
+  const lineDraw = m(f, LINE_BACK - 8, LINE_BACK + 2);
+  const drift = 1 + 0.04 * (f / (END - PAYOFF));
 
   return (
-    <AbsoluteFill>
+    <AbsoluteFill style={{ transform: `scale(${drift})` }}>
+      {f >= LINE_BACK - 8 && (
+        <div style={{ position: "absolute", top: lineY, left: 540 - lineDraw * 460, width: lineDraw * 920, height: 3, background: P.accent }} />
+      )}
       {RIPPLES.map((start, i) => {
         if (f < start) return null;
         const p = m(f, start, start + 110, 0, 1, (t) => 1 - Math.pow(1 - t, 2));
@@ -795,7 +807,6 @@ const Payoff: React.FC = () => {
         <FlapWord text="MAKE IT" start={18} tileWidth={96} height={156} fontFamily={T.display} fontSize={140} fontWeight={900} color={P.ink} tile={P.surface} seam={SEAM} />
         <FlapWord text="QUIET." start={26} tileWidth={96} height={156} fontFamily={T.display} fontSize={140} fontWeight={900} color={P.accent} tile={P.surface} seam={SEAM} />
       </div>
-      <div style={{ position: "absolute", top: 1300, left: 540 - line * 460, width: line * 920, height: 3, background: P.accent }} />
       <div
         style={{
           position: "absolute",
@@ -820,9 +831,11 @@ const Payoff: React.FC = () => {
 const SoundDesign: React.FC = () => (
   <>
     {POPS.map((t, i) => (
-      <Sfx key={`p${t}`} name="pop" at={t} volume={0.3 + i * 0.04} />
+      <Sfx key={`p${t}`} name="pop" at={t} volume={Math.min(0.75, 0.4 + i * 0.035)} />
     ))}
-    <Sfx name="riser" at={0} volume={0.22} />
+    <Sfx name="buzz" at={0} volume={0.4} />
+    <Sfx name="buzz" at={30} volume={0.35} />
+    <Sfx name="riser" at={0} volume={0.38} />
     <Sfx name="swish-reverse" at={LINE_IN - 18} volume={0.4} />
     <Sfx name="whoosh" at={LINE_IN} volume={0.6} />
     <Sfx name="sub-drop" at={LINE_IN + 4} volume={0.6} />
@@ -848,9 +861,9 @@ const SoundDesign: React.FC = () => (
       <Sfx key={`h${t}`} name="tick" at={HELD + t + 30} volume={0.35} />
     ))}
     {[0, 1, 2, 3, 4].map((i) => (
-      <Sfx key={`w${i}`} name="pop" at={WEEK + 47 + i * 6} volume={0.2} />
+      <Sfx key={`w${i}`} name="pop" at={WEEK + CUT_IN + 7 + i * 6} volume={0.25} />
     ))}
-    <Sfx name="click" at={SUMMARY + 84} volume={0.4} />
+    <Sfx name="click" at={SUMMARY + CUT_IN + 34} volume={0.45} />
     <Sfx name="swish-reverse" at={TRIPTYCH - 20} volume={0.35} />
     <Sfx name="whoosh-short" at={TRIPTYCH} volume={0.4} />
     <Sfx name="whoosh" at={MORPH} volume={0.45} />
@@ -858,7 +871,8 @@ const SoundDesign: React.FC = () => (
     {Array.from({ length: 10 }, (_, i) => (
       <Sfx key={`f${i}`} name="tick" at={PAYOFF + 18 + i * 3} volume={0.16} />
     ))}
-    <Sfx name="shimmer" at={PAYOFF + LINE_BACK} volume={0.28} />
+    <Sfx name="swish-reverse" at={PAYOFF + LINE_BACK - 4} volume={0.3} />
+    <Sfx name="shimmer" at={PAYOFF + LINE_BACK + 22} volume={0.28} />
     <Sfx name="shimmer" at={END + 4} volume={0.2} />
   </>
 );

@@ -159,3 +159,17 @@ for k in range(0, len(t), seg):
     g[k : k + seg] = np.sign(np.sin(2 * np.pi * f * t[k : k + seg])) * rng.uniform(0.2, 1)
 g = np.round(g * 6) / 6
 write("glitch", stereo(norm(fade(g, 0.001, 0.02), 0.45), rng.uniform(-0.6, 0.6, len(t))))
+
+# buzz: a phone vibrating on a desk, four pulses over ~1.9s
+t = t_axis(1.9)
+motor = np.sign(np.sin(2 * np.pi * 160 * t)) * 0.5 + np.sin(2 * np.pi * 320 * t) * 0.3
+rattle = 1 + 0.35 * np.sin(2 * np.pi * 45 * t)
+gate = np.zeros(len(t))
+for on in (0.0, 0.5, 1.0, 1.5):
+    a, b = int(on * SR), int((on + 0.36) * SR)
+    ramp = int(0.01 * SR)
+    gate[a:b] = 1
+    gate[a : a + ramp] = np.linspace(0, 1, ramp)
+    gate[b - ramp : b] = np.linspace(1, 0, ramp)
+bz = lowpass(motor * rattle * gate + rng.standard_normal(len(t)) * 0.05 * gate, 1400)
+write("buzz", norm(bz, 0.8))
