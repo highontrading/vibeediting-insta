@@ -2,7 +2,7 @@
 // Usage: npm run review -- <CompositionId> [--frames 30,120,450] [--count 12] [--scale 0.5]
 // Output: out/review/<Id>/f<frame>.png and out/review/<Id>-sheet.png (all frames tiled, 4 per row).
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, rmSync } from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
 import { bundle } from "@remotion/bundler";
@@ -38,6 +38,7 @@ const frames = values.frames
     );
 
 const dir = path.resolve("out/review", id);
+rmSync(dir, { recursive: true, force: true });
 mkdirSync(dir, { recursive: true });
 const files: string[] = [];
 for (const frame of frames) {
