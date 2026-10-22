@@ -101,6 +101,23 @@ These all came up while shipping *Stillwater*, which took 5 rounds to go from 6.
 - **Use real grids.** Split-flap rows share one tile grid (pad with blank tiles), and lines that should join use the same colour.
 - **Frame 0 is the thumbnail.** It must be a full, striking composition, and nothing should start at opacity 0.
 
+These came up on *Curiosity, not information* (6 rounds, best 8.25; not shipped):
+
+- **No empty cut frames.** A mask-rise that starts on the cut frame leaves that frame blank. Start a scene's first type
+  hit about 3 frames before the cut so it's already rising, and scan the render for blank frames
+  (`signalstats` YMIN over the safe zone).
+- **Watch for real-brand lookalikes.** Concentric red and white rings read as the Target logo. Check motifs and marks
+  against famous logos, especially when they sit next to a wordmark.
+- **Use the system's transitions, mixed.** Eleven identical smash-zooms read as a preset, and eleven identical
+  pushes read as a default. Use the system's signature transition for most cuts and 2–3 match cuts where shapes line up.
+- **Don't let the hero shrink.** After a reveal, the next shot should hold or grow the hero word's scale.
+- **Use the whole frame.** Alternate top-hung, centred and bottom-anchored layouts, and don't leave half the safe zone empty for more than about 2s.
+- **Black scenes need an untransformed background.** A zoom or push on a scene layer exposes the page colour at the
+  edges unless the background sits on a layer outside the transform.
+- **Small accent text must pass contrast.** Red mono labels under about 60px usually fail 4.5:1, so use ink or muted for them.
+- **Payoffs must be big and on the beat.** A motif callback (closing a loop, a returning object) needs real scale, a
+  hold and an SFX hit. A 14% stroke completion goes unnoticed.
+
 ## Fast-paced edits (the default pace for the page)
 
 - Cut every 0.5–1.5s and land each cut on a beat (120 BPM: a beat is 15 frames). Something must change on
