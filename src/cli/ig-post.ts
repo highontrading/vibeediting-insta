@@ -1,5 +1,6 @@
 // Publishes a video as an Instagram Reel.
 // Usage: npm run ig:post -- --video out/video.mp4 --caption "Hello" [--caption-file caption.txt] [--no-feed] [--thumb-offset 1500] [--dry-run]
+//        npm run ig:post -- --video out/video.mp4 --host-only   (only host it; prints the public URL)
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { parseArgs } from "node:util";
@@ -16,6 +17,7 @@ const { values } = parseArgs({
     "thumb-offset": { type: "string" },
     "no-feed": { type: "boolean", default: false },
     "dry-run": { type: "boolean", default: false },
+    "host-only": { type: "boolean", default: false },
   },
 });
 
@@ -43,6 +45,13 @@ if (values["dry-run"]) {
   process.exit(0);
 }
 
+if (values["host-only"]) {
+  // Just put the file at a public URL (used when a video is produced ahead of its post date).
+  const url = isUrl ? video : hostOnGitHub(video);
+  console.log(`RESULT ${JSON.stringify({ videoUrl: url })}`);
+  process.exit(0);
+}
+
 const config = loadInstagramConfig();
 let videoSource = video;
 if (!isUrl && config.loginType === "instagram") {
@@ -62,6 +71,7 @@ const result = await ig.publishReel({
 });
 console.log(`\n🎉 Published! Media ID: ${result.id}`);
 if (result.permalink) console.log(`   ${result.permalink}`);
+console.log(`RESULT ${JSON.stringify({ mediaId: result.id, permalink: result.permalink ?? null, videoUrl: isUrl ? video : videoSource })}`);
 
 /** Warn (don't fail) on things Instagram commonly rejects for Reels. */
 function checkReelSpecs(file: string) {

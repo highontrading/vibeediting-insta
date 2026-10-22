@@ -26,6 +26,14 @@ export interface PublishingLimit {
   quotaDurationSeconds: number;
 }
 
+export interface RecentMedia {
+  id: string;
+  caption: string;
+  mediaType: string;
+  permalink: string;
+  timestamp: string;
+}
+
 export interface PublishReelOptions {
   caption: string;
   /** Public https URL Meta can fetch, or a local .mp4 path (Facebook Login only — uploaded directly to Meta). */
@@ -109,6 +117,15 @@ export class InstagramClient {
       followersCount: info.followers_count,
       mediaCount: info.media_count,
     };
+  }
+
+  async getRecentMedia(limit = 10): Promise<RecentMedia[]> {
+    const userId = await this.getUserId();
+    const res = await this.request<{ data: any[] }>("GET", `/${userId}/media`, {
+      fields: "id,caption,media_type,permalink,timestamp",
+      limit: String(limit),
+    });
+    return res.data.map((m) => ({ id: m.id, caption: m.caption ?? "", mediaType: m.media_type, permalink: m.permalink, timestamp: m.timestamp }));
   }
 
   async getPublishingLimit(): Promise<PublishingLimit> {

@@ -11,6 +11,16 @@ prompt ──► Claude writes a Remotion composition (React)
        ──► npm run ig:post  → MP4 hosted on the `media` branch → Meta Graph API → Instagram Reel
 ```
 
+## Autopilot
+
+- **Calendar:** Notion "Vibe Editing — Autopilot" → *Content Calendar* (one row per post).
+- **Scheduled Claude tasks** run the repo skills:
+  - `/produce` makes videos for posts due in the next 3 days (Idea → Review).
+  - `/publish` posts what's due (Review → Posted), with a backup run in case one fails.
+- To stop a post, set its Status to **Hold** in Notion.
+
+See `CLAUDE.md` for the full rules the sessions follow.
+
 ## Setup
 
 ```bash
@@ -27,10 +37,11 @@ npm run ig:check        # verify the Instagram connection
 | `npm run render -- <CompositionId> out/<file>.mp4` | Renders a video |
 | `npm run ig:check` | Checks the token and account, and prints `IG_USER_ID` and the posting quota |
 | `npm run ig:post -- --video <file> --caption "..."` | Publishes a Reel (`--caption-file`, `--no-feed`, `--thumb-offset <ms>`, `--dry-run`) |
+| `npm run ig:recent` | Lists the latest posts (`--json` for machine output) |
 | `npm run ig:refresh-token` | Extends the 60-day token and saves it to `.env` |
 
-If Remotion can't download its own browser, point it at an installed one with
-`REMOTION_BROWSER_EXECUTABLE=/path/to/chrome`.
+Rendering uses the cloud session's built-in Chromium automatically. Elsewhere, Remotion downloads one,
+or you can set `REMOTION_BROWSER_EXECUTABLE=/path/to/chrome`.
 
 ## Layout
 

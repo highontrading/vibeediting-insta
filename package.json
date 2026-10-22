@@ -13,6 +13,7 @@
     "ig:refresh-token": "tsx src/cli/ig-refresh-token.ts",
     "studio": "remotion studio src/video/index.ts",
     "render": "remotion render src/video/index.ts",
+    "ig:recent": "tsx src/cli/ig-recent.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
