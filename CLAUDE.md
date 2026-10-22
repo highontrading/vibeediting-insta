@@ -1,8 +1,10 @@
 # Vibe Editing: Instagram autopilot
 
-Claude makes short motion-graphics videos with Remotion and posts them to the Instagram account
-**@vibeediting.app**. The page's theme is the process itself: AI editing and auto-posting videos.
-It runs on autopilot from Claude scheduled tasks, with Notion as the content calendar.
+**@vibeediting.app** is the portfolio of the *Vibe Editing system*: studio-quality 40–60s motion
+graphics, explainers, brand films and title sequences, built in code with Remotion. Every post is a
+sales piece, so quality comes before everything (`docs/CRAFT.md`). The page never shows or mentions
+how it's automated. Behind the scenes it runs on autopilot from Claude scheduled tasks, with Notion as
+the content calendar.
 
 ## Notion content calendar
 
@@ -54,26 +56,41 @@ npm run typecheck
 
 `ig:post` and `ig:post --host-only` print one machine-readable line starting with `RESULT `. Parse that line.
 
-What to post (series per weekday, voice, hooks, hashtags) lives in `docs/CONTENT_STRATEGY.md`.
+What to post (series per weekday, voice, captions) lives in `docs/CONTENT_STRATEGY.md`. **How well**
+(process, rubric, banned AI-slop tells, type/motion/sound rules) lives in `docs/CRAFT.md`.
 
 ## Video rules
 
 - Every composition is a file in `src/video/compositions/<PascalCaseId>.tsx`, registered in
-  `src/video/Root.tsx` with `{...REEL}` (1080×1920, 30fps). Use colors and fonts from `src/video/theme.ts`.
+  `src/video/Root.tsx` with `{...REEL}` (1080×1920, 30fps).
+- Art direction comes from one design system in `src/video/design/systems.ts` (fonts are bundled in
+  `src/video/design/fonts.ts`). `src/video/theme.ts` is legacy; don't use it.
+- Building blocks: `src/video/kit/` (easing, text reveals, textures, `Sfx`, `Music`, `EndCard`).
+  Sound: `public/sfx/*.wav`, `public/music/*.m4a` (see its README for BPMs).
+- `npm run review -- <Id> [--frames a,b,c | --count 16]` renders styleframes and a contact sheet for QA.
 - Imports inside `src/video/` are **extensionless** (webpack bundles them). Imports in `src/cli`,
   `src/instagram` and `src/hosting` use `.js` (tsx/Node ESM).
-- Length 8–30s unless the brief says otherwise. Hook in the first 1.5s.
+- Length 40–60s, including the 2s end card. Frame 0 is the thumbnail and the hook.
 - Instagram UI covers parts of the frame. Keep text inside x 80–1000 and y 220–1500: avoid the
   bottom ~420px (caption/username), the top ~220px, and the right edge (like/comment buttons).
 - Minimum text size 44px; headline 120px+. Never more than ~12 words on screen at once.
 - After rendering, extract frames (`ffmpeg -i out/x.mp4 -vf "select='eq(n\,30)+eq(n\,150)+eq(n\,270)',scale=360:-1,tile=3x1" -frames:v 1 out/x-preview.png`)
   and **look at them** (Read the PNG). Fix overlaps, clipped text or empty frames before hosting.
-- No copyrighted music, logos or footage. Remotion renders with a silent AAC track by default.
+- No copyrighted music, logos or footage. Fictional brands only.
 
 ## Captions
 
-- Line 1 is a hook (shows in the feed). Then 1–3 short lines of value, then a CTA ("Follow for daily AI edits").
-- 3–8 relevant hashtags at the end, always including `#vibeediting`. Max 2200 chars and 30 hashtags.
+Follow the caption rules in `docs/CONTENT_STRATEGY.md`, always ending with "Made with the Vibe Editing
+system." and the DM CTA. Never mention automation, APIs, Notion, Claude or AI. Max 2200 chars and 30 hashtags.
+
+## Duplicate protection
+
+- Planning: no topic repeats within 90 days, and every day holds exactly one row.
+- Production: each video gets a unique composition ID, and its file's sha256 goes in **Video hash**.
+  A hash that already exists on another row is an error.
+- Publishing: only `Review` rows whose date has arrived get posted. The row is re-read right before posting,
+  a `Posted` row with the same hash blocks it, and the last 10 Instagram posts are checked for the same
+  caption. After posting, the row becomes `Posted` with its Media ID, so it can never be picked again.
 
 ## Hosting and secrets
 

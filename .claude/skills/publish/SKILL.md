@@ -35,10 +35,12 @@ Post the oldest first, and at most **3** per run.
 1. **Double-post guard:** run `npm run ig:recent -- --json --limit 10`. If a post from the last 72h
    has the same first caption line as this row, it's already live. Fill in **Instagram URL**,
    **Media ID** and **Posted at** from that post, set **Status** = `Posted`, and don't publish again.
-2. Re-read the row right before posting. If the owner switched it to `Hold` in the meantime, skip it.
-3. Write the row's **Caption** to a temp file (outside the repo), then:
+2. **Same-file guard:** if another row that is already `Posted` has the same **Video hash** as this
+   row, don't publish. Mark this row Failed with `Error: duplicate of <other topic>`.
+3. Re-read the row right before posting. If the owner switched it to `Hold` in the meantime, skip it.
+4. Write the row's **Caption** to a temp file (outside the repo), then:
    `npm run ig:post -- --video "<Video URL>" --caption-file <tmpfile>`
-4. Parse the `RESULT` line, then update the row: **Status** = `Posted`, **Instagram URL** = permalink,
+5. Parse the `RESULT` line, then update the row: **Status** = `Posted`, **Instagram URL** = permalink,
    **Media ID**, **Posted at** = now, **Error** = empty.
 
 If posting fails: **Status** = `Failed`, **Error** = the short message, **Attempts** = Attempts + 1.

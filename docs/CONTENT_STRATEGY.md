@@ -1,51 +1,51 @@
 # Vibe Editing: content strategy
 
-**Promise of the page:** watch AI edit everything. Every Reel is made by Claude in code (Remotion)
-and posted by the autopilot. The audience is creators and editors who want to learn editing styles
-and see what AI can do with them.
+**What the page is:** the portfolio of the Vibe Editing system, a studio that makes motion
+graphics, explainers and brand films. Every post is a finished piece of work at world-class
+quality, 40–60 seconds long, showing *what you can get made with Vibe Editing*. The page sells the work.
 
-## Series (one per day of the week)
+**What the page is not:** a page about automation, APIs, AI tools or how posting works. Never
+show or mention that side.
+
+## Series (one per weekday)
 
 | Day | Series | Notion Format | What it is |
 |---|---|---|---|
-| Mon | **Style Breakdown** | Motion graphics | Demonstrate one editing/motion style *in* that style, naming it on screen ("This is kinetic typography."). |
-| Tue | **Edit Tip** | Tutorial | One practical editing rule, shown as a quick wrong → right comparison. |
-| Wed | **Prompt → Video** | Motion graphics | Show the prompt typed on screen (2–3s), then the video Claude made from it. |
-| Thu | **Explained** | Explainer | One editing concept or term made visual (J-cut, easing, frame rate…). |
-| Fri | **Autopilot Log** | Behind the scenes | How this page runs itself: the calendar, the code, the posting, the stats. |
-| Sat | **Style Breakdown** | Motion graphics | Same as Monday, different style. |
-| Sun | **Prompt → Video** | Motion graphics | Same as Wednesday; lighter or funnier prompts. |
+| Mon | **Explainer** | Explainer | A concept explained beautifully in 45–60s (science, money, tech, design, everyday "how does X work"). Accurate, sourced. |
+| Tue | **Kinetic Type** | Motion graphics | Typography-led film: a manifesto, a famous public-domain quote, a short story told in type. |
+| Wed | **Brand Film** | Motion graphics | A launch spot for a fictional brand or product: identity, product beats, tagline. |
+| Thu | **Data Story** | Explainer | A real, sourced dataset or fact turned into a narrative with charts and maps. |
+| Fri | **UI Motion** | Motion graphics | A product demo for a fictional app: animated interface, features, flows. |
+| Sat | **Title Sequence** | Motion graphics | Cinematic opening titles for a fictional film, series, festival or conference. |
+| Sun | **Style Study** | Motion graphics | One design or editing movement executed at a pro level (Swiss, Bauhaus, risograph, VHS, editorial…). |
 
-Talking-head content is on hold until there's footage or an avatar tool.
+## Art direction
+
+- Every video uses one design system from `src/video/design/systems.ts`, rotated so the previous 3
+  posts never share a system. The grid on the profile should look like a varied agency portfolio.
+- The quality bar, process and banned list live in `docs/CRAFT.md`. They are not optional.
 
 ## Voice
 
-- Short, confident, a little playful. Talk to creators ("you"), not about AI in the abstract.
-- On-screen text: max ~12 words at a time. Captions do the explaining.
-- Never claim things the page can't back up (no fake stats, follower counts or results).
+- Confident, crisp, specific. Says less, shows more.
+- On screen: short lines, strong verbs, no buzzwords.
 
-## Visual rules
+## Captions
 
-- Brand palette from `src/video/theme.ts` (dark background, purple/cyan/pink accents) unless the
-  style being demonstrated needs its own look (e.g. VHS, Swiss grid). Even then, the last 2s
-  return to the brand look with the series name.
-- Every video opens with a hook in the first 1.5s: a bold claim, a question, or the end result first.
-- Every video ends on the series name plus "Follow @vibeediting.app".
-- Vary layout and motion between consecutive posts. Never reuse the previous video's structure.
+1. Line 1: a hook about the piece or its subject (it shows in the feed).
+2. 2–4 short lines: what this is and one craft detail (e.g. "Built in a Swiss grid, cut to 120 BPM").
+   For explainers and data stories, add `Source: …`.
+3. `Made with the Vibe Editing system.`
+4. CTA: `Want one for your brand? DM "VIBE".`
+5. 5–10 hashtags: always `#vibeediting #motiondesign`, then relevant ones (`#motiongraphics #explainervideo
+   #kinetictypography #brandfilm #uidesign #titlesequence #graphicdesign #datavisualization #typography`).
 
-## Hooks that fit the page
-
-"Nobody edited this." · "This took 0 clicks." · "Your hook has 1.5 seconds." · "I typed one sentence…" ·
-"Stop doing this in your edits." · "This is why your text disappears."
-
-## Hashtags
-
-Always `#vibeediting`, plus 3–7 of: `#videoediting #motiongraphics #editingtips #aivideo #remotion
-#contentcreator #reels #aiautomation #kinetictypography #aftereffects` (pick the relevant ones).
+Never mention automation, APIs, scheduling, Notion, Claude or AI generation.
 
 ## Planning rules (used by `/plan`)
 
 - One post per day at 09:00 IST, following the weekday → series table.
-- Don't repeat a topic from the last 60 days of the calendar.
-- Tie in real dates when they fit (Halloween, New Year…), never forced.
-- Once analytics exist, plan more of what got the most saves and shares.
+- No topic repeated within 90 days. Spread subjects (science, money, tech, culture, design, nature).
+- Fictional brands and products get original names that you've checked aren't famous real brands.
+- Tie in real dates when they fit naturally (festivals, launches, seasons).
+- Once analytics exist, plan more of what gets saves, shares and DMs.

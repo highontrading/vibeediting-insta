@@ -1,7 +1,7 @@
 # Vibe Editing
 
-Claude generates motion-graphics videos and posts them to the **Vibe Editing** Instagram page.
-The page's topic is the process itself: how AI makes and auto-posts these videos.
+Studio-quality motion graphics, explainers and brand films for the **Vibe Editing** Instagram portfolio, built in code with Remotion.
+Quality bar: `docs/CRAFT.md`. What to post: `docs/CONTENT_STRATEGY.md`.
 
 ## How it works
 
