@@ -4,6 +4,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 import { loadInstagramConfig } from "../config.js";
+import { hostOnGitHub } from "../hosting/github.js";
 import { InstagramClient } from "../instagram/client.js";
 
 const { values } = parseArgs({
@@ -42,9 +43,17 @@ if (values["dry-run"]) {
   process.exit(0);
 }
 
-const ig = new InstagramClient(loadInstagramConfig());
+const config = loadInstagramConfig();
+let videoSource = video;
+if (!isUrl && config.loginType === "instagram") {
+  console.log("Hosting video on the GitHub media branch…");
+  videoSource = hostOnGitHub(video);
+  console.log(`  ${videoSource}`);
+}
+
+const ig = new InstagramClient(config);
 const result = await ig.publishReel({
-  video,
+  video: videoSource,
   caption,
   shareToFeed: !values["no-feed"],
   coverUrl: values["cover-url"],

@@ -8,7 +8,7 @@ The page's topic is the process itself: how AI makes and auto-posts these videos
 ```
 prompt ──► Claude writes a Remotion composition (React)
        ──► npm run render   → 1080×1920 MP4 (H.264/AAC)
-       ──► npm run ig:post  → Meta Graph API → Instagram Reel
+       ──► npm run ig:post  → MP4 hosted on the `media` branch → Meta Graph API → Instagram Reel
 ```
 
 ## Setup
@@ -37,7 +37,8 @@ If Remotion can't download its own browser, point it at an installed one with
 ```
 src/
   config.ts                 env loading
-  instagram/client.ts       Graph API client (container → upload → poll → publish)
+  instagram/client.ts       Graph API client (container → poll → publish)
+  hosting/github.ts         puts a local MP4 at a public URL (Instagram fetches videos by URL)
   cli/                      ig:check, ig:post, ig:refresh-token
   video/
     Root.tsx                registers every composition

@@ -83,6 +83,11 @@ npm run ig:post -- --video out/how-this-was-made.mp4 \
 
 Add `--dry-run` to check the video and caption without posting.
 
+> **How the video reaches Instagram:** Instagram Login tokens can't upload files directly; Instagram
+> downloads the video from a public URL. `ig:post` handles this by committing the MP4 to the `media`
+> branch of this public GitHub repo and giving Instagram its `raw.githubusercontent.com` link.
+> You can also pass a public `https://…` URL to `--video` yourself.
+
 ---
 
 ## Keeping the token alive
