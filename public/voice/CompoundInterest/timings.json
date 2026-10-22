@@ -1,0 +1,732 @@
+{
+ "l01": {
+  "duration": 2.015,
+  "words": [
+   {
+    "word": "One",
+    "start": 0.0,
+    "end": 0.19
+   },
+   {
+    "word": "dollar",
+    "start": 0.19,
+    "end": 0.57
+   },
+   {
+    "word": "can",
+    "start": 0.57,
+    "end": 0.76
+   },
+   {
+    "word": "turn",
+    "start": 0.76,
+    "end": 0.95
+   },
+   {
+    "word": "into",
+    "start": 0.95,
+    "end": 1.331
+   },
+   {
+    "word": "a",
+    "start": 1.331,
+    "end": 1.521
+   },
+   {
+    "word": "thousand.",
+    "start": 1.521,
+    "end": 2.015
+   }
+  ]
+ },
+ "l02": {
+  "duration": 1.779,
+  "words": [
+   {
+    "word": "No",
+    "start": 0.0,
+    "end": 0.217
+   },
+   {
+    "word": "luck",
+    "start": 0.217,
+    "end": 0.434
+   },
+   {
+    "word": "required.",
+    "start": 0.434,
+    "end": 1.215
+   },
+   {
+    "word": "Just",
+    "start": 1.215,
+    "end": 1.432
+   },
+   {
+    "word": "time.",
+    "start": 1.432,
+    "end": 1.779
+   }
+  ]
+ },
+ "l03": {
+  "duration": 2.242,
+  "words": [
+   {
+    "word": "Simple",
+    "start": 0.0,
+    "end": 0.193
+   },
+   {
+    "word": "interest",
+    "start": 0.193,
+    "end": 0.773
+   },
+   {
+    "word": "pays",
+    "start": 0.773,
+    "end": 0.967
+   },
+   {
+    "word": "you",
+    "start": 0.967,
+    "end": 1.16
+   },
+   {
+    "word": "on",
+    "start": 1.16,
+    "end": 1.353
+   },
+   {
+    "word": "what",
+    "start": 1.353,
+    "end": 1.547
+   },
+   {
+    "word": "you",
+    "start": 1.547,
+    "end": 1.74
+   },
+   {
+    "word": "put",
+    "start": 1.74,
+    "end": 1.933
+   },
+   {
+    "word": "in.",
+    "start": 1.933,
+    "end": 2.242
+   }
+  ]
+ },
+ "l04": {
+  "duration": 2.672,
+  "words": [
+   {
+    "word": "At",
+    "start": 0.0,
+    "end": 0.181
+   },
+   {
+    "word": "ten",
+    "start": 0.181,
+    "end": 0.361
+   },
+   {
+    "word": "percent,",
+    "start": 0.361,
+    "end": 0.831
+   },
+   {
+    "word": "that's",
+    "start": 0.831,
+    "end": 1.011
+   },
+   {
+    "word": "ten",
+    "start": 1.011,
+    "end": 1.192
+   },
+   {
+    "word": "cents",
+    "start": 1.192,
+    "end": 1.372
+   },
+   {
+    "word": "a",
+    "start": 1.372,
+    "end": 1.553
+   },
+   {
+    "word": "year.",
+    "start": 1.553,
+    "end": 1.842
+   },
+   {
+    "word": "Every",
+    "start": 1.842,
+    "end": 2.383
+   },
+   {
+    "word": "year.",
+    "start": 2.383,
+    "end": 2.672
+   }
+  ]
+ },
+ "l05": {
+  "duration": 2.299,
+  "words": [
+   {
+    "word": "Compound",
+    "start": 0.0,
+    "end": 0.324
+   },
+   {
+    "word": "interest",
+    "start": 0.324,
+    "end": 0.809
+   },
+   {
+    "word": "pays",
+    "start": 0.809,
+    "end": 0.971
+   },
+   {
+    "word": "you",
+    "start": 0.971,
+    "end": 1.133
+   },
+   {
+    "word": "on",
+    "start": 1.133,
+    "end": 1.295
+   },
+   {
+    "word": "the",
+    "start": 1.295,
+    "end": 1.457
+   },
+   {
+    "word": "interest,",
+    "start": 1.457,
+    "end": 2.04
+   },
+   {
+    "word": "too.",
+    "start": 2.04,
+    "end": 2.299
+   }
+  ]
+ },
+ "l06": {
+  "duration": 4.019,
+  "words": [
+   {
+    "word": "One",
+    "start": 0.0,
+    "end": 0.226
+   },
+   {
+    "word": "dollar",
+    "start": 0.226,
+    "end": 0.677
+   },
+   {
+    "word": "becomes",
+    "start": 0.677,
+    "end": 1.355
+   },
+   {
+    "word": "one",
+    "start": 1.355,
+    "end": 1.58
+   },
+   {
+    "word": "ten.",
+    "start": 1.58,
+    "end": 1.942
+   },
+   {
+    "word": "Then",
+    "start": 1.942,
+    "end": 2.167
+   },
+   {
+    "word": "one",
+    "start": 2.167,
+    "end": 2.393
+   },
+   {
+    "word": "twenty-one.",
+    "start": 2.393,
+    "end": 2.98
+   },
+   {
+    "word": "Then",
+    "start": 2.98,
+    "end": 3.206
+   },
+   {
+    "word": "one",
+    "start": 3.206,
+    "end": 3.432
+   },
+   {
+    "word": "thirty-three.",
+    "start": 3.432,
+    "end": 4.019
+   }
+  ]
+ },
+ "l07": {
+  "duration": 1.423,
+  "words": [
+   {
+    "word": "Interest,",
+    "start": 0.0,
+    "end": 0.557
+   },
+   {
+    "word": "earning",
+    "start": 0.557,
+    "end": 0.866
+   },
+   {
+    "word": "interest.",
+    "start": 0.866,
+    "end": 1.423
+   }
+  ]
+ },
+ "l08": {
+  "duration": 2.401,
+  "words": [
+   {
+    "word": "Want",
+    "start": 0.0,
+    "end": 0.197
+   },
+   {
+    "word": "a",
+    "start": 0.197,
+    "end": 0.394
+   },
+   {
+    "word": "shortcut?",
+    "start": 0.394,
+    "end": 0.905
+   },
+   {
+    "word": "The",
+    "start": 0.905,
+    "end": 1.102
+   },
+   {
+    "word": "rule",
+    "start": 1.102,
+    "end": 1.299
+   },
+   {
+    "word": "of",
+    "start": 1.299,
+    "end": 1.496
+   },
+   {
+    "word": "seventy-two.",
+    "start": 1.496,
+    "end": 2.401
+   }
+  ]
+ },
+ "l09": {
+  "duration": 2.193,
+  "words": [
+   {
+    "word": "Divide",
+    "start": 0.0,
+    "end": 0.348
+   },
+   {
+    "word": "seventy-two",
+    "start": 0.348,
+    "end": 1.044
+   },
+   {
+    "word": "by",
+    "start": 1.044,
+    "end": 1.218
+   },
+   {
+    "word": "your",
+    "start": 1.218,
+    "end": 1.392
+   },
+   {
+    "word": "interest",
+    "start": 1.392,
+    "end": 1.914
+   },
+   {
+    "word": "rate.",
+    "start": 1.914,
+    "end": 2.193
+   }
+  ]
+ },
+ "l10": {
+  "duration": 2.672,
+  "words": [
+   {
+    "word": "At",
+    "start": 0.0,
+    "end": 0.188
+   },
+   {
+    "word": "six",
+    "start": 0.188,
+    "end": 0.376
+   },
+   {
+    "word": "percent,",
+    "start": 0.376,
+    "end": 0.866
+   },
+   {
+    "word": "money",
+    "start": 0.866,
+    "end": 1.242
+   },
+   {
+    "word": "doubles",
+    "start": 1.242,
+    "end": 1.618
+   },
+   {
+    "word": "in",
+    "start": 1.618,
+    "end": 1.806
+   },
+   {
+    "word": "about",
+    "start": 1.806,
+    "end": 2.183
+   },
+   {
+    "word": "twelve",
+    "start": 2.183,
+    "end": 2.371
+   },
+   {
+    "word": "years.",
+    "start": 2.371,
+    "end": 2.672
+   }
+  ]
+ },
+ "l11": {
+  "duration": 1.949,
+  "words": [
+   {
+    "word": "At",
+    "start": 0.0,
+    "end": 0.16
+   },
+   {
+    "word": "ten",
+    "start": 0.16,
+    "end": 0.32
+   },
+   {
+    "word": "percent,",
+    "start": 0.32,
+    "end": 0.735
+   },
+   {
+    "word": "about",
+    "start": 0.735,
+    "end": 1.054
+   },
+   {
+    "word": "every",
+    "start": 1.054,
+    "end": 1.534
+   },
+   {
+    "word": "seven.",
+    "start": 1.534,
+    "end": 1.949
+   }
+  ]
+ },
+ "l12": {
+  "duration": 3.415,
+  "words": [
+   {
+    "word": "So",
+    "start": 0.0,
+    "end": 0.211
+   },
+   {
+    "word": "leave",
+    "start": 0.211,
+    "end": 0.422
+   },
+   {
+    "word": "one",
+    "start": 0.422,
+    "end": 0.632
+   },
+   {
+    "word": "dollar",
+    "start": 0.632,
+    "end": 1.054
+   },
+   {
+    "word": "at",
+    "start": 1.054,
+    "end": 1.265
+   },
+   {
+    "word": "ten",
+    "start": 1.265,
+    "end": 1.476
+   },
+   {
+    "word": "percent,",
+    "start": 1.476,
+    "end": 2.024
+   },
+   {
+    "word": "for",
+    "start": 2.024,
+    "end": 2.235
+   },
+   {
+    "word": "seventy-two",
+    "start": 2.235,
+    "end": 3.078
+   },
+   {
+    "word": "years.",
+    "start": 3.078,
+    "end": 3.415
+   }
+  ]
+ },
+ "l13": {
+  "duration": 2.578,
+  "words": [
+   {
+    "word": "Simple",
+    "start": 0.0,
+    "end": 0.218
+   },
+   {
+    "word": "interest:",
+    "start": 0.218,
+    "end": 1.005
+   },
+   {
+    "word": "eight",
+    "start": 1.005,
+    "end": 1.224
+   },
+   {
+    "word": "dollars,",
+    "start": 1.224,
+    "end": 1.792
+   },
+   {
+    "word": "twenty",
+    "start": 1.792,
+    "end": 2.229
+   },
+   {
+    "word": "cents.",
+    "start": 2.229,
+    "end": 2.578
+   }
+  ]
+ },
+ "l14": {
+  "duration": 3.313,
+  "words": [
+   {
+    "word": "Compound",
+    "start": 0.0,
+    "end": 0.436
+   },
+   {
+    "word": "interest:",
+    "start": 0.436,
+    "end": 1.221
+   },
+   {
+    "word": "nine",
+    "start": 1.221,
+    "end": 1.439
+   },
+   {
+    "word": "hundred",
+    "start": 1.439,
+    "end": 1.874
+   },
+   {
+    "word": "and",
+    "start": 1.874,
+    "end": 2.092
+   },
+   {
+    "word": "fifty-six",
+    "start": 2.092,
+    "end": 2.746
+   },
+   {
+    "word": "dollars.",
+    "start": 2.746,
+    "end": 3.313
+   }
+  ]
+ },
+ "l15": {
+  "duration": 1.724,
+  "words": [
+   {
+    "word": "That's",
+    "start": 0.0,
+    "end": 0.2
+   },
+   {
+    "word": "why",
+    "start": 0.2,
+    "end": 0.401
+   },
+   {
+    "word": "starting",
+    "start": 0.401,
+    "end": 0.802
+   },
+   {
+    "word": "early",
+    "start": 0.802,
+    "end": 1.203
+   },
+   {
+    "word": "matters.",
+    "start": 1.203,
+    "end": 1.724
+   }
+  ]
+ },
+ "l16": {
+  "duration": 3.283,
+  "words": [
+   {
+    "word": "Start",
+    "start": 0.0,
+    "end": 0.203
+   },
+   {
+    "word": "twelve",
+    "start": 0.203,
+    "end": 0.405
+   },
+   {
+    "word": "years",
+    "start": 0.405,
+    "end": 0.608
+   },
+   {
+    "word": "later",
+    "start": 0.608,
+    "end": 1.013
+   },
+   {
+    "word": "at",
+    "start": 1.013,
+    "end": 1.216
+   },
+   {
+    "word": "six",
+    "start": 1.216,
+    "end": 1.419
+   },
+   {
+    "word": "percent,",
+    "start": 1.419,
+    "end": 1.945
+   },
+   {
+    "word": "and",
+    "start": 1.945,
+    "end": 2.148
+   },
+   {
+    "word": "you",
+    "start": 2.148,
+    "end": 2.351
+   },
+   {
+    "word": "end",
+    "start": 2.351,
+    "end": 2.553
+   },
+   {
+    "word": "up",
+    "start": 2.553,
+    "end": 2.756
+   },
+   {
+    "word": "with",
+    "start": 2.756,
+    "end": 2.959
+   },
+   {
+    "word": "half.",
+    "start": 2.959,
+    "end": 3.283
+   }
+  ]
+ },
+ "l17": {
+  "duration": 2.33,
+  "words": [
+   {
+    "word": "Same",
+    "start": 0.0,
+    "end": 0.238
+   },
+   {
+    "word": "dollar.",
+    "start": 0.238,
+    "end": 0.856
+   },
+   {
+    "word": "Less",
+    "start": 0.856,
+    "end": 1.094
+   },
+   {
+    "word": "time.",
+    "start": 1.094,
+    "end": 1.474
+   },
+   {
+    "word": "Start",
+    "start": 1.474,
+    "end": 1.712
+   },
+   {
+    "word": "the",
+    "start": 1.712,
+    "end": 1.95
+   },
+   {
+    "word": "clock.",
+    "start": 1.95,
+    "end": 2.33
+   }
+  ]
+ }
+}

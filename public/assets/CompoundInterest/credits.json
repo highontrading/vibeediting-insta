@@ -1,0 +1,32 @@
+[
+ {
+  "file": "note-1000.jpg",
+  "id": "met-339833",
+  "title": "$1000 Bill for The Greenwich Bank, The City of New York \u2014 Asher Brown Durand",
+  "source": "The Metropolitan Museum of Art",
+  "page": "https://www.metmuseum.org/art/collection/search/339833",
+  "license": "CC0 (Met Open Access)",
+  "source_file": "met-339833.jpg",
+  "treatment": "cropped, duotoned to Newsprint ink/paper"
+ },
+ {
+  "file": "note-1.jpg",
+  "id": "met-393923",
+  "title": "Proofs of Bank of New York One Dollar Bill and Two Dollar Bill \u2014 Asher Brown Durand",
+  "source": "The Metropolitan Museum of Art",
+  "page": "https://www.metmuseum.org/art/collection/search/393923",
+  "license": "CC0 (Met Open Access)",
+  "source_file": "met-393923.jpg",
+  "treatment": "cropped, duotoned to Newsprint ink/paper"
+ },
+ {
+  "file": "coin.png",
+  "id": "met-8485",
+  "title": "United States Ten-dollar Gold Piece \u2014 Augustus Saint-Gaudens",
+  "source": "The Metropolitan Museum of Art",
+  "page": "https://www.metmuseum.org/art/collection/search/8485",
+  "license": "CC0 (Met Open Access)",
+  "source_file": "met-8485.jpg",
+  "treatment": "cropped, duotoned to Newsprint ink/paper"
+ }
+]
