@@ -3,3 +3,5 @@ out/
 .env
 *.log
 .DS_Store
+.venv/
+models/

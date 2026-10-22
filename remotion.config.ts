@@ -8,6 +8,8 @@ Config.setVideoImageFormat("jpeg");
 Config.setJpegQuality(90);
 Config.setEnforceAudioTrack(true);
 Config.setOverwriteOutput(true);
+// WebGL (three.js scenes) needs a GL backend in headless Chromium.
+Config.setChromiumOpenGlRenderer("angle");
 
 // Use an already-installed Chromium instead of letting Remotion download one: the env var if set,
 // otherwise the headless shell that Claude Code cloud sessions ship with.
