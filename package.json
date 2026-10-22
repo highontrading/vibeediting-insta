@@ -15,7 +15,8 @@
     "render": "remotion render src/video/index.ts",
     "ig:recent": "tsx src/cli/ig-recent.ts",
     "typecheck": "tsc --noEmit",
-    "review": "tsx src/cli/review.ts"
+    "review": "tsx src/cli/review.ts",
+    "master": "bash scripts/master.sh"
   },
   "dependencies": {
     "@fontsource/anton": "^5.3.0",

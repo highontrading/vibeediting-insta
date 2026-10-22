@@ -48,7 +48,9 @@ Also read the **Design system** of the 3 most recent rows that have one, so you 
 5. **Styleframes first.** `npm run typecheck`, then `npm run review -- <Id> --frames <hook>,<beat1>,…,<payoff> --scale 0.5`.
    Read every PNG. Fix composition, type and colour until the stills could be posters. Repeat as needed.
 6. **Render.** `npm run render -- <Id> out/<Id>.mp4` (run it in the background; it takes minutes).
-   Check: the duration is 40–60s, the audio track exists, and the file is under 300 MB.
+   Then master the audio: `npm run master -- out/<Id>.mp4` (limiter; the peak must end up below -1 dBFS).
+   Check: the duration is 40–60s, the audio track exists, and the file is under 300 MB. Check the loudness arc with
+   `ffmpeg -i out/<Id>.mp4 -af ebur128 -f null -` (the hook should not be quieter than the bed unless that's intended).
 7. **Review.** `npm run review -- <Id> --count 16`, and look at the contact sheet. For motion, extract a
    6fps strip of the busiest 3 seconds:
    `ffmpeg -v error -ss <t> -t 3 -i out/<Id>.mp4 -vf "fps=6,scale=216:-1,tile=6x3" -frames:v 1 out/review/<Id>-motion.png`.

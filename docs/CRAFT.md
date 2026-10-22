@@ -69,6 +69,7 @@ motion designer, editor and creative director made it. Work like that team, not 
 - SFX on each major transition or reveal (whoosh, impact, click, pop, riser into the payoff,
   shimmer on the end card). Roughly one per second at most, never stacked into mush.
 - Cut points sit on beats: beat n = frame `round(n * 60 / BPM * 30)`.
+- The loudness arc serves the story (a "loud" hook must measure loud). Always run `npm run master` after rendering.
 
 ## Copy and claims
 
