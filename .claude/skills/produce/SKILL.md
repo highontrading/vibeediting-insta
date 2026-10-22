@@ -47,6 +47,11 @@ If any step fails: set **Status** = `Failed`, **Error** = the short error messag
 
 Commit the new compositions and `Root.tsx` (one commit per run, e.g. `Add compositions for 2026-11-03..05`) and push the current branch. Never commit `out/` or secrets.
 
-## 5. Report
+## 5. Keep the calendar topped up
 
-End with a short list: each row → `Review` (with Video URL) or `Failed` (with Error).
+Count rows with a **Post date** after now that are not `Posted`. If fewer than **7** future days have a
+row, follow the `/plan` skill to fill the next 30 days. That way the calendar never runs dry.
+
+## 6. Report
+
+End with a short list: each row → `Review` (with Video URL) or `Failed` (with Error), plus how many rows `/plan` added, if any.
