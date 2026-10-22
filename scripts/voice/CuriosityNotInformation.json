@@ -4,17 +4,63 @@
   "lang": "en-gb",
   "speed": 1.0,
   "lines": [
-    {"id": "l01", "text": "Viewers don't stay for information."},
-    {"id": "l02", "text": "Information is everywhere."},
-    {"id": "l03", "text": "It's cheap. It's free. It's forgettable."},
-    {"id": "l04", "text": "They stay for curiosity."},
-    {"id": "l05", "text": "Curiosity is a gap..."},
-    {"id": "l06", "text": "between what they know, and what they need to know."},
-    {"id": "l07", "text": "So open a loop."},
-    {"id": "l08", "text": "Ask the question early."},
-    {"id": "l09", "text": "Answer it late."},
-    {"id": "l10", "text": "Make every second earn the next one."},
-    {"id": "l11", "text": "People don't remember what you told them."},
-    {"id": "l12", "text": "They remember what they had to find out."}
+    {
+      "id": "l01",
+      "text": "Viewers don't stay for information."
+    },
+    {
+      "id": "l02",
+      "text": "Information is everywhere."
+    },
+    {
+      "id": "l03a",
+      "text": "It's cheap."
+    },
+    {
+      "id": "l03b",
+      "text": "It's free."
+    },
+    {
+      "id": "l03c",
+      "text": "It's forgettable."
+    },
+    {
+      "id": "l04",
+      "text": "They stay for curiosity.",
+      "speed": 0.92
+    },
+    {
+      "id": "l05",
+      "text": "Curiosity is a gap..."
+    },
+    {
+      "id": "l06",
+      "text": "between what they know, and what they need to know."
+    },
+    {
+      "id": "l07",
+      "text": "So open a loop."
+    },
+    {
+      "id": "l08",
+      "text": "Ask the question early."
+    },
+    {
+      "id": "l09",
+      "text": "Answer it late."
+    },
+    {
+      "id": "l10",
+      "text": "Make every second earn the next one."
+    },
+    {
+      "id": "l11",
+      "text": "People don't remember what you told them."
+    },
+    {
+      "id": "l12",
+      "text": "They remember what they had to find out.",
+      "speed": 0.92
+    }
   ]
 }

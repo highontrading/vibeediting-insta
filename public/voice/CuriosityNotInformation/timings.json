@@ -49,63 +49,73 @@
    }
   ]
  },
- "l03": {
-  "duration": 2.583,
+ "l03a": {
+  "duration": 0.909,
   "words": [
    {
     "word": "It's",
     "start": 0.0,
-    "end": 0.264
+    "end": 0.35
    },
    {
     "word": "cheap.",
-    "start": 0.264,
-    "end": 0.685
-   },
+    "start": 0.35,
+    "end": 0.909
+   }
+  ]
+ },
+ "l03b": {
+  "duration": 0.892,
+  "words": [
    {
     "word": "It's",
-    "start": 0.685,
-    "end": 0.949
+    "start": 0.0,
+    "end": 0.343
    },
    {
     "word": "free.",
-    "start": 0.949,
-    "end": 1.371
-   },
+    "start": 0.343,
+    "end": 0.892
+   }
+  ]
+ },
+ "l03c": {
+  "duration": 1.222,
+  "words": [
    {
     "word": "It's",
-    "start": 1.371,
-    "end": 1.634
+    "start": 0.0,
+    "end": 0.266
    },
    {
     "word": "forgettable.",
-    "start": 1.634,
-    "end": 2.583
+    "start": 0.266,
+    "end": 1.222
    }
   ]
  },
  "l04": {
-  "duration": 1.937,
+  "duration": 2.06,
   "words": [
    {
     "word": "They",
     "start": 0.0,
-    "end": 0.255
+    "end": 0.271
    },
    {
     "word": "stay",
-    "start": 0.255,
-    "end": 0.51
+    "start": 0.271,
+    "end": 0.542
    },
    {
     "word": "for",
-    "start": 0.51,
-    "end": 0.765
+    "start": 0.542,
+    "end": 0.813
    },
    {
     "word": "curiosity.",
-    "start": 0.765,
-    "end": 1.937
+    "start": 0.813,
+    "end": 2.06
    }
   ]
  },
@@ -340,47 +350,47 @@
   ]
  },
  "l12": {
-  "duration": 2.604,
+  "duration": 2.806,
   "words": [
    {
     "word": "They",
     "start": 0.0,
-    "end": 0.246
+    "end": 0.265
    },
    {
     "word": "remember",
-    "start": 0.246,
-    "end": 0.983
+    "start": 0.265,
+    "end": 1.059
    },
    {
     "word": "what",
-    "start": 0.983,
-    "end": 1.228
+    "start": 1.059,
+    "end": 1.324
    },
    {
     "word": "they",
-    "start": 1.228,
-    "end": 1.474
+    "start": 1.324,
+    "end": 1.588
    },
    {
     "word": "had",
-    "start": 1.474,
-    "end": 1.719
+    "start": 1.588,
+    "end": 1.853
    },
    {
     "word": "to",
-    "start": 1.719,
-    "end": 1.965
+    "start": 1.853,
+    "end": 2.118
    },
    {
     "word": "find",
-    "start": 1.965,
-    "end": 2.211
+    "start": 2.118,
+    "end": 2.382
    },
    {
     "word": "out.",
-    "start": 2.211,
-    "end": 2.604
+    "start": 2.382,
+    "end": 2.806
    }
   ]
  }
