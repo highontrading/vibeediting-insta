@@ -91,7 +91,7 @@ const Grid: React.FC<{ color?: string }> = ({ color = P.ink }) => (
 );
 
 const Label: React.FC<{ children: React.ReactNode; color?: string; style?: React.CSSProperties }> = ({ children, color = P.accent, style }) => (
-  <div style={{ fontFamily: MONO, fontSize: 38, letterSpacing: "0.14em", textTransform: "uppercase", color, ...style }}>{children}</div>
+  <div style={{ fontFamily: MONO, fontSize: 44, letterSpacing: "0.12em", textTransform: "uppercase", color, ...style }}>{children}</div>
 );
 
 /** One line of display type that rises out of a mask at `at`. */
@@ -215,8 +215,8 @@ const Hook: React.FC = () => {
       <Grid />
       <div style={{ fontFamily: S.type.body, fontWeight: 300, fontSize: 64, letterSpacing: "-0.02em" }}>viewers stay for</div>
       <div style={{ display: "flex", alignItems: "center", gap: 18, marginTop: 14 }}>
-        <div style={{ width: 640, height: 128, background: P.accent }} />
-        <div style={{ fontFamily: MONO, fontSize: 40, color: P.accent, letterSpacing: "0.1em" }}>?</div>
+        <div style={{ width: 600, height: 128, background: P.accent }} />
+        <div style={{ fontFamily: DISPLAY, fontWeight: 900, fontSize: 150, lineHeight: 0.85, color: P.accent }}>?</div>
       </div>
       <div style={{ display: "flex", alignItems: "center", fontFamily: DISPLAY, fontWeight: 900, fontSize: 420, lineHeight: 0.9, letterSpacing: "-0.06em", marginTop: 28 }}>
         <span>N</span>
@@ -242,7 +242,9 @@ const Viewers: React.FC = () => {
       <Hit at={w("l01", 3)} size={90} weight={300} style={{ marginTop: 30 }}>for</Hit>
       <div style={{ position: "relative", marginTop: 8, width: "fit-content" }}>
         <Hit at={w("l01", 4)} size={132}>information.</Hit>
-        <div style={{ position: "absolute", left: -6, top: 132 * 0.4 - 8, height: 16, width: `calc(${strike * 100}% + 12px)`, background: P.accent }} />
+        {strike > 0 && (
+          <div style={{ position: "absolute", left: -6, top: 132 * 0.4 - 8, height: 16, width: `calc(${strike} * (100% + 12px))`, background: P.accent }} />
+        )}
       </div>
     </AbsoluteFill>
   );
@@ -304,6 +306,7 @@ const Cheap: React.FC = () => {
           style={{
             alignSelf: "flex-end",
             marginTop: 30,
+            marginRight: 40,
             transform: `rotate(-8deg) scale(${tag})`,
             background: P.accent,
             color: P.bg,
@@ -353,20 +356,30 @@ const Curiosity: React.FC = () => {
     <AbsoluteFill style={{ background: P.ink, color: P.bg, justifyContent: "center", padding: "0 80px", paddingBottom: 80 }}>
       <Hit at={SCENES.curiosity[0]} size={90} weight={300} color={P.bg}>They stay for</Hit>
       <div style={{ position: "relative", marginTop: 26, fontFamily: DISPLAY, fontWeight: 900, fontSize: 250, lineHeight: 0.9, letterSpacing: "-0.05em", color: P.accent }}>
-        {/* the hook's redaction bar returns and wipes away to reveal the answer */}
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            top: 20,
-            height: 410,
-            width: 760,
-            background: P.accent,
-            zIndex: 2,
-            transform: `scaleX(${f < at ? m(f, SCENES.curiosity[0] + 4, SCENES.curiosity[0] + 14, 0, 1, ease.expoOut) : 1 - m(f, at, at + 9, 0, 1, ease.expoOut)})`,
-            transformOrigin: f < at ? "0% 50%" : "100% 50%",
-          }}
-        />
+        {/* the hook's redaction bar returns as one bar per line, then wipes away line by line */}
+        {[
+          { top: 0, width: 770, delay: 0 },
+          { top: 225, width: 560, delay: 2 },
+        ].map((bar) => (
+          <div
+            key={bar.top}
+            style={{
+              position: "absolute",
+              left: 0,
+              top: bar.top,
+              height: 215,
+              width: bar.width,
+              background: P.accent,
+              zIndex: 2,
+              transform: `scaleX(${
+                f < at + bar.delay
+                  ? m(f, SCENES.curiosity[0] + 4 + bar.delay, SCENES.curiosity[0] + 14 + bar.delay, 0, 1, ease.expoOut)
+                  : 1 - m(f, at + bar.delay, at + bar.delay + 9, 0, 1, ease.expoOut)
+              })`,
+              transformOrigin: f < at + bar.delay ? "0% 50%" : "100% 50%",
+            }}
+          />
+        ))}
         <div style={{ display: "flex", alignItems: "center", opacity: f >= at ? 1 : 0 }}>
           <span>CURI</span>
           <span style={{ margin: "0 4px" }}>
@@ -495,7 +508,7 @@ const Timeline: React.FC = () => {
       <div style={{ position: "absolute", left: x0, width: (x1 - x0) * play, top: 1160, height: 6, background: P.ink }} />
       <div style={{ position: "absolute", left: x0 + (x1 - x0) * play - 3, top: 1120, width: 6, height: 86, background: P.accent }} />
       <Label color={P.muted} style={{ position: "absolute", left: x0, top: 1210 }}>0:00 · early</Label>
-      <Label color={P.muted} style={{ position: "absolute", right: 80, top: 1210 }}>late · 0:45</Label>
+      <Label color={P.muted} style={{ position: "absolute", right: 80, top: 1210 }}>late · 0:40</Label>
     </AbsoluteFill>
   );
 };
@@ -509,7 +522,7 @@ const Second: React.FC = () => {
   const sec = String(Math.max(1, spoken)).padStart(2, "0");
   return (
     <AbsoluteFill style={{ background: P.ink, color: P.bg, padding: "300px 80px 0" }}>
-      <Label color={P.muted}>every second</Label>
+      <Label color={P.surface}>every second</Label>
       <div style={{ display: "flex", fontFamily: MONO, fontWeight: 700, fontSize: 250, letterSpacing: "-0.04em", marginTop: 30, lineHeight: 1 }}>
         00:
         {Array.from(sec).map((d, i) => (
@@ -582,8 +595,9 @@ const FindOut: React.FC = () => {
   const wink = blink(f, [1125]);
   const lid = Math.max(eyeOpen, wink);
   const look: [number, number] = f < outAt + 12 ? [-0.7, -0.5] : f < 1095 ? [0.6, 0.2] : [0, 0];
+  const push = 1 + 0.12 * m(f, outAt, FINAL_HOLD_END, 0, 1, ease.sineInOut);
   return (
-    <AbsoluteFill style={{ padding: "320px 80px 0" }}>
+    <AbsoluteFill style={{ padding: "320px 80px 0", transform: `scale(${push})`, transformOrigin: "178px 1057px" }}>
       <Grid />
       <Hit at={w("l12", 0)} size={96} weight={300}>They remember</Hit>
       <Hit at={w("l12", 2)} size={140} style={{ marginTop: 24 }}>what they</Hit>
