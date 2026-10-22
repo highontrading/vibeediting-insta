@@ -35,6 +35,7 @@ Respect the owner's edits: never overwrite a non-empty **Caption** the owner wro
 
 ## Skills (the autopilot runs these)
 
+- `/plan`: fill empty calendar days with Idea rows (default the next 30 days).
 - `/produce`: make videos for upcoming rows (Idea → Review).
 - `/publish`: post rows that are due (Review → Posted).
 
@@ -52,6 +53,8 @@ npm run typecheck
 ```
 
 `ig:post` and `ig:post --host-only` print one machine-readable line starting with `RESULT `. Parse that line.
+
+What to post (series per weekday, voice, hooks, hashtags) lives in `docs/CONTENT_STRATEGY.md`.
 
 ## Video rules
 

@@ -5,7 +5,7 @@ description: Make the videos for upcoming Vibe Editing posts. Finds Notion calen
 
 # Produce upcoming posts
 
-Read `CLAUDE.md` first (Notion IDs, status meanings, video and caption rules).
+Read `CLAUDE.md` (Notion IDs, status meanings, video and caption rules) and `docs/CONTENT_STRATEGY.md` (series, voice, hooks, visual rules) first.
 
 ## 1. Prepare
 
@@ -31,7 +31,7 @@ If nothing matches, say "Nothing to produce" and stop.
 ## 3. For each row
 
 1. Set **Status** = `Producing`.
-2. Read the whole row: Topic, Brief, Format, **Notes for Claude**, and the page's comments. The owner's notes override everything else.
+2. Read the whole row: Topic, Series, Brief, Format, **Notes for Claude**, and the page's comments. The owner's notes override everything else; the Series decides the structure (see CONTENT_STRATEGY.md).
 3. Choose a composition ID: PascalCase from the topic, unique in `src/video/compositions/`.
 4. Write `src/video/compositions/<Id>.tsx`, export a duration constant, and register it in `src/video/Root.tsx`. Follow the video rules in CLAUDE.md. Make each video visually distinct: vary layouts, motion and pacing. Don't clone the previous composition.
 5. `npm run typecheck`, then `npm run render -- <Id> out/<Id>.mp4`.
