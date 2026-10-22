@@ -297,10 +297,11 @@ const PHONE_CY = PHONE_TOP + (PHONE_H * BASE) / 2;
 const onScreen = (sx: number, sy: number) => ({ x: 540 + (14 + sx - PHONE_W / 2) * BASE, y: PHONE_CY + (14 + sy - PHONE_H / 2) * BASE });
 
 const SECTIONS = [
-  { at: 0, num: "01", title: "Set the session.", focus: onScreen(SCREEN_W / 2, 400), closeY: 1040 },
-  { at: HELD - PHONE, num: "02", title: "Noise waits.", focus: onScreen(SCREEN_W / 2, 560), closeY: 1060, zoom: 1.6 },
-  { at: WEEK - PHONE, num: "03", title: "Build the habit.", focus: onScreen(SCREEN_W / 2, 500), closeY: 960, zoom: 1.5 },
-  { at: SUMMARY - PHONE, num: "04", title: "Close the day.", focus: onScreen(SCREEN_W / 2, 720), closeY: 1230, zoom: 1.5 },
+  // close-ups: `closeY` = where the focus point lands; `fade` = [transparent until, opaque from] at the top edge
+  { at: 0, num: "01", title: "Set the session.", focus: onScreen(SCREEN_W / 2, 400), closeY: 870, fade: [290, 350] },
+  { at: HELD - PHONE, num: "02", title: "Noise waits.", focus: onScreen(SCREEN_W / 2, 560), closeY: 990, zoom: 1.6, fade: [230, 300] },
+  { at: WEEK - PHONE, num: "03", title: "Build the habit.", focus: onScreen(SCREEN_W / 2, 500), closeY: 960, zoom: 1.3, fade: [200, 280] },
+  { at: SUMMARY - PHONE, num: "04", title: "Close the day.", focus: onScreen(SCREEN_W / 2, 720), closeY: 1230, fade: [210, 290], zoom: 1.5 },
 ];
 const TRI = TRIPTYCH - PHONE;
 const MOR = MORPH - PHONE;
@@ -329,7 +330,13 @@ const PhoneAct: React.FC = () => {
   return (
     <AbsoluteFill>
       {f < TRI ? (
-        <AbsoluteFill style={local >= CUT_IN ? { maskImage: "linear-gradient(180deg, transparent 0px, transparent 150px, black 300px)" } : undefined}>
+        <AbsoluteFill
+          style={
+            local >= CUT_IN
+              ? { maskImage: `linear-gradient(180deg, transparent 0px, transparent ${sec.fade[0]}px, black ${sec.fade[1]}px, black 1500px, transparent 1640px)` }
+              : undefined
+          }
+        >
           <AbsoluteFill style={{ transform: `translate(${tx}px, ${ty}px) scale(${k})`, transformOrigin: "0 0" }}>
             <PhoneFrame cx={540} cy={PHONE_CY + (1 - enter) * 1400} scale={BASE}>
               <Screens f={f} />
@@ -705,21 +712,22 @@ const SummaryScreen: React.FC<{ lf: number }> = ({ lf }) => {
 
 // ─── Triptych, then a match cut: the dial ring becomes the app icon ──────────────────────────
 
-const TRI_SCALE = 0.55;
+const TRI_SCALE = 0.62;
+const MATCH_SCALE = 0.5; // dial ring r168 * 0.5 = icon ring r84
 const ICON_Y = 740;
-const DIAL_OFFSET = (14 + 190 + 210 - PHONE_H / 2) * TRI_SCALE; // dial centre relative to phone centre
+const dialOffset = (scale: number) => (14 + 190 + 210 - PHONE_H / 2) * scale; // dial centre relative to phone centre
 
 const Triptych: React.FC<{ f: number }> = ({ f }) => {
   const settle = m(f, 0, 30);
   const sideIn = m(f, 0, 30);
   const morph = m(f, MOR - TRI, PAYOFF - PHONE - TRI, 0, 1, ease.quintInOut);
-  const cyRest = 1060;
-  const cyMorph = ICON_Y - DIAL_OFFSET;
+  const cyRest = 1000;
+  const scale = BASE + (TRI_SCALE - BASE) * settle + (MATCH_SCALE - TRI_SCALE) * morph;
+  const cyMorph = ICON_Y - dialOffset(MATCH_SCALE);
   const cy = cyRest + (cyMorph - cyRest) * morph;
-  const scale = BASE + (TRI_SCALE - BASE) * settle;
   const headIn = m(f, 12, 27);
   const headOut = m(f, MOR - TRI, MOR - TRI + 14, 0, 1, ease.quintInOut);
-  const side = (dir: number) => 540 + dir * (288 + (1 - sideIn) * 800 + morph * 900);
+  const side = (dir: number) => 540 + dir * (310 + (1 - sideIn) * 800 + morph * 900);
 
   return (
     <AbsoluteFill>
@@ -871,6 +879,7 @@ const SoundDesign: React.FC = () => (
     <Sfx name="click" at={SUMMARY + CUT_IN + 34} volume={0.45} />
     <Sfx name="swish-reverse" at={TRIPTYCH - 20} volume={0.35} />
     <Sfx name="whoosh-short" at={TRIPTYCH} volume={0.4} />
+    <Sfx name="riser" at={MORPH - 45} volume={0.26} />
     <Sfx name="whoosh" at={MORPH} volume={0.45} />
     <Sfx name="impact" at={PAYOFF} volume={0.55} />
     {Array.from({ length: 10 }, (_, i) => (
