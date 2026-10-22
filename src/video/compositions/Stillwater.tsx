@@ -298,10 +298,10 @@ const onScreen = (sx: number, sy: number) => ({ x: 540 + (14 + sx - PHONE_W / 2)
 
 const SECTIONS = [
   // close-ups: `closeY` = where the focus point lands; `fade` = [transparent until, opaque from] at the top edge
-  { at: 0, num: "01", title: "Set the session.", focus: onScreen(SCREEN_W / 2, 400), closeY: 870, fade: [290, 350] },
-  { at: HELD - PHONE, num: "02", title: "Noise waits.", focus: onScreen(SCREEN_W / 2, 560), closeY: 990, zoom: 1.6, fade: [230, 300] },
-  { at: WEEK - PHONE, num: "03", title: "Build the habit.", focus: onScreen(SCREEN_W / 2, 500), closeY: 960, zoom: 1.3, fade: [200, 280] },
-  { at: SUMMARY - PHONE, num: "04", title: "Close the day.", focus: onScreen(SCREEN_W / 2, 720), closeY: 1230, fade: [210, 290], zoom: 1.5 },
+  { at: 0, num: "01", title: "Set the session.", focus: onScreen(SCREEN_W / 2, 400), closeY: 870, fade: [290, 350], fadeBottom: [1490, 1545] },
+  { at: HELD - PHONE, num: "02", title: "Noise waits.", focus: onScreen(SCREEN_W / 2, 560), closeY: 990, zoom: 1.6, fade: [250, 300] },
+  { at: WEEK - PHONE, num: "03", title: "Build the habit.", focus: onScreen(SCREEN_W / 2, 500), closeY: 960, zoom: 1.3, fade: [230, 265] },
+  { at: SUMMARY - PHONE, num: "04", title: "Close the day.", focus: onScreen(SCREEN_W / 2, 720), closeY: 1230, fade: [222, 256], zoom: 1.5 },
 ];
 const TRI = TRIPTYCH - PHONE;
 const MOR = MORPH - PHONE;
@@ -333,7 +333,11 @@ const PhoneAct: React.FC = () => {
         <AbsoluteFill
           style={
             local >= CUT_IN
-              ? { maskImage: `linear-gradient(180deg, transparent 0px, transparent ${sec.fade[0]}px, black ${sec.fade[1]}px, black 1500px, transparent 1640px)` }
+              ? {
+                  maskImage: `linear-gradient(180deg, transparent 0px, transparent ${sec.fade[0]}px, black ${sec.fade[1]}px, black ${
+                    "fadeBottom" in sec ? (sec.fadeBottom as number[])[0] : 1500
+                  }px, transparent ${"fadeBottom" in sec ? (sec.fadeBottom as number[])[1] : 1640}px)`,
+                }
               : undefined
           }
         >

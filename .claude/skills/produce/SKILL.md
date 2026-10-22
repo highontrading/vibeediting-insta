@@ -57,7 +57,7 @@ Also read the **Design system** of the 3 most recent rows that have one, so you 
 8. **Critic pass (mandatory).** Spawn a separate agent (Agent tool) as an independent creative director.
    Give it the contact sheet paths, the motion strip, the treatment and `docs/CRAFT.md`, and ask it to score
    every rubric axis 1–10 harshly, listing concrete fixes. Ship only if every axis is ≥ 8 and the
-   average is ≥ 8.5. Otherwise apply the fixes, re-render and re-review, up to 3 rounds. If it still fails,
+   average is ≥ 8.5. Otherwise apply the fixes, re-render and re-review with a fresh critic, up to 5 rounds. If it still fails,
    set **Status** = `Failed` with **Error** = `Below quality bar: <scores>` and move on. Never ship mediocre work.
 9. **Duplicate check.** Host it with `npm run ig:post -- --video out/<Id>.mp4 --host-only`, then take `videoUrl`
    and `sha256` from the `RESULT` line. If any other row already has the same **Video hash**,

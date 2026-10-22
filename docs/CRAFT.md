@@ -20,7 +20,7 @@ motion designer, editor and creative director made it. Work like that team, not 
    by extracting a 6fps strip of the busiest 3 seconds with ffmpeg.
 5. **Critic pass.** Spawn a separate reviewer agent. Give it the contact sheets and this file, and
    have it score the rubric below *harshly*. Ship only when every axis is ≥ 8 and the average is ≥ 8.5.
-   Otherwise fix its findings and re-review (up to 3 rounds). If it still fails, mark the row Failed with the
+   Otherwise fix its findings and re-review with a fresh critic (up to 5 rounds). If it still fails, mark the row Failed with the
    scores rather than shipping something mediocre.
 
 ## Rubric (score 1–10 each)
@@ -79,3 +79,24 @@ motion designer, editor and creative director made it. Work like that team, not 
 - Never mention automation, APIs, scheduling, Notion, Claude or "AI-generated" on screen or in
   captions. The work is "made with the Vibe Editing system".
 - Every video ends with the studio end card (`src/video/kit/EndCard.tsx`), dressed in its design system.
+
+## Lessons from past critic reviews (check these before the first render)
+
+These all came up while shipping *Stillwater*, which took 5 rounds to go from 6.4 to 8.56. Check them up front.
+
+- **Use the system's signature moves, not just its colours.** Night Transit means split-flaps and signage on
+  rails. A palette with generic fades scores about 6 on Motion.
+- **Make the sound tell the story.** If the hook is "loud", it must *measure* loud (about −10 LUFS momentary) and the
+  calm parts quieter (about −18 to −19). Silence has to last at least 1s to be heard. Measure with `ebur128`.
+- **Bring the motif back.** If the opening sets up a motif (the waterline), the ending should return to it.
+- **Avoid long same-framing stretches.** No layout should stay the same for more than about 3s. Cut to a close-up on
+  beat 4 of each section, and time the key animation *after* the cut, not before.
+- **Close-ups crop.** Keep the close-up's important text inside y 220–1500 for the *whole* push, and fade the layer
+  softly at the top and bottom edges rather than slicing text.
+- **Captions and devices collide.** Leave at least 40px between a caption's baseline and anything under it. A slow
+  push must pivot so it doesn't move content into the caption.
+- **Keep the data consistent.** Numbers on different screens must agree (today's bar = today's summary).
+- **Don't end on dead air.** The final hold needs movement (drift, a returning motif, a last ripple) and must stay
+  under about 3s.
+- **Use real grids.** Split-flap rows share one tile grid (pad with blank tiles), and lines that should join use the same colour.
+- **Frame 0 is the thumbnail.** It must be a full, striking composition, and nothing should start at opacity 0.
