@@ -1,0 +1,692 @@
+{
+ "l01": {
+  "duration": 2.018,
+  "words": [
+   {
+    "word": "A",
+    "start": 0.0,
+    "end": 0.246
+   },
+   {
+    "word": "tiny",
+    "start": 0.246,
+    "end": 0.738
+   },
+   {
+    "word": "hole.",
+    "start": 0.738,
+    "end": 1.132
+   },
+   {
+    "word": "A",
+    "start": 1.132,
+    "end": 1.378
+   },
+   {
+    "word": "dark",
+    "start": 1.378,
+    "end": 1.624
+   },
+   {
+    "word": "room.",
+    "start": 1.624,
+    "end": 2.018
+   }
+  ]
+ },
+ "l02": {
+  "duration": 3.314,
+  "words": [
+   {
+    "word": "The",
+    "start": 0.0,
+    "end": 0.251
+   },
+   {
+    "word": "world",
+    "start": 0.251,
+    "end": 0.502
+   },
+   {
+    "word": "outside",
+    "start": 0.502,
+    "end": 1.004
+   },
+   {
+    "word": "appears",
+    "start": 1.004,
+    "end": 1.506
+   },
+   {
+    "word": "on",
+    "start": 1.506,
+    "end": 1.757
+   },
+   {
+    "word": "the",
+    "start": 1.757,
+    "end": 2.009
+   },
+   {
+    "word": "wall,",
+    "start": 2.009,
+    "end": 2.41
+   },
+   {
+    "word": "upside",
+    "start": 2.41,
+    "end": 2.912
+   },
+   {
+    "word": "down.",
+    "start": 2.912,
+    "end": 3.314
+   }
+  ]
+ },
+ "l03": {
+  "duration": 2.481,
+  "words": [
+   {
+    "word": "People",
+    "start": 0.0,
+    "end": 0.258
+   },
+   {
+    "word": "knew",
+    "start": 0.258,
+    "end": 0.517
+   },
+   {
+    "word": "this",
+    "start": 0.517,
+    "end": 0.775
+   },
+   {
+    "word": "two",
+    "start": 0.775,
+    "end": 1.034
+   },
+   {
+    "word": "thousand",
+    "start": 1.034,
+    "end": 1.55
+   },
+   {
+    "word": "years",
+    "start": 1.55,
+    "end": 1.809
+   },
+   {
+    "word": "ago.",
+    "start": 1.809,
+    "end": 2.481
+   }
+  ]
+ },
+ "l04": {
+  "duration": 1.999,
+  "words": [
+   {
+    "word": "But",
+    "start": 0.0,
+    "end": 0.208
+   },
+   {
+    "word": "nobody",
+    "start": 0.208,
+    "end": 0.833
+   },
+   {
+    "word": "could",
+    "start": 0.833,
+    "end": 1.041
+   },
+   {
+    "word": "keep",
+    "start": 1.041,
+    "end": 1.249
+   },
+   {
+    "word": "the",
+    "start": 1.249,
+    "end": 1.458
+   },
+   {
+    "word": "picture.",
+    "start": 1.458,
+    "end": 1.999
+   }
+  ]
+ },
+ "l05": {
+  "duration": 3.496,
+  "words": [
+   {
+    "word": "Eighteen",
+    "start": 0.0,
+    "end": 0.432
+   },
+   {
+    "word": "thirty-nine.",
+    "start": 0.432,
+    "end": 1.208
+   },
+   {
+    "word": "Paris",
+    "start": 1.208,
+    "end": 1.64
+   },
+   {
+    "word": "announces",
+    "start": 1.64,
+    "end": 2.287
+   },
+   {
+    "word": "the",
+    "start": 2.287,
+    "end": 2.503
+   },
+   {
+    "word": "daguerreotype.",
+    "start": 2.503,
+    "end": 3.496
+   }
+  ]
+ },
+ "l06": {
+  "duration": 3.126,
+  "words": [
+   {
+    "word": "An",
+    "start": 0.0,
+    "end": 0.206
+   },
+   {
+    "word": "image",
+    "start": 0.206,
+    "end": 0.617
+   },
+   {
+    "word": "fixed",
+    "start": 0.617,
+    "end": 1.028
+   },
+   {
+    "word": "on",
+    "start": 1.028,
+    "end": 1.234
+   },
+   {
+    "word": "silver.",
+    "start": 1.234,
+    "end": 1.769
+   },
+   {
+    "word": "Sit",
+    "start": 1.769,
+    "end": 1.975
+   },
+   {
+    "word": "still",
+    "start": 1.975,
+    "end": 2.18
+   },
+   {
+    "word": "for",
+    "start": 2.18,
+    "end": 2.386
+   },
+   {
+    "word": "minutes.",
+    "start": 2.386,
+    "end": 3.126
+   }
+  ]
+ },
+ "l07": {
+  "duration": 3.93,
+  "words": [
+   {
+    "word": "Eighteen",
+    "start": 0.0,
+    "end": 0.457
+   },
+   {
+    "word": "eighty-eight.",
+    "start": 0.457,
+    "end": 1.051
+   },
+   {
+    "word": "A",
+    "start": 1.051,
+    "end": 1.28
+   },
+   {
+    "word": "box",
+    "start": 1.28,
+    "end": 1.508
+   },
+   {
+    "word": "camera",
+    "start": 1.508,
+    "end": 2.194
+   },
+   {
+    "word": "with",
+    "start": 2.194,
+    "end": 2.422
+   },
+   {
+    "word": "a",
+    "start": 2.422,
+    "end": 2.651
+   },
+   {
+    "word": "hundred",
+    "start": 2.651,
+    "end": 3.108
+   },
+   {
+    "word": "shots",
+    "start": 3.108,
+    "end": 3.336
+   },
+   {
+    "word": "inside.",
+    "start": 3.336,
+    "end": 3.93
+   }
+  ]
+ },
+ "l08": {
+  "duration": 2.128,
+  "words": [
+   {
+    "word": "You",
+    "start": 0.0,
+    "end": 0.209
+   },
+   {
+    "word": "press",
+    "start": 0.209,
+    "end": 0.417
+   },
+   {
+    "word": "the",
+    "start": 0.417,
+    "end": 0.626
+   },
+   {
+    "word": "button.",
+    "start": 0.626,
+    "end": 1.168
+   },
+   {
+    "word": "We",
+    "start": 1.168,
+    "end": 1.377
+   },
+   {
+    "word": "do",
+    "start": 1.377,
+    "end": 1.586
+   },
+   {
+    "word": "the",
+    "start": 1.586,
+    "end": 1.794
+   },
+   {
+    "word": "rest.",
+    "start": 1.794,
+    "end": 2.128
+   }
+  ]
+ },
+ "l09": {
+  "duration": 4.047,
+  "words": [
+   {
+    "word": "Then",
+    "start": 0.0,
+    "end": 0.222
+   },
+   {
+    "word": "thirty-five",
+    "start": 0.222,
+    "end": 0.889
+   },
+   {
+    "word": "millimetre",
+    "start": 0.889,
+    "end": 1.557
+   },
+   {
+    "word": "film.",
+    "start": 1.557,
+    "end": 1.912
+   },
+   {
+    "word": "A",
+    "start": 1.912,
+    "end": 2.135
+   },
+   {
+    "word": "camera",
+    "start": 2.135,
+    "end": 2.802
+   },
+   {
+    "word": "for",
+    "start": 2.802,
+    "end": 3.024
+   },
+   {
+    "word": "your",
+    "start": 3.024,
+    "end": 3.247
+   },
+   {
+    "word": "coat",
+    "start": 3.247,
+    "end": 3.469
+   },
+   {
+    "word": "pocket.",
+    "start": 3.469,
+    "end": 4.047
+   }
+  ]
+ },
+ "l10": {
+  "duration": 4.883,
+  "words": [
+   {
+    "word": "Nineteen",
+    "start": 0.0,
+    "end": 0.631
+   },
+   {
+    "word": "seventy-five.",
+    "start": 0.631,
+    "end": 1.599
+   },
+   {
+    "word": "Steven",
+    "start": 1.599,
+    "end": 2.02
+   },
+   {
+    "word": "Sasson",
+    "start": 2.02,
+    "end": 2.441
+   },
+   {
+    "word": "builds",
+    "start": 2.441,
+    "end": 2.652
+   },
+   {
+    "word": "a",
+    "start": 2.652,
+    "end": 2.862
+   },
+   {
+    "word": "digital",
+    "start": 2.862,
+    "end": 3.494
+   },
+   {
+    "word": "camera",
+    "start": 3.494,
+    "end": 4.125
+   },
+   {
+    "word": "at",
+    "start": 4.125,
+    "end": 4.335
+   },
+   {
+    "word": "Kodak.",
+    "start": 4.335,
+    "end": 4.882
+   }
+  ]
+ },
+ "l11": {
+  "duration": 4.598,
+  "words": [
+   {
+    "word": "Eight",
+    "start": 0.0,
+    "end": 0.274
+   },
+   {
+    "word": "pounds.",
+    "start": 0.274,
+    "end": 0.712
+   },
+   {
+    "word": "Ten",
+    "start": 0.712,
+    "end": 0.985
+   },
+   {
+    "word": "thousand",
+    "start": 0.985,
+    "end": 1.533
+   },
+   {
+    "word": "pixels.",
+    "start": 1.533,
+    "end": 2.244
+   },
+   {
+    "word": "Twenty-three",
+    "start": 2.244,
+    "end": 2.792
+   },
+   {
+    "word": "seconds",
+    "start": 2.792,
+    "end": 3.339
+   },
+   {
+    "word": "to",
+    "start": 3.339,
+    "end": 3.613
+   },
+   {
+    "word": "save",
+    "start": 3.613,
+    "end": 3.886
+   },
+   {
+    "word": "each",
+    "start": 3.886,
+    "end": 4.16
+   },
+   {
+    "word": "one.",
+    "start": 4.16,
+    "end": 4.598
+   }
+  ]
+ },
+ "l12": {
+  "duration": 2.612,
+  "words": [
+   {
+    "word": "By",
+    "start": 0.0,
+    "end": 0.256
+   },
+   {
+    "word": "two",
+    "start": 0.256,
+    "end": 0.512
+   },
+   {
+    "word": "thousand,",
+    "start": 0.512,
+    "end": 1.178
+   },
+   {
+    "word": "phones",
+    "start": 1.178,
+    "end": 1.69
+   },
+   {
+    "word": "take",
+    "start": 1.69,
+    "end": 1.946
+   },
+   {
+    "word": "photos.",
+    "start": 1.946,
+    "end": 2.612
+   }
+  ]
+ },
+ "l13": {
+  "duration": 2.43,
+  "words": [
+   {
+    "word": "Today,",
+    "start": 0.0,
+    "end": 0.518
+   },
+   {
+    "word": "we",
+    "start": 0.518,
+    "end": 0.717
+   },
+   {
+    "word": "take",
+    "start": 0.717,
+    "end": 0.916
+   },
+   {
+    "word": "over",
+    "start": 0.916,
+    "end": 1.315
+   },
+   {
+    "word": "a",
+    "start": 1.315,
+    "end": 1.514
+   },
+   {
+    "word": "trillion",
+    "start": 1.514,
+    "end": 1.912
+   },
+   {
+    "word": "a",
+    "start": 1.912,
+    "end": 2.112
+   },
+   {
+    "word": "year.",
+    "start": 2.112,
+    "end": 2.43
+   }
+  ]
+ },
+ "l14": {
+  "duration": 3.236,
+  "words": [
+   {
+    "word": "Look",
+    "start": 0.0,
+    "end": 0.228
+   },
+   {
+    "word": "closer.",
+    "start": 0.228,
+    "end": 0.821
+   },
+   {
+    "word": "It's",
+    "start": 0.821,
+    "end": 1.048
+   },
+   {
+    "word": "still",
+    "start": 1.048,
+    "end": 1.276
+   },
+   {
+    "word": "a",
+    "start": 1.276,
+    "end": 1.504
+   },
+   {
+    "word": "tiny",
+    "start": 1.504,
+    "end": 1.96
+   },
+   {
+    "word": "hole",
+    "start": 1.96,
+    "end": 2.188
+   },
+   {
+    "word": "and",
+    "start": 2.188,
+    "end": 2.416
+   },
+   {
+    "word": "a",
+    "start": 2.416,
+    "end": 2.644
+   },
+   {
+    "word": "dark",
+    "start": 2.644,
+    "end": 2.872
+   },
+   {
+    "word": "room.",
+    "start": 2.872,
+    "end": 3.236
+   }
+  ]
+ },
+ "l15": {
+  "duration": 2.076,
+  "words": [
+   {
+    "word": "Just",
+    "start": 0.0,
+    "end": 0.241
+   },
+   {
+    "word": "small",
+    "start": 0.241,
+    "end": 0.483
+   },
+   {
+    "word": "enough",
+    "start": 0.483,
+    "end": 0.966
+   },
+   {
+    "word": "for",
+    "start": 0.966,
+    "end": 1.207
+   },
+   {
+    "word": "your",
+    "start": 1.207,
+    "end": 1.449
+   },
+   {
+    "word": "pocket.",
+    "start": 1.449,
+    "end": 2.076
+   }
+  ]
+ }
+}

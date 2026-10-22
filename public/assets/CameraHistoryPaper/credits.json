@@ -1,0 +1,62 @@
+[
+ {
+  "file": "met-631211.jpg",
+  "id": "met-631211",
+  "title": "[Camera Obscura] \u2014 Unknown",
+  "source": "The Metropolitan Museum of Art",
+  "page": "https://www.metmuseum.org/art/collection/search/631211",
+  "license": "CC0 (Met Open Access)",
+  "used_as": "obscura (cut out with rembg)",
+  "treatment": "riso halftone via scripts/riso.py (source not committed)"
+ },
+ {
+  "file": "met-286022.jpg",
+  "id": "met-286022",
+  "title": "Self-Portrait \u2014 Louis-Adolphe Humbert de Molard",
+  "source": "The Metropolitan Museum of Art",
+  "page": "https://www.metmuseum.org/art/collection/search/286022",
+  "license": "CC0 (Met Open Access)",
+  "used_as": "molard",
+  "treatment": "riso halftone via scripts/riso.py (source not committed)"
+ },
+ {
+  "file": "met-283102.jpg",
+  "id": "met-283102",
+  "title": "[Dog] \u2014 Louis-Auguste Bisson",
+  "source": "The Metropolitan Museum of Art",
+  "page": "https://www.metmuseum.org/art/collection/search/283102",
+  "license": "CC0 (Met Open Access)",
+  "used_as": "dog",
+  "treatment": "riso halftone via scripts/riso.py (source not committed)"
+ },
+ {
+  "file": "met-281975.jpg",
+  "id": "met-281975",
+  "title": "[Amateur Snapshot Album] \u2014 Unknown",
+  "source": "The Metropolitan Museum of Art",
+  "page": "https://www.metmuseum.org/art/collection/search/281975",
+  "license": "CC0 (Met Open Access)",
+  "used_as": "snap-house, snap-street, snap-boy, snap-church, snap-tree",
+  "treatment": "riso halftone via scripts/riso.py (source not committed)"
+ },
+ {
+  "file": "met-266886.jpg",
+  "id": "met-266886",
+  "title": "[Snapshot: Dog and Man] \u2014 Unknown",
+  "source": "The Metropolitan Museum of Art",
+  "page": "https://www.metmuseum.org/art/collection/search/266886",
+  "license": "CC0 (Met Open Access)",
+  "used_as": "snap-dogman",
+  "treatment": "riso halftone via scripts/riso.py (source not committed)"
+ },
+ {
+  "file": "met-266313.jpg",
+  "id": "met-266313",
+  "title": "[Album of 131 Views of a French Family & Their Travels] \u2014 Unknown",
+  "source": "The Metropolitan Museum of Art",
+  "page": "https://www.metmuseum.org/art/collection/search/266313",
+  "license": "CC0 (Met Open Access)",
+  "used_as": "tram, bourse, leon, caroline",
+  "treatment": "riso halftone via scripts/riso.py (source not committed)"
+ }
+]
