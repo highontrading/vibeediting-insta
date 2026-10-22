@@ -1,0 +1,30 @@
+{
+  "name": "vibe-editing",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI-generated motion graphics videos, auto-posted to the Vibe Editing Instagram page.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "ig:check": "tsx src/cli/ig-check.ts",
+    "ig:post": "tsx src/cli/ig-post.ts",
+    "ig:refresh-token": "tsx src/cli/ig-refresh-token.ts",
+    "studio": "remotion studio src/video/index.ts",
+    "render": "remotion render src/video/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.537",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "remotion": "4.0.537"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^19.3.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9"
+  }
+}
