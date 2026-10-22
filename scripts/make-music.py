@@ -2,9 +2,12 @@
 
 Synthesised from scratch (no samples), so they're free to use. Each bed has a known BPM so
 compositions can cut on the beat: frame of beat n = round(n * 60 / BPM * 30).
+Pass bed names to build only those, e.g. `python3 scripts/make-music.py clay-hop-120`.
+clay-hop-120 was then loudness-normalised: ffmpeg -i in.m4a -af loudnorm=I=-11:TP=-1.5:LRA=11 -c:a aac -b:a 192k out.m4a
 Run: python3 scripts/make-music.py && for f in public/music/*.wav; do ffmpeg -y -i "$f" -c:a aac -b:a 192k "${f%.wav}.m4a" && rm "$f"; done
 """
 import os
+import sys
 import wave
 
 import numpy as np
@@ -90,7 +93,16 @@ def bass_line(pattern, bpm, total, gain=0.5):
     return lp_fft(out, 900)
 
 
+ONLY = set(sys.argv[1:])
+
+
+def wanted(name):
+    return not ONLY or name in ONLY
+
+
 def master(l, r, name, bpm):
+    if not wanted(name.rsplit(".", 1)[0]):
+        return
     mix = np.stack([l, r], axis=1)
     mix = np.tanh(mix / (np.max(np.abs(mix)) or 1) * 1.6) * 0.8
     n = len(mix)
@@ -148,3 +160,90 @@ for i in range(int(LEN / beat)):
     place(drums, h, i * beat + beat * 0.75, 0.12)
 bass = bass_line([40] * 8 + [36] * 8 + [43] * 8 + [38] * 8, bpm, LEN, gain=0.6)
 master(l * 0.18 + drums * 0.7 + bass, r * 0.18 + drums * 0.7 + bass, "drive-110.wav", bpm)
+
+
+# 4. clay-hop-120: playful and plucky for claymation and toy-like pieces (F → Dm → Bb → C).
+#    Bars 0–1 marimba + pizzicato bass, bars 2–11 add soft drums, bar 12 on (24s) is a calm breakdown:
+#    slow marimba, warm pad, no drums. Own RNG so the beds above never change.
+if wanted("clay-hop-120"):
+    crng = np.random.default_rng(29)
+    bpm = 120
+    beat = 60 / bpm
+    bar = beat * 4
+    n = int(SR * LEN)
+    mar_l, mar_r = np.zeros(n), np.zeros(n)
+
+    def marimba(f, length=0.6, decay=7.0):
+        t = np.arange(int(length * SR)) / SR
+        y = np.sin(2 * np.pi * f * t) * np.exp(-t * decay)
+        y += 0.22 * np.sin(2 * np.pi * f * 3.93 * t) * np.exp(-t * decay * 3.2)
+        y += 0.06 * np.sin(2 * np.pi * f * 9.2 * t) * np.exp(-t * decay * 6)
+        return y * np.minimum(1, t / 0.002)
+
+    prog = [[53, 57, 60, 65], [50, 53, 57, 62], [46, 50, 53, 58], [48, 52, 55, 60]]  # F, Dm, Bb, C
+    # 8th-note arpeggio index pattern per bar (None = rest): bouncy and syncopated
+    arp = [0, 2, 1, 3, None, 2, 3, 1]
+    for b in range(int(LEN / bar)):
+        ch = prog[b % 4]
+        calm = b >= 12
+        if not calm:
+            for i, a in enumerate(arp):
+                if a is None:
+                    continue
+                f = note(ch[a] + 12)
+                g = 0.5 if i % 2 == 0 else 0.38
+                pan = 0.25 if i % 2 else -0.25
+                tone = marimba(f)
+                place(mar_l, tone, b * bar + i * beat / 2, g * (1 - pan))
+                place(mar_r, tone, b * bar + i * beat / 2 + 0.004, g * (1 + pan))
+            # a little answering lick on the last beat of every second bar
+            if b % 2 == 1:
+                for j, m in enumerate([ch[3] + 12, ch[2] + 24, ch[3] + 24]):
+                    tone = marimba(note(m), 0.4, 9)
+                    place(mar_l, tone, b * bar + 3 * beat + j * beat / 4, 0.22)
+                    place(mar_r, tone, b * bar + 3 * beat + j * beat / 4, 0.3)
+        else:
+            for i, a in enumerate([0, 2, 1, 3]):
+                f = note(ch[a] + 12)
+                tone = marimba(f, 1.4, 3.0)
+                place(mar_l, tone, b * bar + i * beat, 0.34)
+                place(mar_r, tone, b * bar + i * beat + 0.006, 0.34)
+
+    # pizzicato bass, bars 0–11
+    bass = np.zeros(n)
+    for b in range(12):
+        root = prog[b % 4][0] - 12
+        for i, off in enumerate([0, None, 12, None, 7, None, 12, 7]):
+            if off is None:
+                continue
+            t = np.arange(int(0.22 * SR)) / SR
+            f = note(root + off)
+            tone = (np.sin(2 * np.pi * f * t) + 0.3 * np.sin(4 * np.pi * f * t)) * np.exp(-t * 14) * np.minimum(1, t / 0.003)
+            place(bass, tone, b * bar + i * beat / 2, 0.55 if i == 0 else 0.4)
+    bass = lp_fft(bass, 1200)
+
+    # soft drums, bars 2–11: kick on 1 and 3 (+ the "and" of 3), clap on 2 and 4, 16th shaker
+    drums = np.zeros(n)
+    kk = kick(0) * 0.8
+    t = np.arange(int(0.18 * SR)) / SR
+    clap = hp_fft(crng.standard_normal(len(t)), 900) * np.exp(-t * 32)
+    clap = lp_fft(clap, 5000) * 0.6
+    t = np.arange(int(0.05 * SR)) / SR
+    shaker = hp_fft(crng.standard_normal(len(t)), 6000) * np.exp(-t * 90)
+    for b in range(2, 12):
+        s0 = b * bar
+        for kb in (0, 2, 2.5):
+            place(drums, kk, s0 + kb * beat, 0.85 if kb != 2.5 else 0.5)
+        for cb in (1, 3):
+            place(drums, clap, s0 + cb * beat, 0.7)
+        for k16 in range(16):
+            place(drums, shaker, s0 + k16 * beat / 4, 0.22 if k16 % 2 else 0.1)
+
+    # warm pad under the breakdown (bar 12 on), very soft
+    pl, pr = pad(prog, bar, LEN, cutoff=1100, detune=0.005)
+    gate = np.zeros(n)
+    s12 = int(12 * bar * SR)
+    gate[s12:] = np.minimum(1, np.arange(n - s12) / (1.5 * SR))
+    l = mar_l * 0.9 + bass + drums * 0.55 + pl * 0.08 * gate
+    r = mar_r * 0.9 + bass + drums * 0.55 + pr * 0.08 * gate
+    master(l, r, "clay-hop-120.wav", bpm)

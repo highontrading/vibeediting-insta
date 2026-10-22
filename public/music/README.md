@@ -5,8 +5,9 @@
 | `pulse-minimal-120.m4a` | 120 | clean, techy, confident | UI motion, data stories, Swiss/Blueprint systems |
 | `ambient-glass-80.m4a` | 80 | airy, editorial, calm | Editorial Noir, Luxe Mono, Terracotta, explainers |
 | `drive-110.m4a` | 110 | punchy, forward | Acid Sport, Brutal Block, brand films, title sequences |
+| `clay-hop-120.m4a` | 120 | playful, plucky marimba + pizzicato; drums bars 2–11, calm breakdown from 24s | claymation, Pastel Lab, toy-like product pieces |
 
-All three were generated from scratch by `scripts/make-music.py` (no samples, free to use).
+All four were generated from scratch by `scripts/make-music.py` (no samples, free to use).
 Beat n lands on frame `round(n * 60 / BPM * 30)`. Cut on beats.
 
 To add licensed tracks (e.g. from Artlist, Epidemic Sound or the Pixabay library), drop the file
