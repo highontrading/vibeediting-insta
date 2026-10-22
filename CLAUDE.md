@@ -10,6 +10,15 @@ It runs on autopilot from Claude scheduled tasks, with Notion as the content cal
 - Database: `74740bc271ca42ab9a87296c42db017a`
 - Data source (use this for queries and new rows): `collection://08cdc86b-d366-4e63-b6f8-5f7d102fb484`
 
+**Schedule:** 1 Reel per day at **09:00 IST** (Asia/Kolkata). Store every **Post date** as a datetime
+with the IST offset, e.g. `2026-11-01T09:00:00+05:30`.
+
+| Scheduled task | When (IST) | Runs |
+|---|---|---|
+| Publish | daily 09:01 | `/publish` |
+| Publish (backup) | daily 10:13 | `/publish` (no-op if the first run worked) |
+| Produce | daily 13:47 | `/produce` (makes videos 1–3 days ahead) |
+
 One row = one post. Status flow:
 
 | Status | Meaning | Who sets it |
