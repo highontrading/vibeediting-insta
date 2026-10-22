@@ -56,7 +56,7 @@ export const EndCard: React.FC<{
       <div style={{ fontFamily: type.body, fontSize: 44, color: palette.ink, opacity: sub, letterSpacing: "0.02em" }}>
         Made with the Vibe Editing system
       </div>
-      <div style={{ fontFamily: type.mono ?? type.body, fontSize: 40, color: palette.ink, opacity: sub, marginTop: 14 }}>@vibeediting.app</div>
+      <div style={{ fontFamily: type.mono ?? type.body, fontSize: 44, color: palette.ink, opacity: sub, marginTop: 14 }}>@vibeediting.app</div>
     </AbsoluteFill>
   );
 };
