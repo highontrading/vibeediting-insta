@@ -288,3 +288,39 @@ write("sniff", stereo(norm(fade(sn, 0.002, 0.05), 0.6)))
 t = t_axis(0.15)
 hp = sweep_sine(t, 300 * (3.6 ** np.clip(t / 0.09, 0, 1))) * env_ad(t, 0.003, 26)
 write("hop", stereo(norm(fade(hp, 0.0005, 0.02), 0.55)))
+# ── Paper-craft set (own generator, so the sounds above stay byte-identical) ──
+prng = np.random.default_rng(23)
+
+
+def crackle(n, density, lo=900.0, hi=6000.0):
+    """Sparse random clicks, band-limited: the fibre crackle in paper sounds."""
+    x = np.zeros(n)
+    hits = prng.random(n) < density
+    x[hits] = prng.uniform(-1, 1, hits.sum())
+    return biquad_bandpass(x, np.full(n, (lo + hi) / 2), 0.7)
+
+
+# paper: a cut-out sliding across card, a soft brushed rustle
+t = t_axis(0.32)
+env = np.sin(np.pi * np.clip(t / 0.32, 0, 1)) ** 1.5
+brush = biquad_bandpass(pink(len(t)), 1800 + 1600 * np.sin(np.pi * t / 0.32), 0.8)
+pp = brush * env + crackle(len(t), 0.004) * env * 0.5
+write("paper", stereo(norm(fade(pp, 0.004, 0.04), 0.6), np.linspace(-0.3, 0.3, len(t))))
+
+# tear: paper ripping, an accelerating train of fibre snaps over a noisy body
+t = t_axis(0.55)
+prog = t / 0.55
+body = biquad_bandpass(rng.standard_normal(len(t)), 2200 + 1800 * prog, 1.2) * (0.3 + 0.7 * prog) * np.exp(-np.maximum(0, prog - 0.85) * 30)
+snaps = crackle(len(t), 0.002 + 0.02 * prog**1.5) * 1.6
+tr = (body + snaps) * np.minimum(1, t * 40)
+write("tear", stereo(norm(fade(tr, 0.002, 0.03), 0.7), np.linspace(0.4, -0.4, len(t))))
+
+# shutter: a mechanical leaf shutter, opening click, spring buzz, closing clack
+t = t_axis(0.22)
+sh = np.zeros(len(t))
+for at, f, g in ((0.0, 4200.0, 1.0), (0.085, 2600.0, 1.3)):
+    i = int(at * SR)
+    seg = t[: len(t) - i]
+    sh[i:] += biquad_bandpass(rng.standard_normal(len(seg)), np.full(len(seg), f), 3) * np.exp(-seg * 160) * g
+spring = np.sin(2 * np.pi * 900 * t) * np.exp(-t * 40) * 0.12 * (t < 0.09)
+write("shutter", norm(fade(sh + spring, 0.0003, 0.02), 0.75))
