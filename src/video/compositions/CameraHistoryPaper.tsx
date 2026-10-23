@@ -29,14 +29,14 @@ const VO: { id: string; at: number; dur: number }[] = [
   { id: "l05", at: beat(25), dur: 105 }, // Eighteen thirty-nine. [47] Paris announces the daguerreotype.
   { id: "l06", at: beat(33), dur: 94 }, // An image fixed on silver. [57] Sit still for minutes.
   { id: "l07", at: beat(41), dur: 118 }, // Eighteen eighty-eight. [42] A box camera with a hundred shots inside.
-  { id: "l08", at: beat(50), dur: 64 }, // You press the button. [37] We do the rest.
+  { id: "l08", at: beat(50), dur: 79 }, // Press one button. [40] Mail it back for prints.
   { id: "l09", at: beat(56), dur: 121 }, // Then thirty-five millimetre film. [70] A camera for your coat pocket.
-  { id: "l10", at: beat(66), dur: 146 }, // Nineteen seventy-five. [57] Steven Sasson builds a digital camera at Kodak.
-  { id: "l11", at: beat(76), dur: 138 }, // Eight pounds. [30] Ten thousand pixels. [76] Twenty-three seconds to save each one.
-  { id: "l12", at: beat(87), dur: 78 }, // By two thousand, [37] phones take photos.
-  { id: "l13", at: beat(93), dur: 73 }, // Today, we take over a trillion a year.
-  { id: "l14", at: beat(100), dur: 97 }, // Look closer. [27] It's still a tiny hole [71] and a dark room.
-  { id: "l15", at: beat(108), dur: 62 }, // Just small enough [36] for your pocket.
+  { id: "l10", at: beat(66), dur: 157 }, // Nineteen seventy-five. [54] An engineer, Steven Sasson, [115] builds a digital camera.
+  { id: "l11", at: beat(77), dur: 138 }, // Eight pounds. [30] Ten thousand pixels. [76] Twenty-three seconds to save each one.
+  { id: "l12", at: beat(88), dur: 78 }, // By two thousand, [37] phones take photos.
+  { id: "l13", at: beat(94), dur: 73 }, // Today, we take over a trillion a year.
+  { id: "l14", at: beat(101), dur: 97 }, // Look closer. [27] It's still a tiny hole [71] and a dark room.
+  { id: "l15", at: beat(109), dur: 62 }, // Just small enough [36] for your pocket.
 ];
 const at = (id: string) => VO.find((v) => v.id === id)!.at;
 
@@ -45,9 +45,10 @@ const WIPE1 = beat(24); // obscura → 1839
 const WIPE2 = beat(40); // 1839 → 1888
 const WIPE3 = beat(55); // 1888 → 35mm
 const WIPE4 = beat(65); // 35mm → 1975
-const WIPE5 = beat(86); // 1975 → 2000
-const PAYOFF = beat(99);
-const END = beat(114);
+const WIPE5 = beat(87); // 1975 → 2000
+const PAYOFF = beat(100);
+const END = beat(115);
+const YEAR_35 = beat(56) + 38; // "…millimetre film": the 1925 tiles keep the date spine going
 export const CAMERA_HISTORY_PAPER_DURATION = END + END_CARD_FRAMES;
 
 // ─── Stop-motion helpers ───────────────────────────────────────────────────────────────────────────
@@ -326,6 +327,7 @@ const Words: React.FC<{
                   display: "inline-block",
                   position: "relative",
                   color: i === pinkWord ? P.accent : color,
+                  textShadow: i === pinkWord ? `6px 6px 0 ${P.ink}` : undefined,
                   transform: `translate(${j.x}px, ${j.y + (1 - p) * size * 0.5 - gone * 1400}px) rotate(${(rand(seed * 3 + i) - 0.5) * 2.4 + j.r}deg)`,
                   filter: shadow(1 - p, 0.6),
                   marginRight: wi < line.split(" ").length - 1 ? "0.22em" : 0,
@@ -647,20 +649,25 @@ const Scene1839: React.FC = () => {
   const L5 = at("l05");
   const L6 = at("l06");
   const PORTRAIT = beat(31); // on the beat inside "daguerreotype"
+  // push-through: the portrait slides in from the right and shoves the year off to the left, landing on the beat
+  const PUSH0 = PORTRAIT - 8;
+  const push = mv(f, PUSH0, PORTRAIT + 6, 0, 1, E);
   if (f < PORTRAIT) {
     return (
       <AbsoluteFill>
-        <Year year="1839" f={f} at={L5} y={560} />
-        <Label text="PARIS" f={f} at={L5 + 47} x={80} y={950} color={P.ink} ink={CREAM} size={56} seed={91} rot={-2} />
-        <Words text="Daguerreotype." f={f} at={L5 + 52} x={80} y={1130} size={128} seed={11} />
+        <AbsoluteFill style={{ transform: `translateX(${-push * 1150}px)` }}>
+          <Year year="1839" f={f} at={L5} y={560} />
+          <Label text="PARIS" f={f} at={L5 + 47} x={80} y={950} color={P.ink} ink={CREAM} size={56} seed={91} rot={-2} />
+          <Words text="Daguerreotype." f={f} at={L5 + 52} x={80} y={1130} size={128} seed={11} />
+        </AbsoluteFill>
+        {f >= PUSH0 && <Daguerreotype f={f} mis={7} x={170 + (1 - push) * 1000} y={330} />}
       </AbsoluteFill>
     );
   }
   if (f < L6) {
-    const p = mv(f, PORTRAIT, PORTRAIT + 12, 0, 1, E);
     return (
       <AbsoluteFill>
-        <Daguerreotype f={f} mis={7} x={170 + (1 - p) * 1000} y={330} />
+        <Daguerreotype f={f} mis={7} x={170 + (1 - push) * 1000} y={330} />
         <Label text="SELF-PORTRAIT · 1846–47" f={f} at={PORTRAIT + 4} x={80} y={1360} color={P.accent3} seed={92} rot={1.5} />
       </AbsoluteFill>
     );
@@ -674,7 +681,7 @@ const Scene1839: React.FC = () => {
     <AbsoluteFill>
       <Daguerreotype f={f} mis={mis} x={170} y={250} k={k} />
       <Words text="Fixed." f={f} at={L6 + 19} x={104} y={1180} size={150} seed={12} out={sit - 4} strip={CREAM} />
-      <Label text="ON SILVER-PLATED COPPER" f={f} at={L6 + 27} x={80} y={1380} color={P.surface} seed={93} rot={-1} />
+      <Label text="ON SILVER-PLATED COPPER" f={f} at={L6 + 27} x={80} y={1380} color={P.surface} seed={93} rot={-1} from="down" />
       {f >= sit && <Words text="Sit still." f={f} at={sit} x={104} y={1180} size={150} seed={13} strip={CREAM} />}
       {f >= sit && <Clock f={f} at={sit + 4} x={680} y={250} r={150} />}
     </AbsoluteFill>
@@ -722,7 +729,7 @@ const SNAP_SPOTS = [
   { x: 30, y: 1180, r: 5, d: 260 },
   { x: 730, y: 1170, r: -6, d: 250 },
   { x: 380, y: 1260, r: 3, d: 250 },
-  { x: 700, y: 250, r: -4, d: 210 },
+  { x: 410, y: 525, r: -4, d: 210 }, // clear of the type above
 ];
 
 const Snapshot: React.FC<{ name: string; x: number; y: number; d: number; rot: number; seed: number; lift?: number }> = ({ name, x, y, d, rot, seed, lift = 0 }) => (
@@ -761,7 +768,7 @@ const Scene1888: React.FC = () => {
     );
   }
   const lf = f - L8;
-  const REST = 37; // "We do the rest." (pause end in l08)
+  const REST = 40; // "Mail it back for prints." (pause end in l08)
   const fingerIn = mv(lf, 0, 12, 0, 1, E);
   const press = lf >= 19 && lf < 30 ? 1 : 0;
   const flash = lf >= 21 ? Math.max(0, 1 - (sf(lf) - 21) / 10) : 0;
@@ -782,7 +789,7 @@ const Scene1888: React.FC = () => {
           </div>
         )}
       </Stage>
-      {lf < REST && <Words text={"“You press\nthe button,"} f={f} at={L8} x={80} y={250} size={128} seed={15} lh={0.95} />}
+      {lf < REST && <Words text={"Press one\nbutton."} f={f} at={L8} x={80} y={250} size={128} seed={15} lh={0.95} />}
       {lf >= REST &&
         SNAPS.map((s, i) => {
           const t0 = REST + 2 + i * STEP;
@@ -803,7 +810,7 @@ const Scene1888: React.FC = () => {
             />
           );
         })}
-      {lf >= REST && <Words text={"we do\nthe rest.”"} f={f} at={L8 + REST} x={80} y={250} size={128} seed={16} pinkWord={3} lh={0.95} />}
+      {lf >= REST && <Words text={"Mail it back\nfor prints."} f={f} at={L8 + REST} x={80} y={250} size={128} seed={16} pinkWord={4} lh={0.95} />}
     </AbsoluteFill>
   );
 };
@@ -870,7 +877,9 @@ const Scene35: React.FC = () => {
       <AbsoluteFill>
         <FilmStrip f={f} advance={advance} />
         <Words text="35mm" f={f} at={L9 + 7} x={80} y={250} size={250} seed={17} lh={0.9} />
-        <Label text="MOVIE FILM, FOR STILLS" f={f} at={L9 + 27} x={80} y={1290} color={P.accent3} seed={175} rot={-2} />
+        <Label text="MOVIE FILM, FOR STILLS" f={f} at={L9 + 27} x={80} y={510} color={P.accent3} seed={175} rot={-2} />
+        {/* the date spine: 35mm stills cameras arrive in 1925 */}
+        <Year year="1925" f={f} at={YEAR_35} y={1160} colors={[P.accent2, P.accent3, P.accent, P.accent2]} />
       </AbsoluteFill>
     );
   }
@@ -919,7 +928,7 @@ const Scene1975: React.FC = () => {
   const L11 = at("l11");
   const PROTO = beat(69);
   const PIX = L11 + 30;
-  const SECS = beat(81);
+  const SECS = beat(82);
   if (f < PROTO) {
     return (
       <AbsoluteFill>
@@ -938,7 +947,7 @@ const Scene1975: React.FC = () => {
           <Prototype f={f} />
         </Stage>
         <Words text={"The first\ndigital\ncamera."} f={f} at={PROTO + 4} x={80} y={250} size={128} seed={19} lh={0.9} pinkWord={2} />
-        <Label text="STEVEN SASSON · KODAK" f={f} at={L10 + 60} x={80} y={1300} color={CREAM} seed={211} rot={-1.5} />
+        <Label text="STEVEN SASSON · ENGINEER" f={f} at={L10 + 56} x={80} y={1300} color={CREAM} seed={211} rot={-1.5} />
         <Label text="PROTOTYPE" f={f} at={L10 + 104} x={560} y={1400} color={P.accent} seed={212} rot={3} from="right" />
       </AbsoluteFill>
     );
@@ -979,7 +988,7 @@ const Scene1975: React.FC = () => {
         </Paper>
         </Stage>
         <Words text="10,000 pixels." f={f} at={PIX} x={104} y={250} size={128} seed={20} pinkWord={0} strip={CREAM} />
-        <Label text="100 × 100" f={f} at={PIX + 10} x={600} y={1250} color={P.accent3} seed={232} rot={3} from="right" size={56} />
+        <Label text="100 × 100 · ILLUSTRATIVE" f={f} at={PIX + 10} x={300} y={1250} color={P.accent3} seed={232} rot={3} from="right" size={48} />
       </AbsoluteFill>
     );
   }
@@ -1046,7 +1055,7 @@ const RAIN = Array.from({ length: 44 }, (_, i) => {
     y: 820 + rand(i * 5.7) * 760 - (i / 44) * 300,
     rot: (rand(i * 7.3) - 0.5) * 50,
     s: 0.75 + rand(i * 2.2) * 0.45,
-    t: Math.floor(i * 1.1),
+    t: i < 8 ? Math.round(-10 + i * 1.2) : Math.floor(i * 1.1), // a pile has already landed on the cut
   };
 });
 
@@ -1060,7 +1069,7 @@ const SceneNow: React.FC = () => {
     const shot = lf >= 37 ? mv(lf, 37, 45, 0, 1, OUT) : 0;
     return (
       <AbsoluteFill>
-        <Year year="2000" f={f} at={L12} y={250} cardW={150} colors={[P.accent, P.accent3, P.accent2, P.accent3]} />
+        <Year year="2000" f={f} at={L12} y={250} colors={[P.accent, P.accent3, P.accent2, P.accent3]} />
         <CandyBar f={f} shot={shot} x={560 + (1 - p) * 700} y={640} />
         <Label text="110,000 PIXELS" f={f} at={L12 + 46} x={80} y={1290} color={P.accent3} size={48} seed={252} rot={-2} />
         <Words text={"Phones\ntake\nphotos."} f={f} at={L12 + 37} x={80} y={760} size={128} seed={22} lh={0.92} pinkWord={2} />
@@ -1102,14 +1111,22 @@ const Lens: React.FC<{ cx: number; cy: number; r: number }> = ({ cx, cy, r }) =>
 
 const PHONE_X = 280;
 const PHONE_Y = 430;
-const LENS_C: Pt = [PHONE_X + 150, PHONE_Y + 150];
+const LENS_C: Pt = [PHONE_X + 260, PHONE_Y + 190]; // one round lens, centred: a riso print of "a phone", not any real model
+
+/** The phone's back, printed in riso pink over a misregistered blue layer (reads against the blue coat pocket). */
+const PhoneBack: React.FC<{ lift?: number }> = ({ lift = 0 }) => (
+  <>
+    <Paper x={PHONE_X + 10} y={PHONE_Y + 8} w={520} h={1040} color={P.accent2} seed={402} radius={78} shadowK={0} texture={false} />
+    <Paper x={PHONE_X} y={PHONE_Y} w={520} h={1040} color={P.accent} seed={401} radius={78} lift={lift} />
+  </>
+);
 
 const ScenePayoff: React.FC = () => {
   const f = useCurrentFrame();
   const L14 = at("l14");
   const L15 = at("l15");
   const PUSH = L14 + 21;
-  const INSIDE = beat(102);
+  const INSIDE = beat(103);
   if (f < INSIDE) {
     const lf = f - PAYOFF;
     const enter = 1; // revealed by the torn-paper wipe, already in place
@@ -1117,9 +1134,7 @@ const ScenePayoff: React.FC = () => {
     return (
       <AbsoluteFill>
         <Stage k={k} fx={LENS_C[0]} fy={LENS_C[1]} tx={f < PUSH ? LENS_C[0] : interpolate(k, [1.03, 9], [LENS_C[0], 540])} ty={(f < PUSH ? LENS_C[1] : interpolate(k, [1.03, 9], [LENS_C[1], 960])) + (1 - enter) * 1500}>
-          <Paper x={PHONE_X} y={PHONE_Y} w={520} h={1040} color={P.ink} seed={401} radius={78}>
-            <div style={{ position: "absolute", left: 40, top: 40, width: 220, height: 220, borderRadius: 56, background: "rgba(244,237,225,0.09)" }} />
-          </Paper>
+          <PhoneBack />
           <Lens cx={LENS_C[0]} cy={LENS_C[1]} r={70} />
         </Stage>
         <Words text="Look closer." f={f} at={L14} x={80} y={250} size={128} seed={25} out={PUSH} />
@@ -1151,16 +1166,16 @@ const ScenePayoff: React.FC = () => {
   return (
     <AbsoluteFill style={{ transform: `scale(${drift})` }}>
       <Pocket f={f} y={1150} />
-      <Stage k={k} fx={LENS_C[0]} fy={LENS_C[1]} tx={interpolate(k, [0.72, 2.4], [470, 540])} ty={interpolate(k, [0.72, 2.4], [420, 960]) + drop * 580}>
+      <Stage k={k} fx={LENS_C[0]} fy={LENS_C[1]} tx={540} ty={interpolate(k, [0.72, 2.4], [760, 960]) + drop * 240}>
         <div style={{ transform: `rotate(${drop * 8}deg)`, transformOrigin: `${LENS_C[0]}px ${LENS_C[1]}px`, position: "absolute", inset: 0 }}>
-          <Paper x={PHONE_X} y={PHONE_Y} w={520} h={1040} color={P.ink} seed={401} radius={78} lift={(1 - drop) * 3 + 0.5}>
-            <div style={{ position: "absolute", left: 40, top: 40, width: 220, height: 220, borderRadius: 56, background: "rgba(244,237,225,0.09)" }} />
-          </Paper>
+          <PhoneBack lift={(1 - drop) * 3 + 0.5} />
           <Lens cx={LENS_C[0]} cy={LENS_C[1]} r={70} />
         </div>
       </Stage>
       <Pocket f={f} front y={1150} />
-      <Words text={"Now it fits\nin your pocket."} f={f} at={L15 + 36} x={80} y={250} size={128} seed={28} lh={0.95} pinkWord={4} />
+      {/* first line lands on the cut, the second with "for your pocket" */}
+      <Words text="Now it fits" f={f} at={L15} x={80} y={250} size={128} seed={28} />
+      <Words text="in your pocket." f={f} at={L15 + 36} x={80} y={250 + 128 * 0.95} size={128} seed={29} pinkWord={1} />
     </AbsoluteFill>
   );
 };
@@ -1200,12 +1215,23 @@ export const CameraHistoryPaper: React.FC = () => (
       </Sequence>
     ))}
     <Sequence from={END}>
-      <EndCard system={S} />
+      <EndCardDrift />
     </Sequence>
     <Vignette />
     <SoundDesign />
   </AbsoluteFill>
 );
+
+/** The end card never sits dead: a slow 1.00 → 1.03 push over its last 1.3s. */
+const EndCardDrift: React.FC = () => {
+  const f = useCurrentFrame();
+  const k = interpolate(f, [END_CARD_FRAMES - 39, END_CARD_FRAMES], [1, 1.03], { ...clamp, easing: ease.sineInOut });
+  return (
+    <AbsoluteFill style={{ transform: `scale(${k})`, transformOrigin: "50% 45%" }}>
+      <EndCard system={S} />
+    </AbsoluteFill>
+  );
+};
 
 const Vignette: React.FC = () => (
   <AbsoluteFill style={{ pointerEvents: "none", background: "radial-gradient(ellipse at 50% 45%, transparent 58%, rgba(31,26,23,0.16) 100%)" }} />
@@ -1214,6 +1240,10 @@ const Vignette: React.FC = () => (
 // ─── Sound ─────────────────────────────────────────────────────────────────────────────────────────
 const voiceAt = (f: number) => VO.some((v) => f >= v.at - 4 && f <= v.at + v.dur + 4);
 const MUSIC_UP = 0.5;
+/** The loudness arc: "people knew this… nobody could keep it" is the quiet, reflective stretch (≈ −18 LUFS M). */
+const VO_GAIN: Record<string, number> = { l03: 0.5, l04: 0.5 };
+const QUIET_FROM = beat(12) - 10;
+const QUIET_TO = beat(18) + 60;
 const MUSIC_DUCK = 0.2;
 /** Smoothed duck: average the VO gate over ±6 frames so the bed eases down and back up. */
 const musicVol = (f: number) => {
@@ -1224,7 +1254,8 @@ const musicVol = (f: number) => {
   // inside the lens it drops to a whisper, then returns for the pocket line.
   const gone = f >= at("l04") + 20 && f < WIPE1 + WIPE_SWAP ? Math.max(0, 1 - (f - at("l04") - 20) / 12) : 1;
   const inside = f >= PAYOFF + 40 && f < at("l15") ? 0.45 : 1;
-  const fadeIn = Math.min(1, (f + 1) / 6) * gone * inside;
+  const quiet = f >= QUIET_FROM && f < QUIET_TO ? 0.5 : 1;
+  const fadeIn = Math.min(1, (f + 1) / 6) * gone * inside * quiet;
   const fadeOut = Math.min(1, (CAMERA_HISTORY_PAPER_DURATION - f) / END_CARD_FRAMES);
   return v * fadeIn * fadeOut;
 };
@@ -1234,7 +1265,7 @@ const SoundDesign: React.FC = () => (
     <Audio src={staticFile("music/pulse-minimal-120.m4a")} volume={musicVol} />
     {VO.map((v) => (
       <Sequence key={v.id} from={v.at} durationInFrames={v.dur + 10} layout="none">
-        <Audio src={staticFile(`voice/CameraHistoryPaper/${v.id}.wav`)} volume={1} />
+        <Audio src={staticFile(`voice/CameraHistoryPaper/${v.id}.wav`)} volume={VO_GAIN[v.id] ?? 1} />
       </Sequence>
     ))}
     {/* 1: the dark room */}
@@ -1244,18 +1275,19 @@ const SoundDesign: React.FC = () => (
     <Sfx name="paper" at={at("l02") + 6} volume={0.4} />
     <Sfx name="swish-reverse" at={at("l02") + 80} volume={0.3} />
     <Sfx name="pop" at={at("l02") + 90} volume={0.45} />
-    <Sfx name="paper" at={at("l03")} volume={0.5} />
-    <Sfx name="pop" at={at("l03") + 23} volume={0.4} />
-    <Sfx name="paper" at={at("l04") + 6} volume={0.35} />
-    <Sfx name="tear" at={at("l04") + 32} volume={0.4} />
+    <Sfx name="paper" at={at("l03")} volume={0.3} />
+    <Sfx name="pop" at={at("l03") + 23} volume={0.25} />
+    <Sfx name="paper" at={at("l04") + 6} volume={0.22} />
+    <Sfx name="tear" at={at("l04") + 32} volume={0.3} />
     {/* wipes */}
     {[WIPE1, WIPE2, WIPE3, WIPE4, WIPE5, PAYOFF - WIPE_SWAP].map((w) => (
       <Sfx key={w} name="tear" at={w + 2} volume={w === WIPE1 ? 0.22 : 0.55} />
     ))}
     {/* 1839 */}
     {[0, 1, 2, 3].map((i) => (
-      <Sfx key={`a${i}`} name={i === 0 ? "impact" : "pop"} at={at("l05") + i * 2.5} volume={i === 0 ? 0.8 : 0.32} />
+      <Sfx key={`a${i}`} name={i === 0 ? "impact" : "pop"} at={at("l05") + i * 2.5} volume={i === 0 ? 1 : 0.32} />
     ))}
+    <Sfx name="sub-drop" at={at("l05")} volume={0.7} />
     <Sfx name="paper" at={at("l05") + 47} volume={0.4} />
     <Sfx name="paper" at={at("l05") + 52} volume={0.45} />
     <Sfx name="shutter" at={at("l06") + 21} volume={0.5} />
@@ -1264,18 +1296,23 @@ const SoundDesign: React.FC = () => (
     ))}
     {/* 1888 */}
     {[0, 1, 2, 3].map((i) => (
-      <Sfx key={`b${i}`} name={i === 0 ? "impact" : "pop"} at={at("l07") + i * 2.5} volume={i === 0 ? 0.55 : 0.3} />
+      <Sfx key={`b${i}`} name={i === 0 ? "impact" : "pop"} at={at("l07") + i * 2.5} volume={i === 0 ? 0.9 : 0.3} />
     ))}
+    <Sfx name="sub-drop" at={at("l07")} volume={0.6} />
     <Sfx name="paper" at={at("l07") + 40} volume={0.45} />
     <Sfx name="pop" at={at("l07") + 80} volume={0.4} />
     <Sfx name="click" at={at("l08") + 19} volume={0.6} />
     <Sfx name="shutter" at={at("l08") + 20} volume={0.7} />
     {SNAPS.map((_, i) => (
-      <Sfx key={`s${i}`} name="paper" at={at("l08") + 39 + i * 5} volume={0.25} />
+      <Sfx key={`s${i}`} name="paper" at={at("l08") + 42 + i * 5} volume={0.25} />
     ))}
     {/* 35mm */}
     {[0, 15, 30, 45].map((t) => (
       <Sfx key={`f${t}`} name="shutter" at={at("l09") + t} volume={0.4} />
+    ))}
+    <Sfx name="impact" at={YEAR_35} volume={0.45} />
+    {[1, 2, 3].map((i) => (
+      <Sfx key={`y${i}`} name="pop" at={YEAR_35 + i * 2.5} volume={0.26} />
     ))}
     <Sfx name="paper" at={at("l09") + 72} volume={0.4} />
     <Sfx name="pop" at={at("l09") + 90} volume={0.35} />
@@ -1284,6 +1321,7 @@ const SoundDesign: React.FC = () => (
       <Sfx key={`d${i}`} name={i === 0 ? "impact" : "pop"} at={at("l10") + i * 2.5} volume={i === 0 ? 0.55 : 0.3} />
     ))}
     <Sfx name="paper" at={at("l10") + 47} volume={0.45} />
+    <Sfx name="paper" at={at("l10") + 56} volume={0.35} />
     <Sfx name="pop" at={at("l10") + 104} volume={0.35} />
     <Sfx name="click" at={at("l11")} volume={0.45} />
     <Sfx name="glitch" at={at("l11") + 30} volume={0.22} />
@@ -1296,7 +1334,7 @@ const SoundDesign: React.FC = () => (
     ))}
     <Sfx name="shutter" at={at("l12") + 37} volume={0.55} />
     {RAIN.filter((_, i) => i % 4 === 0).map((r, i) => (
-      <Sfx key={`r${i}`} name="paper" at={at("l13") + r.t} volume={0.22} />
+      <Sfx key={`r${i}`} name="paper" at={at("l13") + Math.max(0, r.t)} volume={0.22} />
     ))}
     <Sfx name="impact" at={at("l13") + 30} volume={0.4} />
     {/* payoff */}
