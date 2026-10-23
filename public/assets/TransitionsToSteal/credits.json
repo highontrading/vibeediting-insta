@@ -1,0 +1,56 @@
+[
+ {
+  "file": "earth.jpg",
+  "id": "nasa-GSFC_20171208_Archive_e001386",
+  "title": "Most Amazing High Definition Image of Earth - Blue Marble 2012",
+  "source": "NASA Image Library",
+  "page": "https://images.nasa.gov/details/GSFC_20171208_Archive_e001386",
+  "license": "Public domain (NASA)",
+  "note": "Graded to grayscale"
+ },
+ {
+  "file": "saturn.jpg",
+  "id": "nasa-6864722",
+  "title": "Saturn Apollo Program",
+  "source": "NASA Image Library",
+  "page": "https://images.nasa.gov/details/6864722",
+  "license": "Public domain (NASA)",
+  "note": "Graded to grayscale"
+ },
+ {
+  "file": "rocket.jpg",
+  "id": "nasa-6900556",
+  "title": "Saturn Apollo Program",
+  "source": "NASA Image Library",
+  "page": "https://images.nasa.gov/details/6900556",
+  "license": "Public domain (NASA)",
+  "note": "Graded to grayscale"
+ },
+ {
+  "file": "helmet.jpg",
+  "id": "nasa-iss059e002710",
+  "title": "iss059e002710",
+  "source": "NASA Image Library",
+  "page": "https://images.nasa.gov/details/iss059e002710",
+  "license": "Public domain (NASA)",
+  "note": "Graded to grayscale"
+ },
+ {
+  "file": "spacewalk.jpg",
+  "id": "nasa-iss061e065379",
+  "title": "iss061e065379",
+  "source": "NASA Image Library",
+  "page": "https://images.nasa.gov/details/iss061e065379",
+  "license": "Public domain (NASA)",
+  "note": "Graded to grayscale"
+ },
+ {
+  "file": "clouds.mp4, aerial.mp4, clouds-still.jpg, aerial-still.jpg",
+  "id": "archive-202948_Home_Movie_001504",
+  "title": "Home Movie: 001504",
+  "source": "Internet Archive \u2014 Prelinger Archives",
+  "page": "https://archive.org/details/202948_Home_Movie_001504",
+  "license": "Public domain (Prelinger Archives)",
+  "note": "Trimmed to clouds.mp4 (0:09-0:14) and aerial.mp4 (3:29-3:33), grayscale"
+ }
+]
