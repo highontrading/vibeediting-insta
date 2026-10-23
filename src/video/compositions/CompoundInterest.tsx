@@ -210,6 +210,7 @@ const Ring: React.FC<{ at: number; f: number; children: React.ReactNode }> = ({ 
           pathLength={1}
           strokeDasharray={1}
           strokeDashoffset={1 - p}
+          opacity={p > 0.02 ? 1 : 0}
         />
       </svg>
     </span>
@@ -626,6 +627,7 @@ const EndMotif: React.FC = () => {
         pathLength={1}
         strokeDasharray={1}
         strokeDashoffset={1 - p}
+        opacity={p > 0.02 ? 1 : 0}
       />
     </svg>
   );
@@ -740,6 +742,7 @@ const FrontPage: React.FC<{ mode: "hook" | "clock" }> = ({ mode }) => {
                   pathLength={1}
                   strokeDasharray={1}
                   strokeDashoffset={1 - draw}
+                  opacity={draw > 0.02 ? 1 : 0}
                 />
               </svg>
             </div>
@@ -819,7 +822,7 @@ const Principal: React.FC = () => {
         </div>
       </Cam>
       <Tab num="01" label="Simple interest" at={SIMPLE} f={f} />
-      <Kicker f={f} at={SIMPLE + 8} text="$1 at 10% · simple interest" />
+      <Kicker f={f} at={SIMPLE + 8} text="$1 at 10% a year" />
     </>
   );
 };
@@ -950,7 +953,7 @@ const TenCents: React.FC = () => {
         <LedgerBars bars={TEN_BARS} perDollar={450} base={1410} x0={110} w={140} gap={40} f={f} line="ink" years={["0", "1", "2", "3", "4"]} />
       </Cam>
       <Tab num="01" label="Simple interest" at={SIMPLE} f={TENC + 40} />
-      <Kicker f={TENC + 40} at={SIMPLE} text="$1 at 10% · simple interest" />
+      <Kicker f={TENC + 40} at={SIMPLE} text="$1 at 10% a year" />
     </>
   );
 };
@@ -961,8 +964,8 @@ const OnTheInterest: React.FC = () => {
   const f = useF();
   const k = 1 + 0.05 * m(f, COMPOUND, LADDER, 0, 1, lin);
   const c1 = slide(f, COMPOUND + 6, 10);
-  const c2 = m(f, L.l05 + 44, L.l05 + 52, 0, 1, ease.backOut);
-  const c3 = m(f, L.l05 + 58, L.l05 + 66, 0, 1, ease.backOut);
+  const c2 = m(f, L.l05 + 22, L.l05 + 30, 0, 1, ease.backOut);
+  const c3 = m(f, L.l05 + 40, L.l05 + 48, 0, 1, ease.backOut);
   return (
     <>
       <Cam k={k} cx={540} cy={900}>
@@ -981,8 +984,8 @@ const OnTheInterest: React.FC = () => {
         <svg width={1080} height={1920} style={{ position: "absolute", left: 0, top: 0 }}>
           {[
             // $1 → its 10¢ of interest, then 10¢ → its 1¢ of interest-on-interest; each arc ends on the next coin's rim
-            { a: [470, 900], c1: [590, 830], c2: [700, 930], e: [700, 1110], at: L.l05 + 40 },
-            { a: [792, 1132], c1: [845, 1112], c2: [864, 1178], e: [853, 1243], at: L.l05 + 54 },
+            { a: [470, 900], c1: [590, 830], c2: [700, 930], e: [700, 1110], at: L.l05 + 18 },
+            { a: [792, 1132], c1: [845, 1112], c2: [864, 1178], e: [853, 1243], at: L.l05 + 36 },
           ].map((r, i) => {
             const p = m(f, r.at, r.at + 9, 0, 1, ease.sineInOut);
             const ang = Math.atan2(r.e[1] - r.c2[1], r.e[0] - r.c2[0]);
@@ -998,6 +1001,7 @@ const OnTheInterest: React.FC = () => {
                   pathLength={1}
                   strokeDasharray={1}
                   strokeDashoffset={1 - p}
+                  opacity={p > 0.02 ? 1 : 0}
                 />
                 <polyline points={`${head(1)} ${r.e[0]},${r.e[1]} ${head(-1)}`} fill="none" stroke={RED} strokeWidth={9} strokeLinecap="round" strokeLinejoin="round" opacity={p >= 1 ? 1 : 0} />
               </g>
@@ -1080,6 +1084,7 @@ const CalloutArrow: React.FC<{ p: number }> = ({ p }) => {
         pathLength={1}
         strokeDasharray={1}
         strokeDashoffset={1 - p}
+        opacity={p > 0.02 ? 1 : 0}
       />
       <polyline points={`${head(1)} ${end.x},${end.y} ${head(-1)}`} fill="none" stroke={RED} strokeWidth={8} strokeLinecap="round" strokeLinejoin="round" opacity={p >= 1 ? 1 : 0} />
     </svg>
@@ -1126,6 +1131,7 @@ const Earning: React.FC = () => {
           pathLength={1}
           strokeDasharray={1}
           strokeDashoffset={1 - loop}
+          opacity={loop > 0.02 ? 1 : 0}
         />
         <path d="M 862 548 L 898 516 L 928 556" fill="none" stroke={RED} strokeWidth={10} strokeLinecap="round" strokeLinejoin="round" opacity={loop >= 1 ? 1 : 0} />
       </svg>
@@ -1270,7 +1276,22 @@ const simpleV = (t: number) => 1 + 0.1 * t;
 const compV = (t: number) => Math.pow(1.1, t);
 const redYears = (f: number) => 72 * m(f, RED_START, RED_END, 0, 1, (t) => t * t * (3 - 2 * t) * 0.5 + t * 0.5);
 /** The plot's top tracks the red line, so the curve never flattens against the top and the dot never detaches. */
-const ymaxAt = (f: number) => Math.max(10, Math.min(1000, compV(redYears(f)) * 1.08));
+/** Nice scale levels; the plot eases from one to the next as the red line approaches the top. */
+const NICE = [10, 20, 40, 80, 200, 400, 1000];
+const levelFor = (v: number) => {
+  const i = NICE.findIndex((n) => v * 1.12 <= n);
+  return i < 0 ? NICE.length - 1 : i;
+};
+const YMAX_TABLE = (() => {
+  const out: number[] = [];
+  let logY = Math.log(10);
+  for (let f = RED_START; f <= RED_END + 40; f++) {
+    logY += (Math.log(NICE[levelFor(compV(redYears(f)))]) - logY) * 0.4;
+    out.push(Math.exp(logY));
+  }
+  return out;
+})();
+const ymaxAt = (f: number) => (f < RED_START ? 10 : f > RED_END + 40 ? 1000 : YMAX_TABLE[f - RED_START]);
 /** Frame where the y-axis starts to rescale (for the whoosh). */
 const RESCALE_AT = (() => {
   for (let f = RED_START; f < RED_END; f++) if (ymaxAt(f) > 10.01) return f;
@@ -1280,12 +1301,24 @@ const smooth = (t: number) => {
   const c = Math.max(0, Math.min(1, t));
   return c * c * (3 - 2 * c);
 };
-/** Gridlines stay put at quarters of the plot; their labels roll with the scale like the counter does. */
-const GRID = [0.25, 0.5, 0.75, 1];
-const fmtTick = (v: number) => {
-  const r = Number(v.toPrecision(2)); // two significant figures: $4.50, $130, $520, $1,000
-  if (r < 10) return Number.isInteger(r) ? `$${r}` : `$${r.toFixed(2)}`;
-  return `$${r.toLocaleString("en-US")}`;
+const fmtTick = (v: number) => (v < 10 && !Number.isInteger(v) ? `$${v.toFixed(2)}` : `$${Math.round(v).toLocaleString("en-US")}`);
+/** Tick values for the current scale: each nice level's quarter ticks, crossfaded by how close the scale is to that level. */
+const ticksFor = (ymax: number) => {
+  const w = new Map<number, { o: number; k: number }>();
+  NICE.forEach((n, i) => {
+    const up = i < NICE.length - 1 ? Math.log(NICE[i + 1] / n) : 1;
+    const down = i > 0 ? Math.log(n / NICE[i - 1]) : 1;
+    const d = Math.log(ymax / n);
+    // the nearer level stays solid; the two sets only crossfade through the middle of the step
+    const o = Math.max(0, Math.min(1, (0.62 - Math.abs(d) / (d >= 0 ? up : down)) / 0.24));
+    if (o <= 0.01) return;
+    [1, 2, 3, 4].forEach((k) => {
+      const v = (n * k) / 4;
+      const prev = w.get(v);
+      if (!prev || prev.o < o) w.set(v, { o, k });
+    });
+  });
+  return [...w.entries()];
 };
 const CU_IN = beat(72); // 1080: close-up on the simple line reaching $8.20
 const CU_OUT = beat(78); // 1170: back wide for the compound climb
@@ -1371,25 +1404,27 @@ const BigChart: React.FC = () => {
               <rect x={X0 - 10} y={Y1 - 60} width={X1 - X0 + 40} height={Y0 - Y1 + 66} />
             </clipPath>
           </defs>
-          {GRID.map((q, i) => {
-            const y = Y0 - q * (Y0 - Y1);
+          {ticksFor(ymax).map(([v, { o, k }]) => {
+            const y = yOf(v);
+            const op = o * axisIn(k - 1) * (y < Y1 - 4 ? 0 : 1);
+            if (op <= 0.01) return null;
             return (
-              <g key={q} opacity={axisIn(i)}>
+              <g key={v} opacity={op}>
                 <line x1={X0} x2={X1} y1={y} y2={y} stroke={P.ink} strokeOpacity={0.25} strokeWidth={2} strokeDasharray="6 8" />
                 <text x={X0 - 18} y={y + 15} textAnchor="end" fontFamily={T.mono} fontWeight={600} fontSize={44} fill={P.muted} opacity={wide}>
-                  {fmtTick(ymax * q)}
+                  {fmtTick(v)}
                 </text>
               </g>
             );
           })}
           <line x1={X0} x2={X0 + (X1 + 20 - X0) * m(f, CHART + 2, CHART + 22)} y1={Y0} y2={Y0} stroke={P.ink} strokeWidth={4} />
-          {[0, 24, 48].map((t, i) => (
-            <text key={t} x={xOf(t)} y={Y0 + 56} textAnchor="middle" fontFamily={T.mono} fontWeight={600} fontSize={44} fill={P.muted} opacity={axisIn(i) * (t === 48 ? 1 : wide)}>
+          {[0, 24, 48, 72].map((t, i) => (
+            <text key={t} x={xOf(t)} y={Y0 + 56} textAnchor="middle" fontFamily={T.mono} fontWeight={600} fontSize={44} fill={P.muted} opacity={axisIn(i) * (t >= 48 ? 1 : wide)}>
               {t}
             </text>
           ))}
-          <text x={X1 + 24} y={Y0 + 56} textAnchor="end" fontFamily={T.mono} fontWeight={600} fontSize={44} fill={P.muted} opacity={axisIn(3)}>
-            72 YRS
+          <text x={X0 - 40} y={Y0 + 56} textAnchor="end" fontFamily={T.mono} fontWeight={600} fontSize={44} fill={P.muted} opacity={axisIn(0) * wide}>
+            YEARS
           </text>
           <g clipPath="url(#plot)">
             <polyline points={path(simpleV, sYears)} fill="none" stroke={P.ink} strokeWidth={7} strokeLinejoin="round" strokeLinecap="round" />
@@ -1403,7 +1438,7 @@ const BigChart: React.FC = () => {
           style={{
             position: "absolute",
             left: xOf(72) + 26 - 200,
-            top: Math.min(Y0 - 116, yOf(8.2) - 132),
+            top: Math.min(Y0 - 122, yOf(8.2) - 132),
             width: 200,
             textAlign: "right",
             ...MONO,
@@ -1412,9 +1447,9 @@ const BigChart: React.FC = () => {
             opacity: simpleLabel,
           }}
         >
-          <span style={{ color: P.muted }}>Simple</span>
-          <br />
           $8.20
+          <br />
+          <span style={{ color: P.muted }}>Simple</span>
         </div>
         {/* compound end value rides beside the red dot */}
         <div
@@ -1441,7 +1476,7 @@ const BigChart: React.FC = () => {
               <Note note={NOTE1000} x={300} y={760} w={480} rot={-5} seed={9} />
             </div>
           )}
-          <Stamp at={APPROX_AT} f={f} x={537} y={1110} rot={-8} size={76}>
+          <Stamp at={APPROX_AT} f={f} x={522} y={1100} rot={-8} size={68}>
             ≈ $1,000
           </Stamp>
         </div>
@@ -1633,8 +1668,8 @@ const SoundDesign: React.FC = () => (
     {/* compound */}
     <Sfx name="whoosh" at={COMPOUND - 3} volume={0.4} />
     <Sfx name="whoosh-short" at={COMPOUND + 6} volume={0.3} />
-    <Sfx name="pop" at={L.l05 + 44} volume={0.4} />
-    <Sfx name="pop" at={L.l05 + 58} volume={0.35} />
+    <Sfx name="pop" at={L.l05 + 22} volume={0.4} />
+    <Sfx name="pop" at={L.l05 + 40} volume={0.35} />
     <Sfx name="click" at={LADDER} volume={0.35} />
     {LADDER_BARS.slice(1).map((b) => (
       <Sfx key={b.at} name="impact" at={b.at + 6} volume={0.3} />
