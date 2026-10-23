@@ -9,6 +9,7 @@ import { CuriosityNotInformation, CURIOSITY_DURATION } from "./compositions/Curi
 import { CompoundInterest, COMPOUND_INTEREST_DURATION } from "./compositions/CompoundInterest";
 import { MondayInClay, MONDAY_IN_CLAY_DURATION } from "./compositions/MondayInClay";
 import { CameraHistoryPaper, CAMERA_HISTORY_PAPER_DURATION } from "./compositions/CameraHistoryPaper";
+import { TransitionsToSteal, TRANSITIONS_TO_STEAL_DURATION } from "./compositions/TransitionsToSteal";
 
 // Every Reel is 1080x1920 (9:16) at 30fps.
 export const REEL = { width: 1080, height: 1920, fps: 30 } as const;
@@ -24,5 +25,6 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="CompoundInterest" component={CompoundInterest} durationInFrames={COMPOUND_INTEREST_DURATION} {...REEL} />
     <Composition id="MondayInClay" component={MondayInClay} durationInFrames={MONDAY_IN_CLAY_DURATION} {...REEL} />
     <Composition id="CameraHistoryPaper" component={CameraHistoryPaper} durationInFrames={CAMERA_HISTORY_PAPER_DURATION} {...REEL} />
+    <Composition id="TransitionsToSteal" component={TransitionsToSteal} durationInFrames={TRANSITIONS_TO_STEAL_DURATION} {...REEL} />
   </>
 );
