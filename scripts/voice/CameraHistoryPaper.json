@@ -1,0 +1,70 @@
+{
+  "out": "public/voice/CameraHistoryPaper",
+  "voice": "bm_george",
+  "lang": "en-gb",
+  "speed": 1.0,
+  "lines": [
+    {
+      "id": "l01",
+      "text": "A tiny hole. A dark room."
+    },
+    {
+      "id": "l02",
+      "text": "The world outside appears on the wall, upside down."
+    },
+    {
+      "id": "l03",
+      "text": "People knew this two thousand years ago."
+    },
+    {
+      "id": "l04",
+      "text": "But nobody could keep the picture."
+    },
+    {
+      "id": "l05",
+      "text": "Eighteen thirty-nine. Paris announces the daguerreotype."
+    },
+    {
+      "id": "l06",
+      "text": "An image fixed on silver. Sit still for minutes."
+    },
+    {
+      "id": "l07",
+      "text": "Eighteen eighty-eight. A box camera with a hundred shots inside."
+    },
+    {
+      "id": "l08",
+      "text": "One click. Then mail the camera back for prints.",
+      "speed": 1.04
+    },
+    {
+      "id": "l09",
+      "text": "Then thirty-five millimetre film. A camera for your coat pocket."
+    },
+    {
+      "id": "l10",
+      "text": "Nineteen seventy-five. An engineer, Steven Sasson, builds a digital camera.",
+      "speed": 1.06
+    },
+    {
+      "id": "l11",
+      "text": "Eight pounds. Ten thousand pixels. Twenty-three seconds to save each one."
+    },
+    {
+      "id": "l12",
+      "text": "By two thousand, phones take photos."
+    },
+    {
+      "id": "l13",
+      "text": "Today, we take over a trillion a year."
+    },
+    {
+      "id": "l14",
+      "text": "Look closer. It's still a tiny hole and a dark room."
+    },
+    {
+      "id": "l15",
+      "text": "Just small enough for your pocket."
+    }
+  ]
+}

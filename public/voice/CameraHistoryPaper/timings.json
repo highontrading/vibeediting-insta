@@ -300,47 +300,52 @@
   ]
  },
  "l08": {
-  "duration": 2.128,
+  "duration": 2.836,
   "words": [
    {
-    "word": "You",
+    "word": "One",
     "start": 0.0,
-    "end": 0.209
+    "end": 0.232
    },
    {
-    "word": "press",
-    "start": 0.209,
-    "end": 0.417
+    "word": "click.",
+    "start": 0.232,
+    "end": 0.604
    },
    {
-    "word": "the",
-    "start": 0.417,
-    "end": 0.626
+    "word": "Then",
+    "start": 0.604,
+    "end": 0.837
    },
    {
-    "word": "button.",
-    "start": 0.626,
-    "end": 1.168
-   },
-   {
-    "word": "We",
-    "start": 1.168,
-    "end": 1.377
-   },
-   {
-    "word": "do",
-    "start": 1.377,
-    "end": 1.586
+    "word": "mail",
+    "start": 0.837,
+    "end": 1.069
    },
    {
     "word": "the",
-    "start": 1.586,
-    "end": 1.794
+    "start": 1.069,
+    "end": 1.302
    },
    {
-    "word": "rest.",
-    "start": 1.794,
-    "end": 2.128
+    "word": "camera",
+    "start": 1.302,
+    "end": 1.999
+   },
+   {
+    "word": "back",
+    "start": 1.999,
+    "end": 2.232
+   },
+   {
+    "word": "for",
+    "start": 2.232,
+    "end": 2.464
+   },
+   {
+    "word": "prints.",
+    "start": 2.464,
+    "end": 2.836
    }
   ]
  },
@@ -400,57 +405,57 @@
   ]
  },
  "l10": {
-  "duration": 4.883,
+  "duration": 5.236,
   "words": [
    {
     "word": "Nineteen",
     "start": 0.0,
-    "end": 0.631
+    "end": 0.618
    },
    {
     "word": "seventy-five.",
-    "start": 0.631,
-    "end": 1.599
+    "start": 0.618,
+    "end": 1.567
+   },
+   {
+    "word": "An",
+    "start": 1.567,
+    "end": 1.773
+   },
+   {
+    "word": "engineer,",
+    "start": 1.773,
+    "end": 2.515
    },
    {
     "word": "Steven",
-    "start": 1.599,
-    "end": 2.02
+    "start": 2.515,
+    "end": 2.927
    },
    {
-    "word": "Sasson",
-    "start": 2.02,
-    "end": 2.441
+    "word": "Sasson,",
+    "start": 2.927,
+    "end": 3.463
    },
    {
     "word": "builds",
-    "start": 2.441,
-    "end": 2.652
+    "start": 3.463,
+    "end": 3.669
    },
    {
     "word": "a",
-    "start": 2.652,
-    "end": 2.862
+    "start": 3.669,
+    "end": 3.875
    },
    {
     "word": "digital",
-    "start": 2.862,
-    "end": 3.494
+    "start": 3.875,
+    "end": 4.494
    },
    {
-    "word": "camera",
-    "start": 3.494,
-    "end": 4.125
-   },
-   {
-    "word": "at",
-    "start": 4.125,
-    "end": 4.335
-   },
-   {
-    "word": "Kodak.",
-    "start": 4.335,
-    "end": 4.882
+    "word": "camera.",
+    "start": 4.494,
+    "end": 5.236
    }
   ]
  },
