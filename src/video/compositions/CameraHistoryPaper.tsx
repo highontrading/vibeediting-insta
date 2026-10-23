@@ -29,7 +29,7 @@ const VO: { id: string; at: number; dur: number }[] = [
   { id: "l05", at: beat(25), dur: 105 }, // Eighteen thirty-nine. [47] Paris announces the daguerreotype.
   { id: "l06", at: beat(33), dur: 94 }, // An image fixed on silver. [57] Sit still for minutes.
   { id: "l07", at: beat(41), dur: 118 }, // Eighteen eighty-eight. [42] A box camera with a hundred shots inside.
-  { id: "l08", at: beat(50), dur: 79 }, // Press one button. [40] Mail it back for prints.
+  { id: "l08", at: beat(50), dur: 85 }, // One click. [27] Then mail the camera back for prints.
   { id: "l09", at: beat(56), dur: 121 }, // Then thirty-five millimetre film. [70] A camera for your coat pocket.
   { id: "l10", at: beat(66), dur: 157 }, // Nineteen seventy-five. [54] An engineer, Steven Sasson, [115] builds a digital camera.
   { id: "l11", at: beat(77), dur: 138 }, // Eight pounds. [30] Ten thousand pixels. [76] Twenty-three seconds to save each one.
@@ -48,6 +48,8 @@ const WIPE4 = beat(65); // 35mm → 1975
 const WIPE5 = beat(87); // 1975 → 2000
 const PAYOFF = beat(100);
 const END = beat(115);
+const PROTO_AT = beat(68);
+const PAYOFF_LIFT_END = beat(103) + 20; // music lifted from "Look closer." through the push into the lens
 const YEAR_35 = beat(56) + 38; // "…millimetre film": the 1925 tiles keep the date spine going
 export const CAMERA_HISTORY_PAPER_DURATION = END + END_CARD_FRAMES;
 
@@ -418,16 +420,32 @@ const Stage: React.FC<{ k: number; fx: number; fy: number; tx?: number; ty?: num
 );
 
 // ─── Torn-paper wipe ───────────────────────────────────────────────────────────────────────────────
+// A torn band of paper is dragged across the frame. The outgoing scene stays visible ahead of the band and
+// the incoming scene is revealed behind it, so no frame is ever a solid sheet of colour.
 const WIPE_LEN = 24;
-const SHEET_H = 2500;
-const sheetTop = (f: number) => mv(f, 0, WIPE_LEN, 1960, -SHEET_H - 60, IO);
-const Wipe: React.FC<{ color: string; seed: number }> = ({ color, seed }) => {
+type WipeDir = "up" | "right" | "left";
+const BAND_V = 1150; // height of a band that travels up
+const BAND_H = 760; // width of a band that travels sideways
+const EDGE = 55; // the clip line sits this far inside the band, hidden under its torn edge
+/** Leading coordinate of the band at frame f (relative to the wipe start): its top (up) or its left (sideways). */
+const bandPos = (dir: WipeDir, f: number) =>
+  dir === "up" ? mv(f, 0, WIPE_LEN, 1960, -BAND_V - 60, IO) : dir === "right" ? mv(f, 0, WIPE_LEN, -BAND_H - 80, 1160, IO) : mv(f, 0, WIPE_LEN, 1160, -BAND_H - 80, IO);
+/** clip-path insets that keep the outgoing scene ahead of the band and the incoming one behind it. */
+const wipeClips = (dir: WipeDir, f: number) => {
+  const b = bandPos(dir, f);
+  const c = (v: number) => Math.max(0, v).toFixed(1);
+  if (dir === "up") return { old: `inset(0 0 ${c(1920 - (b + EDGE))}px 0)`, neu: `inset(${c(b + BAND_V - EDGE)}px 0 0 0)` };
+  if (dir === "right") return { old: `inset(0 0 0 ${c(b + BAND_H - EDGE)}px)`, neu: `inset(0 ${c(1080 - (b + EDGE))}px 0 0)` };
+  return { old: `inset(0 ${c(1080 - (b + EDGE))}px 0 0)`, neu: `inset(0 0 0 ${c(b + BAND_H - EDGE)}px)` };
+};
+const Wipe: React.FC<{ color: string; seed: number; dir: WipeDir }> = ({ color, seed, dir }) => {
   const f = useCurrentFrame();
   if (f > WIPE_LEN) return null;
-  const top = sheetTop(f);
-  return <Paper x={-60} y={top} w={1200} h={SHEET_H} color={color} seed={seed} torn="tb" amp={9} lift={3} rot={-2} />;
+  const b = bandPos(dir, f);
+  if (dir === "up") return <Paper x={-60} y={b} w={1200} h={BAND_V} color={color} seed={seed} torn="tb" amp={9} lift={3} rot={-2} />;
+  return <Paper x={b} y={-100} w={BAND_H} h={2120} color={color} seed={seed} torn="lr" amp={9} lift={3} rot={dir === "right" ? 1 : -1} />;
 };
-/** Frame (relative to the wipe start) at which the sheet fully covers the screen: swap scenes there. */
+/** Frame (relative to the wipe start) at which the logical scene boundary sits (the band is mid-frame). */
 const WIPE_SWAP = 12;
 
 // ─── Scene 1: the dark room ────────────────────────────────────────────────────────────────────────
@@ -657,8 +675,8 @@ const Scene1839: React.FC = () => {
       <AbsoluteFill>
         <AbsoluteFill style={{ transform: `translateX(${-push * 1150}px)` }}>
           <Year year="1839" f={f} at={L5} y={560} />
-          <Label text="PARIS" f={f} at={L5 + 47} x={80} y={950} color={P.ink} ink={CREAM} size={56} seed={91} rot={-2} />
-          <Words text="Daguerreotype." f={f} at={L5 + 52} x={80} y={1130} size={128} seed={11} />
+          <Label text="PARIS" f={f} at={L5 + 30} x={80} y={950} color={P.ink} ink={CREAM} size={56} seed={91} rot={-2} />
+          <Words text="Daguerreotype." f={f} at={L5 + 36} x={80} y={1130} size={128} seed={11} />
         </AbsoluteFill>
         {f >= PUSH0 && <Daguerreotype f={f} mis={7} x={170 + (1 - push) * 1000} y={330} />}
       </AbsoluteFill>
@@ -733,7 +751,7 @@ const SNAP_SPOTS = [
 ];
 
 const Snapshot: React.FC<{ name: string; x: number; y: number; d: number; rot: number; seed: number; lift?: number }> = ({ name, x, y, d, rot, seed, lift = 0 }) => (
-  <Paper x={x} y={y} w={d + 36} h={d + 60} color={CREAM} seed={seed} torn="" rot={rot} lift={lift}>
+  <Paper x={x} y={y} w={d + 36} h={d + 36} color={CREAM} seed={seed} torn="tblr" amp={2} rot={rot} lift={lift}>
     <div style={{ position: "absolute", left: 18, top: 18, width: d, height: d, borderRadius: "50%", overflow: "hidden", background: CREAM }}>
       <Riso name={name} inks={["blue"]} w={d} h={d} />
     </div>
@@ -749,7 +767,7 @@ const Scene1888: React.FC = () => {
     return (
       <AbsoluteFill>
         <Year year="1888" f={f} at={L7} y={600} colors={[P.accent3, P.accent2, P.accent, P.accent3]} />
-        <Label text="ROCHESTER, NEW YORK" f={f} at={L7 + 12} x={80} y={990} color={P.ink} ink={CREAM} size={48} seed={112} rot={1.5} />
+        <Label text="ROLL FILM · 1888" f={f} at={L7 + 12} x={80} y={990} color={P.ink} ink={CREAM} size={48} seed={112} rot={1.5} />
       </AbsoluteFill>
     );
   }
@@ -768,10 +786,11 @@ const Scene1888: React.FC = () => {
     );
   }
   const lf = f - L8;
-  const REST = 40; // "Mail it back for prints." (pause end in l08)
-  const fingerIn = mv(lf, 0, 12, 0, 1, E);
-  const press = lf >= 19 && lf < 30 ? 1 : 0;
-  const flash = lf >= 21 ? Math.max(0, 1 - (sf(lf) - 21) / 10) : 0;
+  const REST = 27; // "Then mail the camera back for prints." (pause end in l08)
+  const CLICK = 11; // on "click"
+  const fingerIn = mv(lf, 0, 8, 0, 1, E);
+  const press = lf >= CLICK && lf < CLICK + 10 ? 1 : 0;
+  const flash = lf >= CLICK + 1 ? Math.max(0, 1 - (sf(lf) - CLICK - 1) / 10) : 0;
   const zoom = lf < REST ? 1.55 : mv(lf, REST, REST + 8, 1.55, 0.82, IO);
   const q = (1.55 - zoom) / (1.55 - 0.82);
   return (
@@ -789,7 +808,7 @@ const Scene1888: React.FC = () => {
           </div>
         )}
       </Stage>
-      {lf < REST && <Words text={"Press one\nbutton."} f={f} at={L8} x={80} y={250} size={128} seed={15} lh={0.95} />}
+      {lf < REST && <Words text="One click." f={f} at={L8} x={80} y={250} size={128} seed={15} lh={0.95} />}
       {lf >= REST &&
         SNAPS.map((s, i) => {
           const t0 = REST + 2 + i * STEP;
@@ -816,7 +835,7 @@ const Scene1888: React.FC = () => {
 };
 
 // ─── Scene 4: 35mm ─────────────────────────────────────────────────────────────────────────────────
-const FILM_FRAMES = ["tram", "bourse", "leon", "caroline", "dog", "tram"];
+const FILM_FRAMES = ["tram", "bourse", "snap-street", "caroline", "snap-house", "tram"];
 const FRAME_W = 400;
 const FilmStrip: React.FC<{ f: number; advance: number }> = ({ f, advance }) => {
   const j = jit(150, f, 0.7);
@@ -832,7 +851,7 @@ const FilmStrip: React.FC<{ f: number; advance: number }> = ({ f, advance }) => 
         ))}
         {FILM_FRAMES.map((name, i) => (
           <div key={i} style={{ position: "absolute", left: 40 + i * (FRAME_W + 30), top: 68, width: FRAME_W, height: 254, background: CREAM, overflow: "hidden" }}>
-            <Riso name={name} w={FRAME_W} h={254} mis={{ x: 4, y: 2 }} />
+            <Riso name={name} inks={name.startsWith("snap") ? ["blue"] : ["blue", "pink"]} w={FRAME_W} h={254} mis={{ x: 4, y: 2 }} />
           </div>
         ))}
       </Paper>
@@ -926,14 +945,13 @@ const Scene1975: React.FC = () => {
   const f = useCurrentFrame();
   const L10 = at("l10");
   const L11 = at("l11");
-  const PROTO = beat(69);
+  const PROTO = PROTO_AT; // the prototype arrives as soon as the year has landed
   const PIX = L11 + 30;
   const SECS = beat(82);
   if (f < PROTO) {
     return (
       <AbsoluteFill>
         <Year year="1975" f={f} at={L10} y={600} colors={[P.accent2, P.accent, P.accent3, P.accent2]} />
-        <Label text="A LAB IN ROCHESTER" f={f} at={L10 + 12} x={80} y={990} color={P.ink} ink={CREAM} size={48} seed={213} rot={-1.5} />
       </AbsoluteFill>
     );
   }
@@ -997,8 +1015,9 @@ const Scene1975: React.FC = () => {
   const segs = Math.min(23, Math.floor(Math.max(0, sf(lf) - 6) / 2.5));
   return (
     <AbsoluteFill>
+      <Stage k={mv(f, MATCH - 7, MATCH, 1, 1.3, IO)} fx={540} fy={735} ty={735}>
       <Paper x={140} y={560} w={800} h={500} color={P.ink} seed={241} torn="" rot={-1}>
-        <div style={{ position: "absolute", left: 50, top: 50, width: 700, height: 250, background: P.surface, borderRadius: 18 }} />
+        <div style={{ position: "absolute", left: 50, top: 50, width: 700, height: 250, background: CREAM, borderRadius: 18 }} />
         <div style={{ position: "absolute", left: 160, top: 115, width: 120, height: 120, borderRadius: 60, background: P.ink, transform: `rotate(${sidx(lf) * 30}deg)` }}>
           <div style={{ position: "absolute", left: 52, top: 8, width: 16, height: 104, background: P.surface }} />
         </div>
@@ -1012,6 +1031,7 @@ const Scene1975: React.FC = () => {
           ))}
         </div>
       </Paper>
+      </Stage>
       <Words text={"23 seconds\nto save one."} f={f} at={SECS} x={80} y={250} size={128} seed={21} lh={0.92} />
       <div style={{ position: "absolute", left: 80, top: 1140, fontFamily: T.mono, fontWeight: 700, fontSize: 96, color: P.ink }}>
         {String(segs).padStart(2, "0")}
@@ -1045,8 +1065,13 @@ const CandyBar: React.FC<{ f: number; shot: number; x: number; y: number }> = ({
   );
 };
 
+/** Match cut 1975 → 2000: the cassette window becomes the phone screen. */
+const MATCH = beat(87) + 12; // = the 1975 → 2000 scene boundary
+const PHONE_SCREEN: Pt = [560 + 181, 640 + 180]; // centre of the candybar screen (rotated −5°)
+const MATCH_K = 3.0; // the 230px screen opens at ≈ the cassette window's width
+
 const RAIN = Array.from({ length: 44 }, (_, i) => {
-  const imgs = ["dog", "tram", "bourse", "leon", "caroline", "molard", "snap-dogman", "snap-house", "snap-street", "snap-church", "snap-tree", "snap-boy"];
+  const imgs = ["dog", "tram", "bourse", "snap-dogman", "molard", "snap-house", "snap-street", "snap-church", "snap-tree", "snap-boy"];
   const name = imgs[i % imgs.length];
   return {
     name,
@@ -1065,12 +1090,15 @@ const SceneNow: React.FC = () => {
   const L13 = at("l13");
   if (f < L13) {
     const lf = f - L12;
-    const p = mv(lf, 10, 20, 0, 1, E);
     const shot = lf >= 37 ? mv(lf, 37, 45, 0, 1, OUT) : 0;
+    const k = mv(f, MATCH, MATCH + 12, MATCH_K, 1, E);
+    const q = (MATCH_K - k) / (MATCH_K - 1); // 0 on the cut → 1 when the phone is in place
     return (
       <AbsoluteFill>
         <Year year="2000" f={f} at={L12} y={250} colors={[P.accent, P.accent3, P.accent2, P.accent3]} />
-        <CandyBar f={f} shot={shot} x={560 + (1 - p) * 700} y={640} />
+        <Stage k={k} fx={PHONE_SCREEN[0]} fy={PHONE_SCREEN[1]} tx={540 + (PHONE_SCREEN[0] - 540) * q} ty={735 + (PHONE_SCREEN[1] - 735) * q}>
+          <CandyBar f={f} shot={shot} x={560} y={640} />
+        </Stage>
         <Label text="110,000 PIXELS" f={f} at={L12 + 46} x={80} y={1290} color={P.accent3} size={48} seed={252} rot={-2} />
         <Words text={"Phones\ntake\nphotos."} f={f} at={L12 + 37} x={80} y={760} size={128} seed={22} lh={0.92} pinkWord={2} />
       </AbsoluteFill>
@@ -1083,9 +1111,8 @@ const SceneNow: React.FC = () => {
         if (lf < r.t) return null;
         const p = mv(lf, r.t, r.t + 8, 0, 1, OUT);
         const w = 220 * r.s;
-        const h = r.snap ? w + 30 : w * 1.15;
         return (
-          <Paper key={i} x={r.x} y={r.y - (1 - p) * 1500} w={w} h={h} color={CREAM} seed={300 + i} torn="" rot={r.rot} lift={(1 - p) * 3}>
+          <Paper key={i} x={r.x} y={r.y - (1 - p) * 1500} w={w} h={w} color={CREAM} seed={300 + i} torn="tblr" amp={2} rot={r.rot} lift={(1 - p) * 3}>
             <div style={{ position: "absolute", left: 12, top: 12, width: w - 24, height: w - 24, overflow: "hidden", borderRadius: r.snap ? "50%" : 0 }}>
               <Riso name={r.name} inks={r.snap ? ["blue"] : ["blue", "pink"]} w={w - 24} h={w - 24} mis={{ x: 3, y: 2 }} />
             </div>
@@ -1190,19 +1217,36 @@ const SCENES: { from: number; to: number; C: React.FC }[] = [
   { from: WIPE5 + WIPE_SWAP, to: PAYOFF, C: SceneNow },
   { from: PAYOFF, to: END, C: ScenePayoff },
 ];
-const WIPES = [
-  { at: WIPE1, color: P.accent, seed: 501 },
-  { at: WIPE2, color: P.accent2, seed: 502 },
-  { at: WIPE3, color: P.accent3, seed: 503 },
-  { at: WIPE4, color: P.accent, seed: 504 },
-  { at: WIPE5, color: P.accent2, seed: 505 },
-  { at: PAYOFF - WIPE_SWAP, color: P.accent3, seed: 506 },
+// Three bands travel up, two tear sideways; 1975 → 2000 is a match cut (cassette window → phone screen).
+const WIPES: { at: number; color: string; seed: number; dir: WipeDir }[] = [
+  { at: WIPE1, color: P.accent, seed: 501, dir: "up" },
+  { at: WIPE2, color: P.accent2, seed: 502, dir: "right" },
+  { at: WIPE3, color: P.accent3, seed: 503, dir: "up" },
+  { at: WIPE4, color: P.accent, seed: 504, dir: "left" },
+  { at: PAYOFF - WIPE_SWAP, color: P.accent3, seed: 506, dir: "up" },
 ];
 
 /** Scenes read the absolute frame (no Sequence), so every timing constant above is in composition frames. */
+const sceneAt = (f: number) => SCENES.find((x) => f >= x.from && f < x.to);
 const Scenes: React.FC = () => {
   const f = useCurrentFrame();
-  const s = SCENES.find((x) => f >= x.from && f < x.to);
+  const w = WIPES.find((x) => f >= x.at && f <= x.at + WIPE_LEN);
+  if (w) {
+    const Old = sceneAt(w.at + WIPE_SWAP - 1)!.C;
+    const New = sceneAt(w.at + WIPE_SWAP)!.C;
+    const clips = wipeClips(w.dir, f - w.at);
+    return (
+      <>
+        <AbsoluteFill style={{ clipPath: clips.old }}>
+          <Old />
+        </AbsoluteFill>
+        <AbsoluteFill style={{ clipPath: clips.neu }}>
+          <New />
+        </AbsoluteFill>
+      </>
+    );
+  }
+  const s = sceneAt(f);
   return s ? <s.C /> : null;
 };
 
@@ -1211,7 +1255,7 @@ export const CameraHistoryPaper: React.FC = () => (
     <Scenes />
     {WIPES.map((w) => (
       <Sequence key={w.at} from={w.at} durationInFrames={WIPE_LEN + 1}>
-        <Wipe color={w.color} seed={w.seed} />
+        <Wipe color={w.color} seed={w.seed} dir={w.dir} />
       </Sequence>
     ))}
     <Sequence from={END}>
@@ -1241,7 +1285,7 @@ const Vignette: React.FC = () => (
 const voiceAt = (f: number) => VO.some((v) => f >= v.at - 4 && f <= v.at + v.dur + 4);
 const MUSIC_UP = 0.5;
 /** The loudness arc: "people knew this… nobody could keep it" is the quiet, reflective stretch (≈ −18 LUFS M). */
-const VO_GAIN: Record<string, number> = { l03: 0.5, l04: 0.5 };
+const VO_GAIN: Record<string, number> = { l03: 0.5, l04: 0.5, l06: 0.6 };
 const QUIET_FROM = beat(12) - 10;
 const QUIET_TO = beat(18) + 60;
 const MUSIC_DUCK = 0.2;
@@ -1253,8 +1297,10 @@ const musicVol = (f: number) => {
   // story automation: the bed drains away as the picture is lost ("Gone.") and slams back with 1839;
   // inside the lens it drops to a whisper, then returns for the pocket line.
   const gone = f >= at("l04") + 20 && f < WIPE1 + WIPE_SWAP ? Math.max(0, 1 - (f - at("l04") - 20) / 12) : 1;
-  const inside = f >= PAYOFF + 40 && f < at("l15") ? 0.45 : 1;
-  const quiet = f >= QUIET_FROM && f < QUIET_TO ? 0.5 : 1;
+  const inside = f >= PAYOFF_LIFT_END && f < at("l15") ? 0.45 : 1;
+  const quiet = f >= QUIET_FROM && f < QUIET_TO ? 0.5 : f >= at("l06") && f < at("l06") + 105 ? 0.75 : 1;
+  // the payoff lifts: after "Look closer." the bed comes up under the push into the lens
+  if (f >= at("l14") + 18 && f < PAYOFF_LIFT_END) return MUSIC_UP;
   const fadeIn = Math.min(1, (f + 1) / 6) * gone * inside * quiet;
   const fadeOut = Math.min(1, (CAMERA_HISTORY_PAPER_DURATION - f) / END_CARD_FRAMES);
   return v * fadeIn * fadeOut;
@@ -1280,7 +1326,9 @@ const SoundDesign: React.FC = () => (
     <Sfx name="paper" at={at("l04") + 6} volume={0.22} />
     <Sfx name="tear" at={at("l04") + 32} volume={0.3} />
     {/* wipes */}
-    {[WIPE1, WIPE2, WIPE3, WIPE4, WIPE5, PAYOFF - WIPE_SWAP].map((w) => (
+    <Sfx name="whoosh-short" at={MATCH - 6} volume={0.4} />
+    <Sfx name="pop" at={MATCH} volume={0.35} />
+    {[WIPE1, WIPE2, WIPE3, WIPE4, PAYOFF - WIPE_SWAP].map((w) => (
       <Sfx key={w} name="tear" at={w + 2} volume={w === WIPE1 ? 0.22 : 0.55} />
     ))}
     {/* 1839 */}
@@ -1288,8 +1336,8 @@ const SoundDesign: React.FC = () => (
       <Sfx key={`a${i}`} name={i === 0 ? "impact" : "pop"} at={at("l05") + i * 2.5} volume={i === 0 ? 1 : 0.32} />
     ))}
     <Sfx name="sub-drop" at={at("l05")} volume={0.7} />
-    <Sfx name="paper" at={at("l05") + 47} volume={0.4} />
-    <Sfx name="paper" at={at("l05") + 52} volume={0.45} />
+    <Sfx name="paper" at={at("l05") + 30} volume={0.4} />
+    <Sfx name="paper" at={at("l05") + 36} volume={0.45} />
     <Sfx name="shutter" at={at("l06") + 21} volume={0.5} />
     {Array.from({ length: 10 }, (_, i) => (
       <Sfx key={`c${i}`} name="tick" at={at("l06") + 60 + i * 5} volume={0.25} />
@@ -1301,10 +1349,10 @@ const SoundDesign: React.FC = () => (
     <Sfx name="sub-drop" at={at("l07")} volume={0.6} />
     <Sfx name="paper" at={at("l07") + 40} volume={0.45} />
     <Sfx name="pop" at={at("l07") + 80} volume={0.4} />
-    <Sfx name="click" at={at("l08") + 19} volume={0.6} />
-    <Sfx name="shutter" at={at("l08") + 20} volume={0.7} />
+    <Sfx name="click" at={at("l08") + 11} volume={0.6} />
+    <Sfx name="shutter" at={at("l08") + 12} volume={0.7} />
     {SNAPS.map((_, i) => (
-      <Sfx key={`s${i}`} name="paper" at={at("l08") + 42 + i * 5} volume={0.25} />
+      <Sfx key={`s${i}`} name="paper" at={at("l08") + 29 + i * 5} volume={0.25} />
     ))}
     {/* 35mm */}
     {[0, 15, 30, 45].map((t) => (
@@ -1320,7 +1368,7 @@ const SoundDesign: React.FC = () => (
     {[0, 1, 2, 3].map((i) => (
       <Sfx key={`d${i}`} name={i === 0 ? "impact" : "pop"} at={at("l10") + i * 2.5} volume={i === 0 ? 0.55 : 0.3} />
     ))}
-    <Sfx name="paper" at={at("l10") + 47} volume={0.45} />
+    <Sfx name="paper" at={PROTO_AT} volume={0.45} />
     <Sfx name="paper" at={at("l10") + 56} volume={0.35} />
     <Sfx name="pop" at={at("l10") + 104} volume={0.35} />
     <Sfx name="click" at={at("l11")} volume={0.45} />
@@ -1338,9 +1386,9 @@ const SoundDesign: React.FC = () => (
     ))}
     <Sfx name="impact" at={at("l13") + 30} volume={0.4} />
     {/* payoff */}
-    <Sfx name="riser" at={at("l14") + 21 - 50} volume={0.22} />
+    <Sfx name="riser" at={at("l14") + 21 - 50} volume={0.45} />
     <Sfx name="whoosh" at={at("l14") + 19} volume={0.45} />
-    <Sfx name="shutter" at={at("l14") + 27} volume={0.6} />
+    <Sfx name="shutter" at={at("l14") + 27} volume={0.9} />
     <Sfx name="shimmer" at={at("l14") + 30} volume={0.25} />
     <Sfx name="whoosh-short" at={at("l15")} volume={0.35} />
     <Sfx name="paper" at={at("l15") + 24} volume={0.45} />

@@ -300,47 +300,52 @@
   ]
  },
  "l08": {
-  "duration": 2.622,
+  "duration": 2.836,
   "words": [
    {
-    "word": "Press",
+    "word": "One",
     "start": 0.0,
-    "end": 0.257
+    "end": 0.232
    },
    {
-    "word": "one",
-    "start": 0.257,
-    "end": 0.514
+    "word": "click.",
+    "start": 0.232,
+    "end": 0.604
    },
    {
-    "word": "button.",
-    "start": 0.514,
-    "end": 1.183
+    "word": "Then",
+    "start": 0.604,
+    "end": 0.837
    },
    {
-    "word": "Mail",
-    "start": 1.183,
-    "end": 1.44
+    "word": "mail",
+    "start": 0.837,
+    "end": 1.069
    },
    {
-    "word": "it",
-    "start": 1.44,
-    "end": 1.697
+    "word": "the",
+    "start": 1.069,
+    "end": 1.302
+   },
+   {
+    "word": "camera",
+    "start": 1.302,
+    "end": 1.999
    },
    {
     "word": "back",
-    "start": 1.697,
-    "end": 1.954
+    "start": 1.999,
+    "end": 2.232
    },
    {
     "word": "for",
-    "start": 1.954,
-    "end": 2.211
+    "start": 2.232,
+    "end": 2.464
    },
    {
     "word": "prints.",
-    "start": 2.211,
-    "end": 2.622
+    "start": 2.464,
+    "end": 2.836
    }
   ]
  },
