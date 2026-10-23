@@ -217,7 +217,7 @@ const Ring: React.FC<{ at: number; f: number; children: React.ReactNode }> = ({ 
 };
 
 /** Rubber stamp in red ink: slams down at `at`. */
-const Stamp: React.FC<{ at: number; f: number; x: number; y: number; rot?: number; size: number; children: React.ReactNode; double?: boolean }> = ({
+const Stamp: React.FC<{ at: number; f: number; x: number; y: number; rot?: number; size: number; children: React.ReactNode; double?: boolean; emboss?: boolean }> = ({
   at,
   f,
   x,
@@ -226,68 +226,62 @@ const Stamp: React.FC<{ at: number; f: number; x: number; y: number; rot?: numbe
   size,
   children,
   double = true,
+  emboss = false,
 }) => {
-  if (f < at) return null;
-  const s = m(f, at, at + 5, 1.7, 1, (t) => 1 - Math.pow(1 - t, 3));
-  const o = m(f, at, at + 3);
-  return (
+  const box = (color: string, shadow?: string) => (
     <div
       style={{
-        position: "absolute",
-        left: x,
-        top: y,
-        transform: `translate(-50%, -50%) rotate(${rot}deg) scale(${s})`,
-        opacity: o,
-        filter: "url(#ink)",
-        mixBlendMode: "multiply",
+        border: `${Math.max(6, size * 0.045)}px solid ${color}`,
+        borderRadius: size * 0.08,
+        padding: double ? size * 0.05 : 0,
       }}
     >
       <div
         style={{
-          border: `${Math.max(6, size * 0.045)}px solid ${RED}`,
-          borderRadius: size * 0.08,
-          padding: double ? size * 0.05 : 0,
+          ...MONO,
+          fontWeight: 600,
+          fontSize: size,
+          lineHeight: 1,
+          color,
+          textShadow: shadow,
+          padding: `${size * 0.1}px ${size * 0.18}px ${size * 0.06}px`,
+          border: double ? `${Math.max(3, size * 0.018)}px solid ${color}` : undefined,
+          borderRadius: size * 0.05,
+          whiteSpace: "nowrap",
+          letterSpacing: "0.02em",
         }}
       >
-        <div
-          style={{
-            ...MONO,
-            fontWeight: 600,
-            fontSize: size,
-            lineHeight: 1,
-            color: RED,
-            padding: `${size * 0.1}px ${size * 0.18}px ${size * 0.06}px`,
-            border: double ? `${Math.max(3, size * 0.018)}px solid ${RED}` : undefined,
-            borderRadius: size * 0.05,
-            whiteSpace: "nowrap",
-            letterSpacing: "0.02em",
-          }}
-        >
-          {children}
-        </div>
+        {children}
       </div>
     </div>
   );
-};
-
-/** Dashed "stamp here" box, shown from the cut until the stamp lands, so the frame is never half-empty. */
-const StampGhost: React.FC<{ at: number; f: number; x: number; y: number; w: number; h: number; rot?: number }> = ({ at, f, x, y, w, h, rot = -6 }) => {
-  const o = 0.55 * (1 - m(f, at, at + 3));
-  if (o <= 0) return null;
+  // Before it lands, a faint blind-embossed impression of the stamp waits where it will hit.
+  const embossO = emboss ? 1 - m(f, at, at + 3) : 0;
+  const s = m(f, at, at + 5, 1.7, 1, (t) => 1 - Math.pow(1 - t, 3));
+  const o = m(f, at, at + 3);
   return (
-    <div
-      style={{
-        position: "absolute",
-        left: x - w / 2,
-        top: y - h / 2,
-        width: w,
-        height: h,
-        transform: `rotate(${rot}deg) scale(${1 + 0.02 * Math.sin(f / 5)})`,
-        border: `4px dashed ${P.muted}`,
-        borderRadius: 18,
-        opacity: o,
-      }}
-    />
+    <>
+      {embossO > 0 && (
+        <div style={{ position: "absolute", left: x, top: y, transform: `translate(-50%, -50%) rotate(${rot}deg)`, opacity: embossO }}>
+          {box("rgba(20,20,20,0.12)", "2px 2px 0 rgba(255,255,255,0.55), -1px -1px 0 rgba(20,20,20,0.06)")}
+        </div>
+      )}
+      {f >= at && (
+        <div
+          style={{
+            position: "absolute",
+            left: x,
+            top: y,
+            transform: `translate(-50%, -50%) rotate(${rot}deg) scale(${s})`,
+            opacity: o,
+            filter: "url(#ink)",
+            mixBlendMode: "multiply",
+          }}
+        >
+          {box(RED)}
+        </div>
+      )}
+    </>
   );
 };
 
@@ -317,9 +311,9 @@ const Tab: React.FC<{ num: string; label: string; at: number; f: number }> = ({ 
 };
 
 /** Assumptions line under a section tab. */
-const Kicker: React.FC<{ f: number; at: number }> = ({ f, at }) => (
+const Kicker: React.FC<{ f: number; at: number; text?: string }> = ({ f, at, text = "$1 at 10% · compounded yearly" }) => (
   <div style={{ position: "absolute", left: 80, top: 334, ...MONO, fontWeight: 400, fontSize: 44, color: P.muted, opacity: m(f, at, at + 8), whiteSpace: "nowrap" }}>
-    $1 at 10% · compounded yearly
+    {text}
   </div>
 );
 
@@ -328,7 +322,13 @@ const slide = (f: number, at: number, dur = 12) => m(f, at, at + dur);
 
 /** A fictional one-dollar token from the "Bank of Patience", engraved in the Newsprint palette. */
 const REEDS = Array.from({ length: 90 }, (_, i) => (i / 90) * Math.PI * 2);
-const Coin: React.FC<{ x: number; y: number; d: number; rot?: number; style?: React.CSSProperties }> = ({ x, y, d, rot = 0, style }) => (
+type CoinFace = "dollar" | "dime" | "cent";
+const COIN_FACE: Record<CoinFace, { ring: string; mark: string; fs: number; y: number }> = {
+  dollar: { ring: "BANK OF PATIENCE \u00b7 ONE DOLLAR \u00b7", mark: "1", fs: 84, y: 128 },
+  dime: { ring: "BANK OF PATIENCE \u00b7 TEN CENTS \u00b7", mark: "10\u00a2", fs: 56, y: 119 },
+  cent: { ring: "BANK OF PATIENCE \u00b7 ONE CENT \u00b7", mark: "1\u00a2", fs: 66, y: 123 },
+};
+const Coin: React.FC<{ x: number; y: number; d: number; rot?: number; face?: CoinFace; style?: React.CSSProperties }> = ({ x, y, d, rot = 0, face = "dollar", style }) => (
   <svg
     viewBox="0 0 200 200"
     width={d}
@@ -349,11 +349,11 @@ const Coin: React.FC<{ x: number; y: number; d: number; rot?: number; style?: Re
     <circle cx="100" cy="100" r="58" fill="url(#coinHatch)" stroke={P.ink} strokeWidth="2" />
     <text fontFamily={T.mono} fontWeight={600} fontSize="13.5" letterSpacing="2.2" fill={P.ink}>
       <textPath href="#coinRing" startOffset="0">
-        BANK OF PATIENCE · ONE DOLLAR ·
+        {COIN_FACE[face].ring}
       </textPath>
     </text>
-    <text x="100" y="128" textAnchor="middle" fontFamily={T.display} fontSize="84" fill={P.ink}>
-      1
+    <text x="100" y={COIN_FACE[face].y} textAnchor="middle" fontFamily={T.display} fontSize={COIN_FACE[face].fs} fill={P.ink}>
+      {COIN_FACE[face].mark}
     </text>
   </svg>
 );
@@ -680,6 +680,7 @@ const FrontPage: React.FC<{ mode: "hook" | "clock" }> = ({ mode }) => {
                 borderTop: `1px solid ${P.ink}`,
                 borderBottom: `3px solid ${P.ink}`,
                 padding: "8px 0 6px",
+                opacity: hook && f >= ZOOM ? 0 : 1,
                 display: "flex",
                 justifyContent: "space-between",
                 ...MONO,
@@ -785,9 +786,8 @@ const LuckTime: React.FC = () => {
             </Marker>
           </div>
         </Scrap>
-        <div style={{ position: "absolute", left: 128, top: 900, ...MONO, fontSize: 44, color: P.ink, opacity: m(f, L.l02 + 30, L.l02 + 36) }}>Just</div>
-        <StampGhost at={timeAt} f={f} x={540} y={1150} w={690} h={330} rot={-5} />
-        <Stamp at={timeAt} f={f} x={540} y={1150} rot={-5} size={230}>
+        <div style={{ position: "absolute", left: 214, top: 918, ...MONO, fontSize: 56, color: P.ink, opacity: m(f, L.l02 + 30, L.l02 + 36) }}>Just</div>
+        <Stamp at={timeAt} f={f} x={540} y={1150} rot={-5} size={230} emboss>
           Time
         </Stamp>
       </div>
@@ -800,11 +800,11 @@ const LuckTime: React.FC = () => {
 const Principal: React.FC = () => {
   const f = useF();
   const k = 1 + 0.035 * m(f, SIMPLE, TENC, 0, 1, lin);
-  const n = slide(f, SIMPLE + 8, 14);
+  const n = slide(f, SIMPLE + 4, 14);
   return (
     <>
       <Cam k={k} cx={540} cy={1000}>
-        <div style={{ position: "absolute", left: 80, top: 360, width: 920, ...DISPLAY, fontSize: 150 }}>
+        <div style={{ position: "absolute", left: 80, top: 410, width: 920, ...DISPLAY, fontSize: 150 }}>
           Paid only
           <br />
           on what
@@ -819,6 +819,7 @@ const Principal: React.FC = () => {
         </div>
       </Cam>
       <Tab num="01" label="Simple interest" at={SIMPLE} f={f} />
+      <Kicker f={f} at={SIMPLE + 8} text="$1 at 10% · simple interest" />
     </>
   );
 };
@@ -941,14 +942,15 @@ const TenCents: React.FC = () => {
   return (
     <>
       <Cam k={k} cx={540} cy={1100}>
-        <div style={{ position: "absolute", left: 80, top: 330, ...DISPLAY, fontSize: 150 }}>
+        <div style={{ position: "absolute", left: 80, top: 400, ...DISPLAY, fontSize: 140 }}>
           <span style={{ display: "inline-block", transform: `scale(${m(f, L.l04 + 30, L.l04 + 36, 1.12, 1)})`, transformOrigin: "0 60%" }}>+10¢ a year.</span>
           <br />
           <Hi at={L.l04 + 55} f={f}>Every year.</Hi>
         </div>
-        <LedgerBars bars={TEN_BARS} perDollar={520} base={1390} x0={110} w={140} gap={40} f={f} line="ink" years={["0", "1", "2", "3", "4"]} />
+        <LedgerBars bars={TEN_BARS} perDollar={450} base={1410} x0={110} w={140} gap={40} f={f} line="ink" years={["0", "1", "2", "3", "4"]} />
       </Cam>
       <Tab num="01" label="Simple interest" at={SIMPLE} f={TENC + 40} />
+      <Kicker f={TENC + 40} at={SIMPLE} text="$1 at 10% · simple interest" />
     </>
   );
 };
@@ -971,19 +973,34 @@ const OnTheInterest: React.FC = () => {
         </div>
         <Coin x={330 - (1 - c1) * 900} y={1060} d={420} rot={-8 + (1 - c1) * -40} />
         <div style={{ position: "absolute", inset: 0, opacity: c2 }}>
-          <Coin x={640 + c2 * 60} y={1180 + c2 * 40} d={210 * c2 + 1} rot={12} />
+          <Coin x={640 + c2 * 60} y={1180 + c2 * 40} d={210 * c2 + 1} rot={12} face="dime" />
         </div>
         <div style={{ position: "absolute", inset: 0, opacity: c3 }}>
-          <Coin x={850} y={1300} d={105 * c3 + 1} rot={-6} />
+          <Coin x={850} y={1300} d={105 * c3 + 1} rot={-6} face="cent" />
         </div>
         <svg width={1080} height={1920} style={{ position: "absolute", left: 0, top: 0 }}>
           {[
-            { d: "M 470 900 C 560 840, 660 900, 690 1010", at: L.l05 + 40 },
-            { d: "M 760 1080 C 830 1060, 880 1120, 870 1210", at: L.l05 + 54 },
-          ].map((a, i) => {
-            const p = m(f, a.at, a.at + 9, 0, 1, ease.sineInOut);
+            // $1 → its 10¢ of interest, then 10¢ → its 1¢ of interest-on-interest; each arc ends on the next coin's rim
+            { a: [470, 900], c1: [590, 830], c2: [700, 930], e: [700, 1110], at: L.l05 + 40 },
+            { a: [792, 1132], c1: [845, 1112], c2: [864, 1178], e: [853, 1243], at: L.l05 + 54 },
+          ].map((r, i) => {
+            const p = m(f, r.at, r.at + 9, 0, 1, ease.sineInOut);
+            const ang = Math.atan2(r.e[1] - r.c2[1], r.e[0] - r.c2[0]);
+            const head = (sg: number) => `${r.e[0] - 30 * Math.cos(ang + sg * 0.5)},${r.e[1] - 30 * Math.sin(ang + sg * 0.5)}`;
             return (
-              <path key={i} d={a.d} fill="none" stroke={RED} strokeWidth={9} strokeLinecap="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - p} />
+              <g key={i}>
+                <path
+                  d={`M ${r.a[0]} ${r.a[1]} C ${r.c1[0]} ${r.c1[1]}, ${r.c2[0]} ${r.c2[1]}, ${r.e[0]} ${r.e[1]}`}
+                  fill="none"
+                  stroke={RED}
+                  strokeWidth={9}
+                  strokeLinecap="round"
+                  pathLength={1}
+                  strokeDasharray={1}
+                  strokeDashoffset={1 - p}
+                />
+                <polyline points={`${head(1)} ${r.e[0]},${r.e[1]} ${head(-1)}`} fill="none" stroke={RED} strokeWidth={9} strokeLinecap="round" strokeLinejoin="round" opacity={p >= 1 ? 1 : 0} />
+              </g>
             );
           })}
         </svg>
@@ -1076,7 +1093,7 @@ const Earning: React.FC = () => {
   const k = 1 + 0.05 * m(f, EARNING, RULE, 0, 1, lin);
   const strips = [
     { text: "Interest,", at: EARNING, y: 430, from: -1, rot: -2.5, x: 80, w: 690 },
-    { text: "earning", at: L.l07 + 15, y: 730, from: 1, rot: 1.8, x: 210, w: 680 },
+    { text: "earning", at: L.l07 + 11, y: 730, from: 1, rot: 1.8, x: 210, w: 680 },
     { text: "interest.", at: L.l07 + 25, y: 1030, from: -1, rot: -1.5, x: 100, w: 700 },
   ];
   const loop = m(f, L.l07 + 36, L.l07 + 52, 0, 1, ease.sineInOut);
@@ -1133,8 +1150,7 @@ const RuleOf72: React.FC = () => {
           <div style={{ position: "absolute", left: 80, top: 520, overflow: "hidden", ...DISPLAY, fontSize: 170, paddingBottom: 20 }}>
             <div style={{ transform: `translateY(${(1 - ruleIn) * 110}%)` }}>The rule of</div>
           </div>
-          <StampGhost at={at72} f={f} x={540} y={1080} w={700} h={540} rot={-7} />
-          <Stamp at={at72} f={f} x={540} y={1080} rot={-7} size={400}>
+          <Stamp at={at72} f={f} x={540} y={1080} rot={-7} size={400} emboss>
             72
           </Stamp>
         </div>
@@ -1216,25 +1232,13 @@ const TenPercent: React.FC = () => {
           const filled = m(f, colAt(c) + n - 1, colAt(c) + n + 5);
           return (
             <div key={c}>
-              {/* dashed ledger slot for the full stack, there from the cut so the frame is never half-empty */}
-              <div
-                style={{
-                  position: "absolute",
-                  left: cx - 84,
-                  width: 168,
-                  top: 1290 - (n - 1) * 58 - 84,
-                  height: (n - 1) * 58 + 84 + 94,
-                  border: `3px dashed ${P.muted}`,
-                  borderBottom: "none",
-                  borderRadius: "84px 84px 0 0",
-                  opacity: 0.55 * (1 - filled),
-                }}
-              />
               {Array.from({ length: n }, (_, i) => {
                 const at = colAt(c) + i * 1;
                 const p = m(f, at, at + 7, 0, 1, ease.backOut);
-                if (f < at) return null;
-                return <Coin key={i} x={cx} y={1290 - i * 58 - (1 - p) * 120} d={150} rot={(rand(c * 10 + i) - 0.5) * 30} style={{ opacity: m(f, at, at + 3) }} />;
+                const rot = (rand(c * 10 + i) - 0.5) * 30;
+                // a faint printed impression of each coin waits in place until the coin drops onto it
+                if (f < at) return <Coin key={i} x={cx} y={1290 - i * 58} d={150} rot={rot} style={{ opacity: 0.12, filter: "none" }} />;
+                return <Coin key={i} x={cx} y={1290 - i * 58 - (1 - p) * 120} d={150} rot={rot} style={{ opacity: m(f, at, at + 3) }} />;
               })}
               <div style={{ position: "absolute", left: cx - 100, width: 200, top: 1395, textAlign: "center", ...MONO, fontSize: 48, color: filled > 0.5 ? P.ink : P.muted }}>
                 ${n}
@@ -1279,9 +1283,9 @@ const smooth = (t: number) => {
 /** Gridlines stay put at quarters of the plot; their labels roll with the scale like the counter does. */
 const GRID = [0.25, 0.5, 0.75, 1];
 const fmtTick = (v: number) => {
-  if (Math.abs(v - Math.round(v)) < 0.005 && v < 10) return `$${Math.round(v)}`;
-  if (v < 10) return `$${v.toFixed(2)}`;
-  return `$${Math.round(v).toLocaleString("en-US")}`;
+  const r = Number(v.toPrecision(2)); // two significant figures: $4.50, $130, $520, $1,000
+  if (r < 10) return Number.isInteger(r) ? `$${r}` : `$${r.toFixed(2)}`;
+  return `$${r.toLocaleString("en-US")}`;
 };
 const CU_IN = beat(72); // 1080: close-up on the simple line reaching $8.20
 const CU_OUT = beat(78); // 1170: back wide for the compound climb
@@ -1398,7 +1402,7 @@ const BigChart: React.FC = () => {
         <div
           style={{
             position: "absolute",
-            left: xOf(72) + 16 - 200,
+            left: xOf(72) + 26 - 200,
             top: Math.min(Y0 - 116, yOf(8.2) - 132),
             width: 200,
             textAlign: "right",
@@ -1431,13 +1435,13 @@ const BigChart: React.FC = () => {
           </span>
         </div>
         {/* the $1,000 note lands in the empty upper-left of the plot */}
-        <div style={{ position: "absolute", inset: 0, transform: `translate(${10 * pushP}px, ${-6 * pushP}px) scale(${1 + 0.12 * pushP})`, transformOrigin: "540px 990px" }}>
+        <div style={{ position: "absolute", inset: 0, transform: `scale(${1 + 0.12 * pushP})`, transformOrigin: "540px 760px" }}>
           {f >= NOTE_IN && (
             <div style={{ position: "absolute", inset: 0, transform: `translate(${(1 - note) * -1100}px, ${(1 - note) * 80}px) rotate(${(1 - note) * -10}deg)` }}>
-              <Note note={NOTE1000} x={300} y={850} w={480} rot={-5} seed={9} />
+              <Note note={NOTE1000} x={300} y={760} w={480} rot={-5} seed={9} />
             </div>
           )}
-          <Stamp at={APPROX_AT} f={f} x={515} y={1085} rot={-8} size={84}>
+          <Stamp at={APPROX_AT} f={f} x={537} y={1110} rot={-8} size={76}>
             ≈ $1,000
           </Stamp>
         </div>
@@ -1620,7 +1624,7 @@ const SoundDesign: React.FC = () => (
     <Sfx name="click" at={L.l02 + 42} volume={0.5} />
     {/* simple */}
     <Sfx name="whoosh" at={SIMPLE - 3} volume={0.4} />
-    <Sfx name="whoosh-short" at={SIMPLE + 8} volume={0.35} />
+    <Sfx name="whoosh-short" at={SIMPLE + 4} volume={0.35} />
     <Sfx name="type" at={L.l03 + 40} volume={0.35} />
     <Sfx name="click" at={TENC} volume={0.35} />
     {TEN_BARS.slice(1).map((b) => (
@@ -1638,7 +1642,7 @@ const SoundDesign: React.FC = () => (
     <Sfx name="whoosh-short" at={LADDER_CU - 2} volume={0.4} />
     {/* earning */}
     <Sfx name="whoosh-short" at={EARNING} volume={0.35} />
-    <Sfx name="whoosh-short" at={L.l07 + 13} volume={0.35} />
+    <Sfx name="whoosh-short" at={L.l07 + 9} volume={0.35} />
     <Sfx name="whoosh-short" at={L.l07 + 23} volume={0.35} />
     <Sfx name="swish-reverse" at={L.l07 + 34} volume={0.3} />
     {/* rule of 72 */}
