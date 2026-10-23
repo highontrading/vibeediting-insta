@@ -1,0 +1,26 @@
+{
+  "out": "public/voice/WhyYouCantStopScrolling",
+  "voice": "af_heart",
+  "lang": "en-us",
+  "speed": 1.05,
+  "lines": [
+    {"id": "l01", "text": "Why can't you stop scrolling?"},
+    {"id": "l02", "text": "Because your feed works like a machine."},
+    {"id": "l03", "text": "First, the reward."},
+    {"id": "l04", "text": "Most posts are okay. Then one is great."},
+    {"id": "l05", "text": "You never know which swipe pays off."},
+    {"id": "l06", "text": "That's called a variable reward."},
+    {"id": "l07", "text": "Slot machines run on the same idea."},
+    {"id": "l08", "text": "Second, there's no bottom."},
+    {"id": "l09", "text": "Infinite scroll was designed in 2006."},
+    {"id": "l10", "text": "No last page means no natural place to stop."},
+    {"id": "l11", "text": "Third, the badge."},
+    {"id": "l12", "text": "A little number that says something is waiting."},
+    {"id": "l13", "text": "Fourth, autoplay."},
+    {"id": "l14", "text": "The next one starts before you decide."},
+    {"id": "l15", "text": "So it's not just you. It's design."},
+    {"id": "l16", "text": "Which means you can design the stop back in."},
+    {"id": "l17", "text": "Turn off badges. Pick an end point first."},
+    {"id": "l18", "text": "Now the machine has an off switch."}
+  ]
+}

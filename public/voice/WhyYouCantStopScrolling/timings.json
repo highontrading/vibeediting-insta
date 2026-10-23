@@ -1,0 +1,652 @@
+{
+ "l01": {
+  "duration": 1.439,
+  "words": [
+   {
+    "word": "Why",
+    "start": 0.0,
+    "end": 0.218
+   },
+   {
+    "word": "can't",
+    "start": 0.218,
+    "end": 0.436
+   },
+   {
+    "word": "you",
+    "start": 0.436,
+    "end": 0.654
+   },
+   {
+    "word": "stop",
+    "start": 0.654,
+    "end": 0.872
+   },
+   {
+    "word": "scrolling?",
+    "start": 0.872,
+    "end": 1.439
+   }
+  ]
+ },
+ "l02": {
+  "duration": 1.828,
+  "words": [
+   {
+    "word": "Because",
+    "start": 0.0,
+    "end": 0.381
+   },
+   {
+    "word": "your",
+    "start": 0.381,
+    "end": 0.571
+   },
+   {
+    "word": "feed",
+    "start": 0.571,
+    "end": 0.762
+   },
+   {
+    "word": "works",
+    "start": 0.762,
+    "end": 0.952
+   },
+   {
+    "word": "like",
+    "start": 0.952,
+    "end": 1.142
+   },
+   {
+    "word": "a",
+    "start": 1.142,
+    "end": 1.333
+   },
+   {
+    "word": "machine.",
+    "start": 1.333,
+    "end": 1.828
+   }
+  ]
+ },
+ "l03": {
+  "duration": 1.095,
+  "words": [
+   {
+    "word": "First,",
+    "start": 0.0,
+    "end": 0.337
+   },
+   {
+    "word": "the",
+    "start": 0.337,
+    "end": 0.548
+   },
+   {
+    "word": "reward.",
+    "start": 0.548,
+    "end": 1.095
+   }
+  ]
+ },
+ "l04": {
+  "duration": 2.389,
+  "words": [
+   {
+    "word": "Most",
+    "start": 0.0,
+    "end": 0.234
+   },
+   {
+    "word": "posts",
+    "start": 0.234,
+    "end": 0.468
+   },
+   {
+    "word": "are",
+    "start": 0.468,
+    "end": 0.703
+   },
+   {
+    "word": "okay.",
+    "start": 0.703,
+    "end": 1.312
+   },
+   {
+    "word": "Then",
+    "start": 1.312,
+    "end": 1.546
+   },
+   {
+    "word": "one",
+    "start": 1.546,
+    "end": 1.78
+   },
+   {
+    "word": "is",
+    "start": 1.78,
+    "end": 2.014
+   },
+   {
+    "word": "great.",
+    "start": 2.014,
+    "end": 2.389
+   }
+  ]
+ },
+ "l05": {
+  "duration": 1.695,
+  "words": [
+   {
+    "word": "You",
+    "start": 0.0,
+    "end": 0.197
+   },
+   {
+    "word": "never",
+    "start": 0.197,
+    "end": 0.591
+   },
+   {
+    "word": "know",
+    "start": 0.591,
+    "end": 0.789
+   },
+   {
+    "word": "which",
+    "start": 0.789,
+    "end": 0.986
+   },
+   {
+    "word": "swipe",
+    "start": 0.986,
+    "end": 1.183
+   },
+   {
+    "word": "pays",
+    "start": 1.183,
+    "end": 1.38
+   },
+   {
+    "word": "off.",
+    "start": 1.38,
+    "end": 1.695
+   }
+  ]
+ },
+ "l06": {
+  "duration": 1.579,
+  "words": [
+   {
+    "word": "That's",
+    "start": 0.0,
+    "end": 0.184
+   },
+   {
+    "word": "called",
+    "start": 0.184,
+    "end": 0.551
+   },
+   {
+    "word": "a",
+    "start": 0.551,
+    "end": 0.734
+   },
+   {
+    "word": "variable",
+    "start": 0.734,
+    "end": 1.102
+   },
+   {
+    "word": "reward.",
+    "start": 1.102,
+    "end": 1.579
+   }
+  ]
+ },
+ "l07": {
+  "duration": 1.982,
+  "words": [
+   {
+    "word": "Slot",
+    "start": 0.0,
+    "end": 0.187
+   },
+   {
+    "word": "machines",
+    "start": 0.187,
+    "end": 0.748
+   },
+   {
+    "word": "run",
+    "start": 0.748,
+    "end": 0.935
+   },
+   {
+    "word": "on",
+    "start": 0.935,
+    "end": 1.122
+   },
+   {
+    "word": "the",
+    "start": 1.122,
+    "end": 1.309
+   },
+   {
+    "word": "same",
+    "start": 1.309,
+    "end": 1.496
+   },
+   {
+    "word": "idea.",
+    "start": 1.496,
+    "end": 1.982
+   }
+  ]
+ },
+ "l08": {
+  "duration": 1.42,
+  "words": [
+   {
+    "word": "Second,",
+    "start": 0.0,
+    "end": 0.45
+   },
+   {
+    "word": "there's",
+    "start": 0.45,
+    "end": 0.796
+   },
+   {
+    "word": "no",
+    "start": 0.796,
+    "end": 0.969
+   },
+   {
+    "word": "bottom.",
+    "start": 0.969,
+    "end": 1.42
+   }
+  ]
+ },
+ "l09": {
+  "duration": 2.84,
+  "words": [
+   {
+    "word": "Infinite",
+    "start": 0.0,
+    "end": 0.804
+   },
+   {
+    "word": "scroll",
+    "start": 0.804,
+    "end": 1.072
+   },
+   {
+    "word": "was",
+    "start": 1.072,
+    "end": 1.34
+   },
+   {
+    "word": "designed",
+    "start": 1.34,
+    "end": 2.143
+   },
+   {
+    "word": "in",
+    "start": 2.143,
+    "end": 2.411
+   },
+   {
+    "word": "2006.",
+    "start": 2.411,
+    "end": 2.84
+   }
+  ]
+ },
+ "l10": {
+  "duration": 2.836,
+  "words": [
+   {
+    "word": "No",
+    "start": 0.0,
+    "end": 0.244
+   },
+   {
+    "word": "last",
+    "start": 0.244,
+    "end": 0.489
+   },
+   {
+    "word": "page",
+    "start": 0.489,
+    "end": 0.733
+   },
+   {
+    "word": "means",
+    "start": 0.733,
+    "end": 0.978
+   },
+   {
+    "word": "no",
+    "start": 0.978,
+    "end": 1.222
+   },
+   {
+    "word": "natural",
+    "start": 1.222,
+    "end": 1.956
+   },
+   {
+    "word": "place",
+    "start": 1.956,
+    "end": 2.2
+   },
+   {
+    "word": "to",
+    "start": 2.2,
+    "end": 2.445
+   },
+   {
+    "word": "stop.",
+    "start": 2.445,
+    "end": 2.836
+   }
+  ]
+ },
+ "l11": {
+  "duration": 0.936,
+  "words": [
+   {
+    "word": "Third,",
+    "start": 0.0,
+    "end": 0.356
+   },
+   {
+    "word": "the",
+    "start": 0.356,
+    "end": 0.579
+   },
+   {
+    "word": "badge.",
+    "start": 0.579,
+    "end": 0.936
+   }
+  ]
+ },
+ "l12": {
+  "duration": 2.08,
+  "words": [
+   {
+    "word": "A",
+    "start": 0.0,
+    "end": 0.165
+   },
+   {
+    "word": "little",
+    "start": 0.165,
+    "end": 0.33
+   },
+   {
+    "word": "number",
+    "start": 0.33,
+    "end": 0.66
+   },
+   {
+    "word": "that",
+    "start": 0.66,
+    "end": 0.825
+   },
+   {
+    "word": "says",
+    "start": 0.825,
+    "end": 0.99
+   },
+   {
+    "word": "something",
+    "start": 0.99,
+    "end": 1.486
+   },
+   {
+    "word": "is",
+    "start": 1.486,
+    "end": 1.651
+   },
+   {
+    "word": "waiting.",
+    "start": 1.651,
+    "end": 2.08
+   }
+  ]
+ },
+ "l13": {
+  "duration": 1.118,
+  "words": [
+   {
+    "word": "Fourth,",
+    "start": 0.0,
+    "end": 0.344
+   },
+   {
+    "word": "autoplay.",
+    "start": 0.344,
+    "end": 1.118
+   }
+  ]
+ },
+ "l14": {
+  "duration": 1.871,
+  "words": [
+   {
+    "word": "The",
+    "start": 0.0,
+    "end": 0.195
+   },
+   {
+    "word": "next",
+    "start": 0.195,
+    "end": 0.39
+   },
+   {
+    "word": "one",
+    "start": 0.39,
+    "end": 0.585
+   },
+   {
+    "word": "starts",
+    "start": 0.585,
+    "end": 0.779
+   },
+   {
+    "word": "before",
+    "start": 0.779,
+    "end": 1.169
+   },
+   {
+    "word": "you",
+    "start": 1.169,
+    "end": 1.364
+   },
+   {
+    "word": "decide.",
+    "start": 1.364,
+    "end": 1.871
+   }
+  ]
+ },
+ "l15": {
+  "duration": 1.933,
+  "words": [
+   {
+    "word": "So",
+    "start": 0.0,
+    "end": 0.21
+   },
+   {
+    "word": "it's",
+    "start": 0.21,
+    "end": 0.42
+   },
+   {
+    "word": "not",
+    "start": 0.42,
+    "end": 0.63
+   },
+   {
+    "word": "just",
+    "start": 0.63,
+    "end": 0.84
+   },
+   {
+    "word": "you.",
+    "start": 0.84,
+    "end": 1.177
+   },
+   {
+    "word": "It's",
+    "start": 1.177,
+    "end": 1.387
+   },
+   {
+    "word": "design.",
+    "start": 1.387,
+    "end": 1.933
+   }
+  ]
+ },
+ "l16": {
+  "duration": 2.253,
+  "words": [
+   {
+    "word": "Which",
+    "start": 0.0,
+    "end": 0.213
+   },
+   {
+    "word": "means",
+    "start": 0.213,
+    "end": 0.425
+   },
+   {
+    "word": "you",
+    "start": 0.425,
+    "end": 0.638
+   },
+   {
+    "word": "can",
+    "start": 0.638,
+    "end": 0.85
+   },
+   {
+    "word": "design",
+    "start": 0.85,
+    "end": 1.275
+   },
+   {
+    "word": "the",
+    "start": 1.275,
+    "end": 1.488
+   },
+   {
+    "word": "stop",
+    "start": 1.488,
+    "end": 1.7
+   },
+   {
+    "word": "back",
+    "start": 1.7,
+    "end": 1.913
+   },
+   {
+    "word": "in.",
+    "start": 1.913,
+    "end": 2.253
+   }
+  ]
+ },
+ "l17": {
+  "duration": 2.328,
+  "words": [
+   {
+    "word": "Turn",
+    "start": 0.0,
+    "end": 0.228
+   },
+   {
+    "word": "off",
+    "start": 0.228,
+    "end": 0.456
+   },
+   {
+    "word": "badges.",
+    "start": 0.456,
+    "end": 1.05
+   },
+   {
+    "word": "Pick",
+    "start": 1.05,
+    "end": 1.278
+   },
+   {
+    "word": "an",
+    "start": 1.278,
+    "end": 1.506
+   },
+   {
+    "word": "end",
+    "start": 1.506,
+    "end": 1.735
+   },
+   {
+    "word": "point",
+    "start": 1.735,
+    "end": 1.963
+   },
+   {
+    "word": "first.",
+    "start": 1.963,
+    "end": 2.328
+   }
+  ]
+ },
+ "l18": {
+  "duration": 1.695,
+  "words": [
+   {
+    "word": "Now",
+    "start": 0.0,
+    "end": 0.197
+   },
+   {
+    "word": "the",
+    "start": 0.197,
+    "end": 0.394
+   },
+   {
+    "word": "machine",
+    "start": 0.394,
+    "end": 0.788
+   },
+   {
+    "word": "has",
+    "start": 0.788,
+    "end": 0.985
+   },
+   {
+    "word": "an",
+    "start": 0.985,
+    "end": 1.182
+   },
+   {
+    "word": "off",
+    "start": 1.182,
+    "end": 1.379
+   },
+   {
+    "word": "switch.",
+    "start": 1.379,
+    "end": 1.695
+   }
+  ]
+ }
+}
