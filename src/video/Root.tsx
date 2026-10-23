@@ -7,6 +7,7 @@ import { NobodyPostedThis, NOBODY_POSTED_THIS_DURATION } from "./compositions/No
 import { Stillwater, STILLWATER_DURATION } from "./compositions/Stillwater";
 import { CuriosityNotInformation, CURIOSITY_DURATION } from "./compositions/CuriosityNotInformation";
 import { CompoundInterest, COMPOUND_INTEREST_DURATION } from "./compositions/CompoundInterest";
+import { MondayInClay, MONDAY_IN_CLAY_DURATION } from "./compositions/MondayInClay";
 
 // Every Reel is 1080x1920 (9:16) at 30fps.
 export const REEL = { width: 1080, height: 1920, fps: 30 } as const;
@@ -20,5 +21,6 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="Stillwater" component={Stillwater} durationInFrames={STILLWATER_DURATION} {...REEL} />
     <Composition id="CuriosityNotInformation" component={CuriosityNotInformation} durationInFrames={CURIOSITY_DURATION} {...REEL} />
     <Composition id="CompoundInterest" component={CompoundInterest} durationInFrames={COMPOUND_INTEREST_DURATION} {...REEL} />
+    <Composition id="MondayInClay" component={MondayInClay} durationInFrames={MONDAY_IN_CLAY_DURATION} {...REEL} />
   </>
 );
