@@ -790,7 +790,7 @@ const LuckTime: React.FC = () => {
           </div>
         </Scrap>
         <div style={{ position: "absolute", left: 214, top: 918, ...MONO, fontSize: 56, color: P.ink, opacity: m(f, L.l02 + 30, L.l02 + 36) }}>Just</div>
-        <Stamp at={timeAt} f={f} x={540} y={1150} rot={-5} size={230} emboss>
+        <Stamp at={timeAt} f={f} x={540} y={1150} rot={-5} size={230} emboss double={false}>
           Time
         </Stamp>
       </div>
@@ -1180,7 +1180,7 @@ const IndexCard: React.FC = () => {
           <div style={{ position: "absolute", left: 0, right: 0, top: 128, height: 3, background: RED, opacity: 0.75 }} />
           <div style={{ position: "absolute", left: 50, top: 40, ...MONO, fontWeight: 400, fontSize: 44, color: P.muted }}>Years to double</div>
           <div style={{ position: "absolute", left: 50, top: 200, ...MONO, fontSize: 96, letterSpacing: "0", textTransform: "none", lineHeight: 1.45 }}>
-            <Typed text="72 ÷ rate" at={CARD + 4} f={f} cps={22} />
+            <Typed text="72 ÷ rate" at={CARD - 2} f={f} cps={22} />
             <br />
             <Typed text="≈ years" at={L.l09 + 34} f={f} cps={22} />
           </div>
@@ -1310,7 +1310,7 @@ const ticksFor = (ymax: number) => {
     const down = i > 0 ? Math.log(n / NICE[i - 1]) : 1;
     const d = Math.log(ymax / n);
     // the nearer level stays solid; the two sets only crossfade through the middle of the step
-    const o = Math.max(0, Math.min(1, (0.62 - Math.abs(d) / (d >= 0 ? up : down)) / 0.24));
+    const o = Math.max(0, Math.min(1, (0.62 - Math.abs(d) / (d >= 0 ? up : down)) / 0.12));
     if (o <= 0.01) return;
     [1, 2, 3, 4].forEach((k) => {
       const v = (n * k) / 4;
@@ -1376,7 +1376,7 @@ const BigChart: React.FC = () => {
         </Scrap>
         {/* header */}
         <div style={{ position: "absolute", left: 100, top: 290, ...MONO, fontSize: 44, opacity: wide }}>
-          $1 at 10% · <span style={{ color: redOn ? RED : P.ink }}>{mode}</span>
+          $1 at 10% · {mode}
         </div>
         <div style={{ position: "absolute", right: 100, top: 290, ...MONO, fontSize: 44, color: P.muted, opacity: wide }}>
           Year <span style={{ color: P.ink, display: "inline-block", minWidth: 56, textAlign: "right" }}>{year}</span>
@@ -1419,7 +1419,7 @@ const BigChart: React.FC = () => {
           })}
           <line x1={X0} x2={X0 + (X1 + 20 - X0) * m(f, CHART + 2, CHART + 22)} y1={Y0} y2={Y0} stroke={P.ink} strokeWidth={4} />
           {[0, 24, 48, 72].map((t, i) => (
-            <text key={t} x={xOf(t)} y={Y0 + 56} textAnchor="middle" fontFamily={T.mono} fontWeight={600} fontSize={44} fill={P.muted} opacity={axisIn(i) * (t >= 48 ? 1 : wide)}>
+            <text key={t} x={xOf(t)} y={Y0 + 56} textAnchor="middle" fontFamily={T.mono} fontWeight={600} fontSize={44} fill={P.muted} opacity={axisIn(i) * wide}>
               {t}
             </text>
           ))}
@@ -1466,7 +1466,7 @@ const BigChart: React.FC = () => {
           }}
         >
           <span style={{ background: P.bg, padding: "2px 10px" }}>
-            Compound <span style={{ color: RED }}>$956</span>
+            Compound $956
           </span>
         </div>
         {/* the $1,000 note lands in the empty upper-left of the plot */}
@@ -1580,8 +1580,9 @@ const Stacks: React.FC = () => {
         </div>
         <svg width={1080} height={1920} style={{ position: "absolute", left: 0, top: 0 }}>
           <line
-            x1={xa}
-            x2={xa + (xb - 16 - xa) * dash}
+            x1={xa + NOTE_W + 8}
+            x2={xa + NOTE_W + 8 + (xb - 16 - (xa + NOTE_W + 8)) * dash}
+            opacity={dash > 0.02 ? 1 : 0}
             y1={STACK_BASE - hA / 2}
             y2={STACK_BASE - hA / 2}
             stroke={RED}
@@ -1685,7 +1686,7 @@ const SoundDesign: React.FC = () => (
     <Sfx name="whoosh-short" at={RULE + 1} volume={0.3} />
     <Sfx name="impact" at={L.l08 + 45} volume={0.7} />
     <Sfx name="sub-drop" at={L.l08 + 45} volume={0.45} />
-    <Sfx name="type" at={CARD + 4} volume={0.3} />
+    <Sfx name="type" at={CARD} volume={0.3} />
     <Sfx name="type" at={L.l09 + 34} volume={0.3} />
     <Sfx name="click" at={SIX} volume={0.35} />
     <Sfx name="pop" at={L.l10 + 37} volume={0.45} />
