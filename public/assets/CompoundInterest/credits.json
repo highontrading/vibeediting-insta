@@ -7,7 +7,7 @@
   "page": "https://www.metmuseum.org/art/collection/search/339833",
   "license": "CC0 (Met Open Access)",
   "source_file": "met-339833.jpg",
-  "treatment": "cropped, duotoned to Newsprint ink/paper"
+  "treatment": "cropped, duotoned to Newsprint ink/paper; portraits and standing figure removed (left column cropped, a '1000' panel set in the figure's place); bank, city and fund re-lettered to the fictional 'Bank of Patience', 'Town of Thrift', 'Time Fund'"
  },
  {
   "file": "note-1.jpg",
@@ -18,15 +18,5 @@
   "license": "CC0 (Met Open Access)",
   "source_file": "met-393923.jpg",
   "treatment": "cropped, duotoned to Newsprint ink/paper; bank name re-lettered to the fictional 'Bank of Patience'"
- },
- {
-  "file": "coin.png",
-  "id": "met-8485",
-  "title": "United States Ten-dollar Gold Piece \u2014 Augustus Saint-Gaudens",
-  "source": "The Metropolitan Museum of Art",
-  "page": "https://www.metmuseum.org/art/collection/search/8485",
-  "license": "CC0 (Met Open Access)",
-  "source_file": "met-8485.jpg",
-  "treatment": "cropped, duotoned to Newsprint ink/paper"
  }
 ]

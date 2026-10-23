@@ -298,15 +298,40 @@ const Tab: React.FC<{ num: string; label: string; at: number; f: number }> = ({ 
 /** Slide-in progress for a cut-out: 0 → 1. */
 const slide = (f: number, at: number, dur = 12) => m(f, at, at + dur);
 
+/** A fictional one-dollar token from the "Bank of Patience", engraved in the Newsprint palette. */
+const REEDS = Array.from({ length: 90 }, (_, i) => (i / 90) * Math.PI * 2);
 const Coin: React.FC<{ x: number; y: number; d: number; rot?: number; style?: React.CSSProperties }> = ({ x, y, d, rot = 0, style }) => (
-  <Img
-    src={staticFile("assets/CompoundInterest/coin.png")}
-    style={{ position: "absolute", left: x - d / 2, top: y - d / 2, width: d, height: d, transform: `rotate(${rot}deg)`, filter: SHADOW, ...style }}
-  />
+  <svg
+    viewBox="0 0 200 200"
+    width={d}
+    height={d}
+    style={{ position: "absolute", left: x - d / 2, top: y - d / 2, transform: `rotate(${rot}deg)`, filter: SHADOW, overflow: "visible", ...style }}
+  >
+    <defs>
+      <pattern id="coinHatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <line x1="0" y1="0" x2="0" y2="5" stroke={P.ink} strokeWidth="1.1" strokeOpacity="0.32" />
+      </pattern>
+      <path id="coinRing" d="M 100 100 m -70 0 a 70 70 0 1 1 140 0 a 70 70 0 1 1 -140 0" />
+    </defs>
+    <circle cx="100" cy="100" r="98" fill={P.surface} stroke={P.ink} strokeWidth="4" />
+    {REEDS.map((a, i) => (
+      <line key={i} x1={100 + Math.cos(a) * 89} y1={100 + Math.sin(a) * 89} x2={100 + Math.cos(a) * 96} y2={100 + Math.sin(a) * 96} stroke={P.ink} strokeWidth="1.6" />
+    ))}
+    <circle cx="100" cy="100" r="86" fill={P.bg} stroke={P.ink} strokeWidth="2.5" />
+    <circle cx="100" cy="100" r="58" fill="url(#coinHatch)" stroke={P.ink} strokeWidth="2" />
+    <text fontFamily={T.mono} fontWeight={600} fontSize="13.5" letterSpacing="2.2" fill={P.ink}>
+      <textPath href="#coinRing" startOffset="0">
+        BANK OF PATIENCE · ONE DOLLAR ·
+      </textPath>
+    </text>
+    <text x="100" y="128" textAnchor="middle" fontFamily={T.display} fontSize="84" fill={P.ink}>
+      1
+    </text>
+  </svg>
 );
 
 const NOTE1 = { src: "assets/CompoundInterest/note-1.jpg", ratio: 1500 / 661 };
-const NOTE1000 = { src: "assets/CompoundInterest/note-1000.jpg", ratio: 1700 / 711 };
+const NOTE1000 = { src: "assets/CompoundInterest/note-1000.jpg", ratio: 1444 / 711 };
 
 const Note: React.FC<{ note: typeof NOTE1; x: number; y: number; w: number; rot?: number; seed?: number }> = ({ note, x, y, w, rot = 0, seed = 5 }) => {
   const h = w / note.ratio;
@@ -935,8 +960,8 @@ const RuleOf72: React.FC = () => {
     <>
       <Cam k={k} cx={540} cy={1000}>
         <div style={{ position: "absolute", inset: 0, transform: `translate(${shake(f, at72, 12)}px, ${shake(f, at72, 12) * 0.5}px)` }}>
-          <div style={{ position: "absolute", left: 80, top: 400, ...MONO, fontSize: 56 }}>
-            <Typed text="Want a shortcut?" at={RULE + 2} f={f} cps={34} />
+          <div style={{ position: "absolute", left: 80, top: 372, overflow: "hidden", ...DISPLAY, fontSize: 112, paddingBottom: 14 }}>
+            <div style={{ transform: `translateY(${(1 - m(f, RULE - 4, RULE + 6)) * 110}%)` }}>Want a shortcut?</div>
           </div>
           <div style={{ position: "absolute", left: 80, top: 520, overflow: "hidden", ...DISPLAY, fontSize: 170, paddingBottom: 20 }}>
             <div style={{ transform: `translateY(${(1 - ruleIn) * 110}%)` }}>The rule of</div>
@@ -967,7 +992,7 @@ const IndexCard: React.FC = () => {
           <div style={{ position: "absolute", left: 50, top: 200, ...MONO, fontSize: 96, letterSpacing: "0", textTransform: "none", lineHeight: 1.45 }}>
             <Typed text="72 ÷ rate" at={CARD + 4} f={f} cps={22} />
             <br />
-            <Typed text="= years" at={L.l09 + 34} f={f} cps={22} />
+            <Typed text="≈ years" at={L.l09 + 34} f={f} cps={22} />
           </div>
           <div style={{ position: "absolute", left: 50, top: 650, ...MONO, fontSize: 56, letterSpacing: "0", textTransform: "none", opacity: m(f, CARD + 10, CARD + 16) }}>
             rate: <Hi at={CARD + 14} f={f}>6% → 6</Hi>
@@ -1058,16 +1083,16 @@ const TenPercent: React.FC = () => {
 
 // ─── 9. The big chart: $1 at 10% for 72 years ────────────────────────────────────────────────
 
-const X0 = 230;
+const X0 = 275;
 const X1 = 950;
 const Y1 = 660; // plot top (ymax)
 const Y0 = 1290; // baseline ($0)
 const SIMPLE_START = CHART + 36;
 const SIMPLE_END = L.l13 + 28;
 const RED_START = L.l14 + 2;
-const RED_END = L.l14 + 64;
-const NOTE_IN = L.l14 + 80;
-const APPROX_AT = NOTE_IN + 14; // "≈ $1,000" stamp on the note
+const RED_END = L.l14 + 37; // lands on "nine hundred"
+const NOTE_IN = RED_END + 8;
+const APPROX_AT = beat(82); // 1230: "≈ $1,000" stamp on the note, one beat after the $956 hit
 
 const simpleV = (t: number) => 1 + 0.1 * t;
 const compV = (t: number) => Math.pow(1.1, t);
@@ -1089,7 +1114,8 @@ const tickWeights = (ymax: number) => {
   const w = new Map<number, number>();
   for (const st of TICK_STEPS) {
     const sp = (st / ymax) * (Y0 - Y1);
-    const o = smooth((sp - 105) / 25) * (1 - smooth((sp - 300) / 50));
+    // the coarse set fades in exactly as the fine set (2.5x finer) fades out, so labels never crowd or vanish
+    const o = smooth((sp - 105) / 25) * (1 - smooth((sp - 262) / 63));
     if (o <= 0.001) continue;
     for (let k = 1; k * st <= ymax * 1.001; k++) w.set(k * st, Math.max(w.get(k * st) ?? 0, o));
   }
@@ -1117,11 +1143,13 @@ const BigChart: React.FC = () => {
   const counter = counterV < 100 ? `$${counterV.toFixed(2)}` : `$${Math.round(counterV).toLocaleString("en-US")}`;
   const landed = f >= RED_END;
   const punch = landed ? m(f, RED_END, RED_END + 8, 1.12, 1) : 1;
-  const k = (f < L.l14 ? 1 + 0.03 * m(f, CHART, L.l14, 0, 1, lin) : 1.0 + 0.04 * m(f, L.l14, EARLY, 0, 1, lin)) * (landed ? 1 + 0.03 * m(f, RED_END, RED_END + 6) : 1);
+  const k = (f < L.l14 ? 1 + 0.02 * m(f, CHART, L.l14, 0, 1, lin) : 1.0 + 0.02 * m(f, L.l14, EARLY, 0, 1, lin)) * (landed ? 1 + 0.02 * m(f, RED_END, RED_END + 6) : 1);
   const ticks = [...tickWeights(ymax).entries()];
   const fmt = (v: number) => (v >= 100 ? `$${v.toLocaleString("en-US")}` : `$${v % 1 ? v.toFixed(2) : v}`);
   const note = slide(f, NOTE_IN, 12);
   const simpleLabel = m(f, SIMPLE_END + 2, SIMPLE_END + 8);
+  const compLabel = m(f, RED_END + 4, RED_END + 10);
+  const mode = redOn ? "compound" : "simple";
 
   return (
     <Cam k={k} cx={540} cy={900}>
@@ -1137,7 +1165,9 @@ const BigChart: React.FC = () => {
           />
         </Scrap>
         {/* header */}
-        <div style={{ position: "absolute", left: 100, top: 290, ...MONO, fontSize: 44 }}>$1 at 10% a year</div>
+        <div style={{ position: "absolute", left: 100, top: 290, ...MONO, fontSize: 44 }}>
+          $1 at 10% · <span style={{ color: redOn ? RED : P.ink }}>{mode}</span>
+        </div>
         <div style={{ position: "absolute", right: 100, top: 290, ...MONO, fontSize: 44, color: P.muted }}>
           Year <span style={{ color: P.ink, display: "inline-block", minWidth: 56, textAlign: "right" }}>{year}</span>
         </div>
@@ -1196,30 +1226,50 @@ const BigChart: React.FC = () => {
         <div
           style={{
             position: "absolute",
-            left: xOf(72) - 186,
-            top: Math.min(Y0 - 80, yOf(8.2) - 96),
-            width: 186,
+            left: xOf(72) + 16 - 200,
+            top: Math.min(Y0 - 116, yOf(8.2) - 132),
+            width: 200,
+            textAlign: "right",
+            ...MONO,
+            fontSize: 44,
+            lineHeight: 1.05,
+            opacity: simpleLabel,
+          }}
+        >
+          <span style={{ color: P.muted, fontSize: 36 }}>Simple</span>
+          <br />
+          $8.20
+        </div>
+        {/* compound end value rides beside the red dot */}
+        <div
+          style={{
+            position: "absolute",
+            left: xOf(72) - 34 - 420,
+            width: 420,
+            top: yOf(compV(72)) - 30,
             textAlign: "right",
             ...MONO,
             fontSize: 48,
-            opacity: simpleLabel,
-            padding: "4px 0",
+            opacity: compLabel,
+            transform: `translateX(${(1 - compLabel) * -20}px)`,
           }}
         >
-          $8.20
+          <span style={{ background: P.bg, padding: "2px 10px" }}>
+            Compound <span style={{ color: RED }}>$956</span>
+          </span>
         </div>
         {/* the $1,000 note lands in the empty upper-left of the plot */}
         {f >= NOTE_IN && (
           <div style={{ position: "absolute", inset: 0, transform: `translate(${(1 - note) * -1100}px, ${(1 - note) * 80}px) rotate(${(1 - note) * -10}deg)` }}>
-            <Note note={NOTE1000} x={300} y={700} w={480} rot={-5} seed={9} />
+            <Note note={NOTE1000} x={300} y={850} w={480} rot={-5} seed={9} />
           </div>
         )}
-        <Stamp at={APPROX_AT} f={f} x={600} y={930} rot={-8} size={84}>
+        <Stamp at={APPROX_AT} f={f} x={545} y={1085} rot={-8} size={84}>
           ≈ $1,000
         </Stamp>
         {/* footnote */}
-        <div style={{ position: "absolute", left: 100, top: 1384, ...MONO, fontWeight: 400, fontSize: 44, color: P.muted, lineHeight: 1.1 }}>
-          Illustrative. Compounded yearly;
+        <div style={{ position: "absolute", left: 100, top: 1378, ...MONO, fontWeight: 400, fontSize: 38, letterSpacing: "0.01em", color: P.muted, lineHeight: 1.12 }}>
+          Illustrative. {redOn ? "Compounded yearly;" : "Simple interest;"}
           <br />
           no fees, tax or inflation.
         </div>
@@ -1290,6 +1340,7 @@ const Stacks: React.FC = () => {
     <>
       <Cam k={k} cx={540} cy={1000}>
         <div style={{ position: "absolute", left: 80, top: 352, ...MONO, fontSize: 48 }}>Each $1 at 6% a year</div>
+        <div style={{ position: "absolute", left: 80, top: 414, ...MONO, fontWeight: 400, fontSize: 36, color: P.muted }}>Illustrative · compounded yearly</div>
         <NoteStack x={xa} value={STACK_A} grow={gA} />
         <NoteStack x={xb} value={STACK_B} grow={gB} />
         <div style={{ position: "absolute", left: xa, width: NOTE_W, top: STACK_BASE - hA * gA - 70, textAlign: "center", ...MONO, fontSize: 52, opacity: gA }}>
@@ -1402,7 +1453,7 @@ const SoundDesign: React.FC = () => (
     <Sfx name="swish-reverse" at={L.l07 + 34} volume={0.3} />
     {/* rule of 72 */}
     <Sfx name="whoosh" at={RULE - 3} volume={0.4} />
-    <Sfx name="type" at={RULE + 2} volume={0.3} />
+    <Sfx name="whoosh-short" at={RULE + 1} volume={0.3} />
     <Sfx name="impact" at={L.l08 + 45} volume={0.7} />
     <Sfx name="sub-drop" at={L.l08 + 45} volume={0.45} />
     <Sfx name="type" at={CARD + 4} volume={0.3} />
