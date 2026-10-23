@@ -36,8 +36,8 @@ const NAMES = ["ORBIT", "MATCH CUT", "WHIP PAN", "PAPER TEAR", "INK BLEED", "GLI
 const mv = (f: number, a: number, b: number, from = 0, to = 1, e: (t: number) => number = E) =>
   interpolate(f, [a, b], [from, to], { ...clamp, easing: e });
 
-/** Beat 5 of every scene (f+75): a 10% punch-in over 8 frames in the house easing. */
-const beat5 = (f: number, amt = 0.1) => 1 + amt * mv(f, 75, 83, 0, 1, E);
+/** Beat 4 of every scene (f+60): a 10% punch-in over 8 frames in the house easing. */
+const beat5 = (f: number, amt = 0.1) => 1 + amt * mv(f, 60, 68, 0, 1, E);
 
 // ─── Shared geometry ───────────────────────────────────────────────────────────────────────────────
 const DISK = { x: 540, y: 800, r: 340 };
@@ -70,7 +70,7 @@ const Lift: React.FC = () => <div style={{ position: "absolute", left: -1600, to
 
 /** Scale steps inside every scene: punch-in on beat 4 (f+60), a second step on beat 6 (f+90). */
 const punch = (f: number, amt = 0.07) =>
-  (1 + 0.04 * mv(f, 0, 120, 0, 1, (t) => t)) * (1 + amt * mv(f, 59, 64, 0, 1, OUT)) * beat5(f) * (1 + amt * 0.5 * mv(f, 89, 94, 0, 1, OUT));
+  (1 + 0.04 * mv(f, 0, 120, 0, 1, (t) => t)) * beat5(f) * (1 + amt * 0.5 * mv(f, 89, 94, 0, 1, OUT));
 
 // ─── Anton's 8 as a path (same glyph as the frame-0 numeral) ──────────────────────────────────────
 const E8_CX_U = (EIGHT_BBOX[0] + EIGHT_BBOX[2]) / 2;
@@ -422,8 +422,9 @@ const Orbit: React.FC<{ f: number }> = ({ f }) => {
       ? interpolate(f, [-17, -13], [1300, 540], { ...clamp, easing: OUT })
       : interpolate(f, [-13, -6], [540, DISK.r * 1.25], { ...clamp, easing: IN });
   const origin = `${DISK.x}px ${DISK.y}px`;
-  // 12 sub-frame copies across a 0.9-frame shutter; copy k drawn at opacity 1/(k+1) so every copy weighs 1/12
-  const N_SUB = Math.abs(vel) > 0.5 ? 12 : 1;
+  // way out: 20 sub-frame copies across a 0.9-frame shutter (copy k at opacity 1/(k+1), so each weighs 1/20),
+  // softened by a small blur so no contour steps show. Way in: one layer (the disk is round), blurred by speed.
+  const N_SUB = outgoing && Math.abs(vel) > 0.5 ? 20 : 1;
   const layers = Array.from({ length: N_SUB }, (_, k) => {
     const back = N_SUB === 1 ? 0 : 1 - k / (N_SUB - 1); // 1 = oldest sub-frame
     return (
@@ -435,7 +436,13 @@ const Orbit: React.FC<{ f: number }> = ({ f }) => {
   });
   return (
     <AbsoluteFill style={{ background: P.bg, overflow: "hidden" }}>
-      {outgoing ? <AbsoluteFill style={{ clipPath: `circle(${iris}px at ${DISK.x}px ${DISK.y}px)` }}>{layers}</AbsoluteFill> : layers}
+      {outgoing ? (
+        <AbsoluteFill style={{ clipPath: `circle(${iris}px at ${DISK.x}px ${DISK.y}px)` }}>
+          <AbsoluteFill style={{ filter: N_SUB > 1 ? "blur(3.5px)" : undefined }}>{layers}</AbsoluteFill>
+        </AbsoluteFill>
+      ) : (
+        <AbsoluteFill style={{ filter: Math.abs(vel) > 2 ? `blur(${Math.min(6, Math.abs(vel) * 0.12).toFixed(2)}px)` : undefined }}>{layers}</AbsoluteFill>
+      )}
     </AbsoluteFill>
   );
 };
@@ -638,7 +645,11 @@ const SEVEN = (() => {
 })();
 const ZoomThrough: React.FC<{ f: number }> = ({ f }) => {
   const slam = mv(f, -32, -24, 0, 1, OUT);
-  const z = f < -10 ? 1 + 0.04 * mv(f, -24, -10, 0, 1) : 1.04 + 34 * mv(f, -10, 4, 0, 1, Easing.bezier(0.6, 0, 0.95, 0.6));
+  const zAt = (t: number) => (t < -10 ? 1 + 0.04 * mv(t, -24, -10, 0, 1) : 1.04 + 34 * mv(t, -10, 4, 0, 1, Easing.bezier(0.6, 0, 0.95, 0.6)));
+  const z = zAt(f);
+  // zoom blur while the scale grows faster than 1.2x per frame (the blur is in layer pixels, so divide by z)
+  const ratio = z / zAt(f - 1);
+  const zBlur = ratio > 1.15 ? Math.min(10, (ratio - 1) * 14) / z : 0;
   const inner = interpolate(f, [-10, 8], [1.7, 1], { ...clamp, easing: OUT });
   const glyphIn = `translate(${(1 - slam) * -500}px, 0) skewX(${(1 - slam) * 16}deg) scale(${1 + (1 - slam) * 0.3})`;
   return (
@@ -647,7 +658,7 @@ const ZoomThrough: React.FC<{ f: number }> = ({ f }) => {
       <AbsoluteFill style={{ transform: `scale(${inner})`, transformOrigin: `${visor(f).x}px ${visor(f).y}px` }}>
         <Sc k={7} f={f} />
       </AbsoluteFill>
-      <AbsoluteFill style={{ transform: `scale(${z})`, transformOrigin: `${HOLE_C.x}px ${HOLE_C.y}px` }}>
+      <AbsoluteFill style={{ transform: `scale(${z})`, transformOrigin: `${HOLE_C.x}px ${HOLE_C.y}px`, filter: zBlur > 0.5 ? `blur(${zBlur.toFixed(2)}px)` : undefined }}>
         <AbsoluteFill style={{ clipPath: `path(evenodd, "M0 0H${W}V${H}H0Z ${rr(HOLE.x + 4, HOLE.y + 4, HOLE.w - 8, HOLE.h - 8, HOLE.r - 4)}")` }}>
           <Sc k={6} f={f + 120} bare />
           <AbsoluteFill style={{ background: `rgba(11,11,11,${0.35 * slam})` }} />
@@ -773,6 +784,8 @@ const Chip: React.FC<{ frame: number }> = ({ frame }) => {
   const wipe = mv(since, 0, 6, 0, 1, OUT);
   const exitP = mv(frame, RECAP - 8, RECAP, 0, 1, IN);
   const num = (n: number) => String(n).padStart(2, "0");
+  // steps aside while the hook irises and spins (f28-41), so it never notches the circle
+  const aside = frame < 28 || frame >= 41 ? 1 : frame < 34 ? mv(frame, 28, 30, 1, 0) : mv(frame, 38, 41, 0, 1);
   return (
     <div
       style={{
@@ -785,6 +798,7 @@ const Chip: React.FC<{ frame: number }> = ({ frame }) => {
         padding: "10px 26px 10px 20px",
         transform: `translateX(${(1 - enter) * -700 - exitP * 700}px) skewX(${(1 - enter) * 14}deg)`,
         gap: 18,
+        opacity: aside,
       }}
     >
       <div style={{ position: "relative", height: 70, width: 66, overflow: "hidden" }}>
@@ -812,32 +826,24 @@ const Recap: React.FC<{ frame: number }> = ({ frame }) => {
   const k = i + 1;
   const since = frame - RECAP_AT[i];
   const p = mv(since, -1, 4, 0, 1, OUT);
-  const onLime = k === 4 || k === 1;
-  const photo = [2, 3, 5, 6, 7].includes(k);
   return (
     <AbsoluteFill style={{ background: P.bg, overflow: "hidden" }}>
-      <AbsoluteFill style={{ transform: `scale(${1.12 - 0.05 * p})` }}>
-        {k === 8 ? <SpeedLines f={since + 300} seed={88} color={P.surface} count={20} /> : <Sc k={k} f={70 + since} bare lite />}
+      <AbsoluteFill style={{ transform: `scale(${1.08 - 0.05 * p}) translateX(${k === 8 ? 200 : 0}px)` }}>
+        <Sc k={k} f={70 + since} bare lite />
       </AbsoluteFill>
-      {photo && <AbsoluteFill style={{ background: "rgba(11,11,11,0.4)" }} />}
       <div
         style={{
           position: "absolute",
-          left: 0,
-          right: 0,
-          top: 560,
-          textAlign: "center",
-          fontFamily: T.display,
-          fontSize: 640,
-          lineHeight: 1,
-          color: onLime ? P.bg : P.accent,
-          transform: `scale(${1.25 - 0.25 * p}) skewX(${-10 * (1 - p)}deg)`,
+          left: 80,
+          top: 1010,
+          background: P.bg,
+          padding: "34px 34px 26px",
+          transform: `translateX(${(1 - p) * -60}px) skewX(${-8 * (1 - p)}deg)`,
+          transformOrigin: "0% 100%",
         }}
       >
-        <span style={{ background: onLime ? undefined : P.bg, padding: onLime ? undefined : "40px 44px 0" }}>{String(k).padStart(2, "0")}</span>
-      </div>
-      <div style={{ position: "absolute", left: 0, right: 0, top: 1226, textAlign: "center" }}>
-        <span style={{ fontFamily: T.body, fontWeight: 800, fontSize: 48, letterSpacing: "0.06em", color: P.ink, background: P.bg, padding: "10px 22px" }}>{NAMES[k - 1]}</span>
+        <div style={{ fontFamily: T.display, fontSize: 300, lineHeight: 0.9, color: P.accent }}>{String(k).padStart(2, "0")}</div>
+        <div style={{ fontFamily: T.body, fontWeight: 800, fontSize: 44, letterSpacing: "0.06em", color: P.ink, marginTop: 14 }}>{NAMES[k - 1]}</div>
       </div>
     </AbsoluteFill>
   );
@@ -854,27 +860,49 @@ const Payoff: React.FC<{ frame: number }> = ({ frame }) => {
   const push = 1 + 0.03 * mv(f, 30, 90, 0, 1, (t) => t);
   const dot = mv(f, 27, 33, 0, 1, OUT);
   const save = mv(f, 38, 46, 0, 1, OUT);
-  const leave = mv(f, MINI.at - PAYOFF + 1, MINI.at - PAYOFF + 9, 0, 1, IN);
+  const leaveAt = (t: number) => mv(t, MINI.at - PAYOFF, MINI.at - PAYOFF + 6, 0, 1, IN);
+  const leave = leaveAt(f);
+  const leaveBlur = Math.min(60, 0.35 * (leaveAt(f) - leaveAt(f - 1)) * 1540);
+  const slideAt = (t: number, a: number) => mv(t, a - 6, a, 0, 1, OUT);
   const fm = frame - MINI.at;
   return (
     <AbsoluteFill style={{ background: P.bg, overflow: "hidden" }}>
       <SpeedLines f={f} seed={91} color={P.surface} count={20} />
       <AbsoluteFill style={{ transform: `scale(${push})`, transformOrigin: "80px 900px" }}>
-        <div style={{ position: "absolute", left: 80, top: 300 }}>
+        <svg width={0} height={0} style={{ position: "absolute" }}>
+          {words.map((_, i) => {
+            const a = i * 15;
+            const sb = i === 0 ? 0 : Math.min(30, 0.25 * 1200 * (slideAt(f, a) - slideAt(f - 1, a)));
+            return (
+              <filter key={i} id={`pw${i}-${frame}`} x="-50%" y="0%" width="200%" height="100%" colorInterpolationFilters="sRGB">
+                <feGaussianBlur stdDeviation={`${Math.max(0.01, sb)} 0`} />
+              </filter>
+            );
+          })}
+          <filter id={`pl-${frame}`} x="-100%" y="0%" width="300%" height="100%" colorInterpolationFilters="sRGB">
+            <feGaussianBlur stdDeviation={`${Math.max(0.01, leaveBlur)} 0`} />
+          </filter>
+        </svg>
+        <div style={{ position: "absolute", left: 80, top: 300, filter: leaveBlur > 0.5 ? `url(#pl-${frame})` : undefined, opacity: leave >= 1 ? 0 : 1 }}>
           {words.map((w, i) => {
             const a = i * 15;
-            const p = mv(f, a - 3, a + 5, 0, 1, OUT);
+            // NOW is there on the cut; STEAL and THEM slide in and land exactly on their beats
+            const p = i === 0 ? 1 : slideAt(f, a);
+            const moving = i > 0 && p > 0 && p < 1;
+            const settle = i === 0 ? 1 + 0.06 * (1 - mv(f, 0, 4, 0, 1, OUT)) : 1;
             return (
               <div
                 key={w}
                 style={{
+                  filter: moving ? `url(#pw${i}-${frame})` : undefined,
+                  transformOrigin: "0% 100%",
                   fontFamily: T.display,
                   fontSize: 360,
                   lineHeight: 0.88,
                   color: P.ink,
                   letterSpacing: "-0.01em",
-                  transform: `translateX(${(1 - p) * -1200 - leave * (1300 + i * 120)}px) skewX(${(1 - p) * 18 + leave * 16}deg)`,
-                  opacity: f < a - 3 ? 0 : 1,
+                  transform: `translateX(${(1 - p) * -1200 - leave * (1300 + i * 120)}px) skewX(${(1 - p) * 18 + leave * 16}deg) scale(${settle})`,
+                  opacity: f < a - 6 ? 0 : 1,
                   display: "flex",
                   alignItems: "flex-end",
                 }}
@@ -898,7 +926,7 @@ const Payoff: React.FC<{ frame: number }> = ({ frame }) => {
             );
           })}
         </div>
-        <div style={{ position: "absolute", left: 86, top: 1380, fontFamily: T.body, fontWeight: 600, fontSize: 52, color: P.ink, opacity: save, transform: `translateY(${(1 - save) * 30}px) translateX(${-leave * 1300}px)` }}>
+        <div style={{ position: "absolute", left: 86, top: 1380, fontFamily: T.body, fontWeight: 600, fontSize: 52, color: P.ink, opacity: leave >= 1 ? 0 : save, filter: leaveBlur > 0.5 ? `url(#pl-${frame})` : undefined, transform: `translateY(${(1 - save) * 30}px) translateX(${-leave * 1300}px)` }}>
           Save these for your next edit.
         </div>
       </AbsoluteFill>
@@ -961,8 +989,8 @@ const HERO_LINES = [0, 2, 2, 2, 0, 2, 3, 2, 2];
 for (let k = 1; k <= 8; k++) for (let i = 0; i < HERO_LINES[k]; i++) SFX.push({ name: "click", at: L[k] + 15 + i * 15, volume: 0.35 });
 // beat 3: the re-smash
 for (let k = 1; k <= 8; k++) SFX.push({ name: "tick", at: L[k] + 45, volume: 0.45 });
-// beat 5: the punch-in
-for (let k = 1; k <= 8; k++) SFX.push({ name: "tick", at: L[k] + 75, volume: 0.4 });
+// beat 4: the punch-in
+for (let k = 1; k <= 8; k++) SFX.push({ name: "tick", at: L[k] + 60, volume: 0.4 });
 
 /** End-card element bands (measured from a render) and when each one is wiped open, in frames after END. */
 const END_REVEALS = [
