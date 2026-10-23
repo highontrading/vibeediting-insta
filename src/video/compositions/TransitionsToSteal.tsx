@@ -5,6 +5,7 @@ import { EndCard, END_CARD_FRAMES } from "../kit/EndCard";
 import { clamp, ease, rand } from "../kit/motion";
 import { Music, Sfx } from "../kit/Sfx";
 import { SystemTexture } from "../kit/Texture";
+import { EIGHT_ASCENT, EIGHT_BBOX, EIGHT_D, EIGHT_DESCENT, EIGHT_OUTER, EIGHT_UPM } from "./TransitionsToStealGlyph";
 
 // Showreel: "8 transitions every editor should steal". Acid Sport: condensed type at frame-filling
 // scale, one acid lime, black, speed. Eight transitions, one every 4s (8 beats at 120 BPM), each
@@ -40,7 +41,9 @@ const DISK = { x: 540, y: 820, r: 380 };
 const DISK_PUSH = (f: number) => 1 + 0.045 * mv(f, 0, 120, 0, 1, (t) => t); // slow push through scene 1
 const MATCH_R = DISK.r * DISK_PUSH(120); // radius at the match cut
 const EARTH = { cx: 958, cy: 936, r: 795, size: 1920 };
-const RING = { x: 540, y: 860, r: 410 }; // visor ring that becomes the 8
+const RING_R = 410; // the visor ring that becomes the 8
+/** Visor centre in scene 7: under the 0's counter at the landing, then panning right. */
+const visor = (f: number) => ({ x: 340 + 2.2 * Math.max(-20, f), y: 860 });
 
 /** Place an image so its point (px, py) sits at (fx, fy) at scale s. */
 const Photo: React.FC<{ src: string; iw: number; ih: number; px: number; py: number; fx: number; fy: number; s: number; style?: React.CSSProperties }> = ({
@@ -59,12 +62,26 @@ const Photo: React.FC<{ src: string; iw: number; ih: number; px: number; py: num
     style={{ position: "absolute", left: fx - px * s, top: fy - py * s, width: iw * s, height: ih * s, maxWidth: "none", ...style }}
   />
 );
+/** Lifts a photo's pure blacks to the system black, so plates and edges never show as grey boxes. */
+const Lift: React.FC = () => <AbsoluteFill style={{ background: P.bg, mixBlendMode: "lighten" }} />;
 
-/** Beat-4 punch-in: a quick 6-frame step in scale, the "close-up" inside each scene. */
-const punch = (f: number, amt = 0.07) => 1 + amt * mv(f, 60, 66, 0, 1, OUT);
+/** Scale steps inside every scene: punch-in on beat 4 (f+60), a second step on beat 6 (f+90). */
+const punch = (f: number, amt = 0.07) => 1 + amt * mv(f, 60, 66, 0, 1, OUT) + amt * 0.6 * mv(f, 90, 96, 0, 1, OUT);
+
+// ─── Anton's 8 as a path (same glyph as the frame-0 numeral) ──────────────────────────────────────
+const E8_CX_U = (EIGHT_BBOX[0] + EIGHT_BBOX[2]) / 2;
+const E8_CY_U = (EIGHT_BBOX[1] + EIGHT_BBOX[3]) / 2;
+/** SVG transform that draws the glyph `size` px tall-em, centred on (cx, cy). */
+const eightAt = (cx: number, cy: number, size: number) => {
+  const k = size / EIGHT_UPM;
+  return `translate(${cx - E8_CX_U * k} ${cy + E8_CY_U * k}) scale(${k} ${-k})`;
+};
+/** Baseline of CSS text with line-height 1 (typo metrics), so the path sits where the text would. */
+const baselineAt = (top: number, size: number) => top + (size - ((EIGHT_ASCENT + EIGHT_DESCENT) / EIGHT_UPM) * size) / 2 + (EIGHT_ASCENT / EIGHT_UPM) * size;
+const E8 = { cx: 540, cy: 1060, size: 960 };
 
 // ─── Speed lines (Acid Sport signature) ───────────────────────────────────────────────────────────
-const SpeedLines: React.FC<{ f: number; seed: number; color: string; dir?: 1 | -1; count?: number; opacity?: number; top?: number; bottom?: number }> = ({
+const SpeedLines: React.FC<{ f: number; seed: number; color: string; dir?: 1 | -1; count?: number; opacity?: number; top?: number; bottom?: number; width?: number }> = ({
   f,
   seed,
   color,
@@ -73,21 +90,22 @@ const SpeedLines: React.FC<{ f: number; seed: number; color: string; dir?: 1 | -
   opacity = 1,
   top = 0,
   bottom = H,
+  width = W,
 }) => (
   <AbsoluteFill style={{ pointerEvents: "none", opacity }}>
     {Array.from({ length: count }, (_, i) => {
       const y = top + rand(seed * 17 + i * 3.1) * (bottom - top);
       const len = 180 + rand(seed + i * 7.7) * 520;
       const speed = 70 + rand(seed * 3 + i) * 90;
-      const x0 = rand(seed * 5 + i * 1.9) * (W + len);
-      const x = dir < 0 ? ((x0 - f * speed) % (W + len) + (W + len)) % (W + len) - len : ((x0 + f * speed) % (W + len)) - len;
+      const x0 = rand(seed * 5 + i * 1.9) * (width + len);
+      const x = dir < 0 ? ((x0 - f * speed) % (width + len) + (width + len)) % (width + len) - len : ((x0 + f * speed) % (width + len)) - len;
       const th = rand(seed + i * 11.3) > 0.7 ? 6 : 3;
       return <div key={i} style={{ position: "absolute", left: x, top: y, width: len, height: th, background: color }} />;
     })}
   </AbsoluteFill>
 );
 
-// ─── Hero lines: skewed type smash, one line per beat ─────────────────────────────────────────────
+// ─── Hero lines: skewed type smash, one line per beat, a re-smash on beat 3 ──────────────────────
 type HeroProps = {
   f: number;
   lines: string[];
@@ -101,46 +119,52 @@ type HeroProps = {
   slab?: boolean;
   accentLast?: boolean;
 };
-const Hero: React.FC<HeroProps> = ({ f, lines, top, size = 150, color = P.ink, align = "left", from = -1, start = 15, exit = 92, slab, accentLast }) => {
+const Hero: React.FC<HeroProps> = ({ f, lines, top, size = 150, color = P.ink, align = "left", from = -1, start = 15, exit = 104, slab, accentLast }) => {
   const out = mv(f, exit, exit + 8, 0, 1, IN);
+  // beat 3: the block re-smashes (jolt + skew snap back) under a burst of speed lines
+  const kick = f >= 45 && f < 54 ? 1 - mv(f, 45, 54, 0, 1, OUT) : 0;
   return (
-    <div style={{ position: "absolute", left: 80, right: 80, top, display: "flex", flexDirection: "column", alignItems: align === "left" ? "flex-start" : "flex-end" }}>
-      {lines.map((ln, i) => {
-        const a = start + i * 15;
-        const p = mv(f, a - 2, a + 6, 0, 1, OUT);
-        const x = (1 - p) * from * 1150 + out * -from * 1300;
-        const sk = (1 - p) * 18 * from + out * 14 * -from;
-        const last = accentLast && i === lines.length - 1;
-        return (
-          <div
-            key={i}
-            style={{
-              fontFamily: T.display,
-              fontSize: size,
-              lineHeight: 0.92,
-              letterSpacing: `${T.displayTracking}em`,
-              color,
-              textTransform: "uppercase",
-              whiteSpace: "nowrap",
-              transform: `translateX(${x}px) skewX(${-sk}deg)`,
-              background: slab ? P.bg : undefined,
-              padding: slab ? "14px 26px 6px" : undefined,
-              marginTop: slab && i > 0 ? 10 : 0,
-              opacity: f < a - 2 ? 0 : 1,
-            }}
-          >
-            {last ? (
-              <>
-                {ln.replace(/\.$/, "")}
-                <span style={{ color: P.accent }}>{ln.endsWith(".") ? "." : ""}</span>
-              </>
-            ) : (
-              ln
-            )}
-          </div>
-        );
-      })}
-    </div>
+    <>
+      {kick > 0 && <SpeedLines f={f} seed={7 + lines.length} color={slab ? P.ink : color} dir={from < 0 ? 1 : -1} count={9} top={top - 20} bottom={top + lines.length * size * 0.95} opacity={kick * 0.7} />}
+      <div style={{ position: "absolute", left: 80, right: 80, top, display: "flex", flexDirection: "column", alignItems: align === "left" ? "flex-start" : "flex-end" }}>
+        {lines.map((ln, i) => {
+          const a = start + i * 15;
+          const p = mv(f, a - 2, a + 6, 0, 1, OUT);
+          const drift = -from * 0.45 * Math.max(0, f - a - 6);
+          const x = (1 - p) * from * 1150 + out * -from * 1300 + drift + kick * -from * 46 * (i % 2 ? -1 : 1);
+          const sk = (1 - p) * 18 * from + out * 14 * -from + kick * 12 * from;
+          const last = accentLast && i === lines.length - 1;
+          return (
+            <div
+              key={i}
+              style={{
+                fontFamily: T.display,
+                fontSize: size,
+                lineHeight: 0.92,
+                letterSpacing: `${T.displayTracking}em`,
+                color,
+                textTransform: "uppercase",
+                whiteSpace: "nowrap",
+                transform: `translateX(${x}px) skewX(${-sk}deg)`,
+                background: slab ? P.bg : undefined,
+                padding: slab ? "14px 26px 6px" : undefined,
+                marginTop: slab && i > 0 ? 10 : 0,
+                opacity: f < a - 2 ? 0 : 1,
+              }}
+            >
+              {last ? (
+                <>
+                  {ln.replace(/\.$/, "")}
+                  <span style={{ color: P.accent }}>{ln.endsWith(".") ? "." : ""}</span>
+                </>
+              ) : (
+                ln
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </>
   );
 };
 
@@ -150,24 +174,15 @@ type SceneProps = { f: number; bare?: boolean; lite?: boolean };
 /** 0: hook. Saturn V on the pad, a lime 8 and the title. */
 const Scene0: React.FC<SceneProps> = ({ f }) => {
   const s = 1.08 * (1 + 0.0012 * Math.max(0, f));
+  const k = 700 / EIGHT_UPM;
   return (
     <AbsoluteFill style={{ background: P.bg, overflow: "hidden" }}>
       <Photo src="saturn.jpg" iw={1466} ih={1920} px={668} py={960} fx={640} fy={960} s={s} />
+      <Lift />
       <AbsoluteFill style={{ background: "linear-gradient(180deg, rgba(11,11,11,0.55) 0%, rgba(11,11,11,0.15) 40%, rgba(11,11,11,0.0) 55%, rgba(11,11,11,0.55) 78%, rgba(11,11,11,0.85) 100%)" }} />
-      <div
-        style={{
-          position: "absolute",
-          left: 62,
-          top: 285,
-          fontFamily: T.display,
-          fontSize: 700,
-          lineHeight: 1,
-          color: P.accent,
-          transform: `translateY(${-f * 0.6}px)`,
-        }}
-      >
-        8
-      </div>
+      <svg width={W} height={H} style={{ position: "absolute", inset: 0, transform: `translateY(${-f * 0.6}px)` }}>
+        <path d={EIGHT_D} fill={P.accent} transform={`translate(62 ${baselineAt(285, 700)}) scale(${k} ${-k})`} />
+      </svg>
       <div style={{ position: "absolute", left: 80, top: 1010, transform: `translateX(${-f * 0.8}px)` }}>
         <div style={{ fontFamily: T.display, fontSize: 196, lineHeight: 0.9, color: P.ink, letterSpacing: "-0.01em", background: P.bg, padding: "16px 22px 4px" }}>
           TRANSITIONS
@@ -180,85 +195,127 @@ const Scene0: React.FC<SceneProps> = ({ f }) => {
   );
 };
 
-/** 1: graphic. A lime disk on black with speed lines. */
+/** A small lime moon on a tilted elliptical orbit; it passes behind the body when it's on the far side. */
+const moonAt = (t: number, cx: number, cy: number, sc: number) => {
+  const a = t * ((2 * Math.PI) / 120) + 0.4;
+  const x = Math.cos(a) * 450 * sc;
+  const y = Math.sin(a) * 120 * sc;
+  const tilt = (-14 * Math.PI) / 180;
+  return { x: cx + x * Math.cos(tilt) - y * Math.sin(tilt), y: cy + x * Math.sin(tilt) + y * Math.cos(tilt), front: Math.sin(a) > 0 };
+};
+const Moon: React.FC<{ t: number; cx: number; cy: number; sc: number; front: boolean; opacity?: number }> = ({ t, cx, cy, sc, front, opacity = 1 }) => {
+  const m = moonAt(t, cx, cy, sc);
+  if (m.front !== front) return null;
+  return (
+    <>
+      {[4, 3, 2, 1, 0].map((g) => {
+        const q = moonAt(t - g * 1.2, cx, cy, sc);
+        const r = 30 * sc * (1 - g * 0.12);
+        return <div key={g} style={{ position: "absolute", left: q.x - r, top: q.y - r, width: r * 2, height: r * 2, borderRadius: "50%", background: P.accent, opacity: opacity * (g === 0 ? 1 : 0.5 / g) }} />;
+      })}
+    </>
+  );
+};
+
+/** 1: graphic. A lime disk on black with a moon in orbit and speed lines. */
 const Scene1: React.FC<SceneProps> = ({ f, bare }) => {
-  const r = DISK.r * DISK_PUSH(f) * punch(f, 0.0);
+  const sc = DISK_PUSH(f);
+  const r = DISK.r * sc;
   return (
     <AbsoluteFill style={{ background: P.bg, overflow: "hidden" }}>
       <SpeedLines f={f} seed={11} color={P.surface} count={22} />
+      <Moon t={f} cx={DISK.x} cy={DISK.y} sc={sc} front={false} />
       <div style={{ position: "absolute", left: DISK.x - r, top: DISK.y - r, width: r * 2, height: r * 2, borderRadius: "50%", background: P.accent }} />
       <SpeedLines f={f} seed={12} color={P.bg} count={6} top={DISK.y - 300} bottom={DISK.y + 300} opacity={0.9} />
-      {!bare && <Hero f={f} lines={["SPIN OUT.", "SPIN IN."]} top={1230} size={150} accentLast />}
+      <Moon t={f} cx={DISK.x} cy={DISK.y} sc={sc} front />
+      {!bare && <Hero f={f} lines={["SPIN OUT.", "SPIN IN."]} top={1210} size={150} accentLast />}
     </AbsoluteFill>
   );
 };
 
-/** 2: Earth, matched to the disk. Tilts down and keeps growing after the cut. */
-const earthR = (f: number) => MATCH_R * (1 + 0.012 * Math.max(0, f) / 10) * punch(f, 0.05);
-const earthY = (f: number) => DISK.y + 230 * mv(f, 8, 40, 0, 1, E);
+/** 2: Earth, matched to the disk. Spins, tilts down and keeps growing after the cut; the moon carries over. */
+const earthR = (f: number) => MATCH_R * (1 + (0.012 * Math.max(0, f)) / 10) * punch(f, 0.05);
+const earthY = (f: number) => DISK.y + 250 * mv(f, 8, 40, 0, 1, E);
 const Scene2: React.FC<SceneProps> = ({ f, bare }) => {
   const r = earthR(f);
   const s = r / EARTH.r;
+  const y = earthY(f);
+  const msc = r / DISK.r;
   return (
     <AbsoluteFill style={{ background: P.bg, overflow: "hidden" }}>
-      <AbsoluteFill style={{ clipPath: `circle(${r * 0.985}px at 540px ${earthY(f)}px)` }}>
-        <Photo src="earth.jpg" iw={1920} ih={1920} px={EARTH.cx} py={EARTH.cy} fx={540} fy={earthY(f)} s={s} />
+      <Moon t={f + 120} cx={540} cy={y} sc={msc} front={false} />
+      <AbsoluteFill style={{ clipPath: `circle(${r * 0.985}px at 540px ${y}px)` }}>
+        <Photo src="earth.jpg" iw={1920} ih={1920} px={EARTH.cx} py={EARTH.cy} fx={540} fy={y} s={s} style={{ transform: `rotate(${f * 0.22}deg)`, transformOrigin: `${EARTH.cx * s}px ${EARTH.cy * s}px` }} />
+        <Lift />
       </AbsoluteFill>
+      <Moon t={f + 120} cx={540} cy={y} sc={msc} front />
       {!bare && <Hero f={f} lines={["SAME SHAPE.", "SAME SPOT."]} top={340} size={150} from={1} accentLast />}
     </AbsoluteFill>
   );
 };
 
-/** 3: the rocket climbing on a diagonal. */
+/** 3: the rocket climbing on its diagonal, air streaming past it. */
+const ROCKET_DIR = { x: -0.84, y: -0.55 };
 const Scene3: React.FC<SceneProps> = ({ f, bare }) => {
-  const s = 1.8 * punch(f, 0.08) * (1 + 0.0006 * Math.max(0, f));
+  const s = 1.25 * punch(f, 0.04);
+  const t = Math.max(0, f) * 3.2;
   return (
     <AbsoluteFill style={{ background: P.bg, overflow: "hidden" }}>
-      <Photo src="rocket.jpg" iw={1920} ih={1523} px={583} py={295} fx={300 - Math.max(0, f) * 0.9} fy={520 - Math.max(0, f) * 0.6} s={s} />
+      <div style={{ position: "absolute", left: -700, top: -700, width: W + 1400, height: H + 1400, transform: "rotate(33deg)", transformOrigin: "50% 50%" }}>
+        <SpeedLines f={f} seed={31} color={P.surface} dir={1} count={26} width={W + 1400} bottom={H + 1400} />
+      </div>
+      <Photo src="rocket.jpg" iw={1920} ih={1523} px={583} py={295} fx={330 + ROCKET_DIR.x * t} fy={640 + ROCKET_DIR.y * t} s={s} />
+      <Lift />
+      <div style={{ position: "absolute", left: -700, top: -700, width: W + 1400, height: H + 1400, transform: "rotate(33deg)", transformOrigin: "50% 50%" }}>
+        <SpeedLines f={f} seed={32} color={P.ink} dir={1} count={7} width={W + 1400} bottom={H + 1400} opacity={0.35} />
+      </div>
       {!bare && <Hero f={f} lines={["CUT INSIDE", "THE BLUR."]} top={1190} size={160} accentLast />}
     </AbsoluteFill>
   );
 };
 
-/** 4: graphic. Full lime field, black type at frame-filling scale. */
-const Scene4: React.FC<SceneProps> = ({ f, bare }) => (
-  <AbsoluteFill style={{ background: P.accent, overflow: "hidden" }}>
-    <SpeedLines f={f} seed={41} color={P.bg} count={9} opacity={0.18} />
-    {/* torn paper shreds still drifting from the rip */}
-    {[0, 1, 2].map((i) => (
-      <div
-        key={i}
-        style={{
-          position: "absolute",
-          left: [120, 760, 430][i] + f * [1.4, -1.1, 0.6][i],
-          top: [1430, 300, 1500][i] - f * [0.8, -0.5, 1.2][i],
-          width: [90, 70, 50][i],
-          height: [26, 22, 18][i],
-          background: P.ink,
-          clipPath: "polygon(0 20%, 30% 0, 62% 26%, 100% 6%, 92% 80%, 60% 100%, 28% 74%, 4% 100%)",
-          transform: `rotate(${[18, -24, 40][i] + f * 0.6}deg)`,
-          opacity: bare ? 0 : 1,
-        }}
-      />
-    ))}
-    {!bare && (
-      <AbsoluteFill style={{ transform: `scale(${punch(f, 0.06)})`, transformOrigin: "80px 900px" }}>
-        <Hero f={f} lines={["RIP THE", "FRAME", "OPEN."]} top={430} size={300} color={P.bg} start={-60} exit={101} />
-      </AbsoluteFill>
-    )}
-  </AbsoluteFill>
-);
+/** 4: graphic. Full lime field, black type at frame-filling scale, a chevron band running underneath. */
+const Scene4: React.FC<SceneProps> = ({ f, bare }) => {
+  const run = (f * 9) % 120;
+  return (
+    <AbsoluteFill style={{ background: P.accent, overflow: "hidden" }}>
+      <SpeedLines f={f} seed={41} color={P.bg} count={9} opacity={0.18} />
+      <div style={{ position: "absolute", left: 0, right: 0, top: 1330, height: 130, background: P.bg, overflow: "hidden" }}>
+        {Array.from({ length: 12 }, (_, i) => (
+          <div
+            key={i}
+            style={{
+              position: "absolute",
+              left: -240 + i * 120 + run,
+              top: 25,
+              width: 60,
+              height: 80,
+              background: P.accent,
+              clipPath: "polygon(0 0, 45% 0, 100% 50%, 45% 100%, 0 100%, 55% 50%)",
+            }}
+          />
+        ))}
+      </div>
+      {!bare && (
+        <AbsoluteFill style={{ transform: `scale(${punch(f, 0.05)})`, transformOrigin: "80px 900px" }}>
+          <Hero f={f} lines={["RIP THE", "FRAME", "OPEN."]} top={420} size={300} color={P.bg} start={-60} exit={101} />
+        </AbsoluteFill>
+      )}
+    </AbsoluteFill>
+  );
+};
 
-/** 5: spacewalk over the Earth's limb. Placement shared with the ink-bleed SVG. */
+/** 5: spacewalk over the Earth's limb, panning. Placement shared with the ink-bleed SVG. */
 const s5 = (f: number) => {
-  const s = 1.6 * (1 + 0.0007 * Math.max(-20, f)) * punch(f, 0.06);
-  return { s, fx: 600, fy: 860, px: 936, py: 564 };
+  const s = 1.51 * punch(f, 0.05);
+  return { s, fx: 640 - 3.4 * Math.max(-20, f), fy: 850, px: 936, py: 564 };
 };
 const Scene5: React.FC<SceneProps> = ({ f, bare }) => {
   const g = s5(f);
   return (
     <AbsoluteFill style={{ background: P.bg, overflow: "hidden" }}>
       <Photo src="spacewalk.jpg" iw={1920} ih={1280} px={g.px} py={g.py} fx={g.fx} fy={g.fy} s={g.s} />
+      <Lift />
       {!bare && <Hero f={f} lines={["LET IT", "SPILL IN."]} top={380} size={150} slab accentLast />}
     </AbsoluteFill>
   );
@@ -268,10 +325,10 @@ const Scene5: React.FC<SceneProps> = ({ f, bare }) => {
 const FRAME_W = 470;
 const FRAME_H = 329;
 const Scene6: React.FC<SceneProps> = ({ f, bare, lite }) => {
-  const scroll = (f * 3.2) % (FRAME_H + 46);
+  const scroll = (f * 6.5) % (FRAME_H + 46);
   return (
     <AbsoluteFill style={{ background: P.bg, overflow: "hidden" }}>
-      <div style={{ position: "absolute", left: 470, top: -460, width: 600, height: H + 900, transform: "rotate(7deg)", transformOrigin: "50% 50%" }}>
+      <div style={{ position: "absolute", left: 590, top: -460, width: 600, height: H + 900, transform: `rotate(${7 + 0.5 * punch(f, 1) - 0.5}deg)`, transformOrigin: "50% 50%" }}>
         <div style={{ position: "absolute", inset: 0, background: P.surface, transform: `translateY(${-scroll}px)` }}>
           {Array.from({ length: 9 }, (_, i) => {
             const clip = i % 2 === 0 ? "clouds" : "aerial";
@@ -280,12 +337,7 @@ const Scene6: React.FC<SceneProps> = ({ f, bare, lite }) => {
                 {lite ? (
                   <Img src={asset(`${clip}-still.jpg`)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 ) : (
-                  <OffthreadVideo
-                    src={asset(`${clip}.mp4`)}
-                    muted
-                    startFrom={(i * 7) % 20}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  />
+                  <OffthreadVideo src={asset(`${clip}.mp4`)} muted startFrom={(i * 7) % 20} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 )}
               </div>
             );
@@ -298,50 +350,38 @@ const Scene6: React.FC<SceneProps> = ({ f, bare, lite }) => {
           ))}
         </div>
       </div>
-      {!bare && <Hero f={f} lines={["FOUR", "FRAMES.", "NO MORE."]} top={520} size={170} exit={84} accentLast />}
+      {!bare && <Hero f={f} lines={["FOUR", "FRAMES.", "NO MORE."]} top={540} size={150} exit={84} accentLast />}
     </AbsoluteFill>
   );
 };
 
-/** 7: the astronaut's visor, flown into through the 0. */
+/** 7: the astronaut's visor, flown into through the 0, panning right. */
 const Scene7: React.FC<SceneProps> = ({ f, bare }) => {
-  const s = 1.6 * (1 + 0.0008 * Math.max(0, f)) * punch(f, 0.06);
+  const s = 1.52 * punch(f, 0.05);
+  const v = visor(f);
   return (
     <AbsoluteFill style={{ background: P.bg, overflow: "hidden" }}>
-      <Photo src="helmet.jpg" iw={1920} ih={1280} px={830} py={580} fx={RING.x} fy={RING.y} s={s} />
+      <Photo src="helmet.jpg" iw={1920} ih={1280} px={830} py={580} fx={v.x} fy={v.y} s={s} />
+      <Lift />
       {!bare && <Hero f={f} lines={["FIND A HOLE.", "FLY THROUGH."]} top={1180} size={140} align="right" from={1} slab exit={86} accentLast />}
     </AbsoluteFill>
   );
 };
 
-// The 8: a lemniscate of Gerono, stroked, the same point count as the visor ring so they morph.
-const N_PTS = 180;
-const eightPts = (cx: number, cy: number, B: number, A: number) =>
-  Array.from({ length: N_PTS }, (_, i) => {
-    const t = (i / N_PTS) * Math.PI * 2;
-    const top = Math.sin(t) > 0;
-    const k = top ? 0.88 : 1; // top bowl a little smaller, like a drawn 8
-    return [cx + A * k * Math.sin(2 * t), cy - B * k * Math.sin(t) + (top ? 0 : 0)] as [number, number];
-  });
-const circlePts = (cx: number, cy: number, r: number) =>
-  Array.from({ length: N_PTS }, (_, i) => {
-    const t = (i / N_PTS) * Math.PI * 2;
-    return [cx + r * Math.cos(t), cy - r * Math.sin(t)] as [number, number];
-  });
-const lerpPts = (a: [number, number][], b: [number, number][], p: number) => a.map(([x, y], i) => [x + (b[i][0] - x) * p, y + (b[i][1] - y) * p] as [number, number]);
-const toPath = (pts: [number, number][]) => `M${pts.map(([x, y]) => `${x.toFixed(1)} ${y.toFixed(1)}`).join("L")}Z`;
-const EIGHT = { x: 540, y: 1080, B: 392, A: 232 };
-
-/** 8: the lime 8, drawn by the morph. */
+/** 8: the lime Anton 8 the morph lands on. */
 const Scene8: React.FC<SceneProps> = ({ f, bare }) => {
-  const sc = 1 + 0.0006 * Math.max(0, f) + 0.05 * mv(f, 60, 66, 0, 1, OUT);
+  const sc = (1 + 0.0007 * Math.max(0, f)) * punch(f, 0.035);
   return (
     <AbsoluteFill style={{ background: P.bg, overflow: "hidden" }}>
-      <SpeedLines f={f} seed={81} color={P.surface} count={16} />
-      <svg width={W} height={H} style={{ position: "absolute", inset: 0, transform: `scale(${sc}) rotate(${Math.sin(f / 40) * 1.5}deg)`, transformOrigin: `${EIGHT.x}px ${EIGHT.y}px` }}>
-        <path d={toPath(eightPts(EIGHT.x, EIGHT.y, EIGHT.B, EIGHT.A))} fill="none" stroke={P.accent} strokeWidth={104} strokeLinejoin="round" />
+      <SpeedLines f={f} seed={81} color={P.surface} count={18} />
+      <svg
+        width={W}
+        height={H}
+        style={{ position: "absolute", inset: 0, transform: `scale(${sc}) rotate(${Math.sin(f / 22) * 2.5}deg) translateX(${Math.sin(f / 30) * 18}px)`, transformOrigin: `${E8.cx}px 700px` }}
+      >
+        <path d={EIGHT_D} fill={P.accent} transform={eightAt(E8.cx, E8.cy, E8.size)} />
       </svg>
-      {!bare && <Hero f={f} lines={["SHAPE INTO", "SHAPE."]} top={350} size={150} accentLast />}
+      {!bare && <Hero f={f} lines={["SHAPE INTO", "SHAPE."]} top={340} size={150} accentLast />}
     </AbsoluteFill>
   );
 };
@@ -524,7 +564,7 @@ const Glitch: React.FC<{ f: number }> = ({ f }) => {
   return (
     <AbsoluteFill style={{ background: P.bg, overflow: "hidden" }}>
       <Sc k={base} f={bf} lite />
-      <AbsoluteFill style={{ transform: `translateX(${split}px)`, mixBlendMode: "screen", opacity: heavy ? 0.8 : 0.28, isolation: "isolate" }}>
+      <AbsoluteFill style={{ transform: `translateX(${split}px)`, mixBlendMode: "screen", opacity: heavy ? 0.6 : 0.25, isolation: "isolate" }}>
         <Sc k={base} f={bf} lite bare />
         <AbsoluteFill style={{ background: P.accent, mixBlendMode: "multiply" }} />
       </AbsoluteFill>
@@ -576,7 +616,7 @@ const ZoomThrough: React.FC<{ f: number }> = ({ f }) => {
   return (
     <AbsoluteFill style={{ background: P.bg, overflow: "hidden" }}>
       {/* the next shot sits behind, already moving */}
-      <AbsoluteFill style={{ transform: `scale(${inner})`, transformOrigin: `${RING.x}px ${RING.y}px` }}>
+      <AbsoluteFill style={{ transform: `scale(${inner})`, transformOrigin: `${visor(f).x}px ${visor(f).y}px` }}>
         <Sc k={7} f={f} />
       </AbsoluteFill>
       <AbsoluteFill style={{ transform: `scale(${z})`, transformOrigin: `${HOLE_C.x}px ${HOLE_C.y}px` }}>
@@ -593,39 +633,66 @@ const ZoomThrough: React.FC<{ f: number }> = ({ f }) => {
   );
 };
 
-/** 8 MORPH: a lime ring locks onto the visor, the picture irises away, the ring twists into the 8. */
+/** 8 MORPH: a lime ring locks onto the visor, the picture irises away, the ring twists 180° into the
+ *  outline of the Anton 8 (both resampled by arc length), and the glyph fills on the landing. */
+type Pt = [number, number];
+const N8 = EIGHT_OUTER.length / 2;
+const signedArea = (pts: Pt[]) => pts.reduce((a, p, i) => a + p[0] * pts[(i + 1) % pts.length][1] - pts[(i + 1) % pts.length][0] * p[1], 0) / 2;
+const MORPH = (() => {
+  const k = E8.size / EIGHT_UPM;
+  // glyph outer contour, centred, in screen orientation (y down), pre-rotated by 180° for the twist
+  const target: Pt[] = Array.from({ length: N8 }, (_, i) => [-(EIGHT_OUTER[2 * i] - E8_CX_U) * k, (EIGHT_OUTER[2 * i + 1] - E8_CY_U) * k]);
+  let ring: Pt[] = Array.from({ length: N8 }, (_, i) => {
+    const t = (i / N8) * Math.PI * 2;
+    return [RING_R * Math.cos(t), RING_R * Math.sin(t)];
+  });
+  if (Math.sign(signedArea(ring)) !== Math.sign(signedArea(target))) ring = ring.reverse();
+  let best = 0;
+  let bestD = Infinity;
+  for (let off = 0; off < N8; off++) {
+    let d = 0;
+    for (let i = 0; i < N8; i += 4) {
+      const q = target[(i + off) % N8];
+      d += (ring[i][0] - q[0]) ** 2 + (ring[i][1] - q[1]) ** 2;
+    }
+    if (d < bestD) {
+      bestD = d;
+      best = off;
+    }
+  }
+  return { ring, target: ring.map((_, i) => target[(i + best) % N8]) };
+})();
 const Morph: React.FC<{ f: number }> = ({ f }) => {
   const draw = mv(f, -26, -16, 0, 1, OUT);
   const iris = mv(f, -20, -8, 0, 1, E);
   const fade = mv(f, -12, -4, 0, 1, E);
-  const m = mv(f, -12, 2, 0, 1, E);
-  const ring = circlePts(RING.x, RING.y, RING.r);
-  const eight = eightPts(EIGHT.x, EIGHT.y, EIGHT.B, EIGHT.A);
-  const pts = lerpPts(ring, eight, m);
-  const c = 2 * Math.PI * RING.r;
-  const holeR = interpolate(iris, [0, 1], [1500, RING.r - 2]);
+  const m = mv(f, -14, 0, 0, 1, E);
+  const fill = mv(f, -2, 1, 0, 1, OUT);
+  const v = visor(f + 120);
+  const cx = v.x + (E8.cx - v.x) * m;
+  const cy = v.y + (E8.cy - v.y) * m;
+  const rot = Math.PI * m;
+  const pts = MORPH.ring.map(([x, y], i) => {
+    const [tx, ty] = MORPH.target[i];
+    const lx = x + (tx - x) * m;
+    const ly = y + (ty - y) * m;
+    return [cx + lx * Math.cos(rot) - ly * Math.sin(rot), cy + lx * Math.sin(rot) + ly * Math.cos(rot)] as Pt;
+  });
+  const c = 2 * Math.PI * RING_R;
+  const holeR = interpolate(iris, [0, 1], [1500, RING_R - 2]);
   return (
     <AbsoluteFill style={{ background: P.bg, overflow: "hidden" }}>
-      <AbsoluteFill style={{ opacity: 1 - fade, clipPath: `circle(${holeR}px at ${RING.x}px ${RING.y}px)` }}>
+      <AbsoluteFill style={{ opacity: 1 - fade, clipPath: `circle(${holeR}px at ${v.x}px ${v.y}px)` }}>
         <Sc k={7} f={f + 120} bare />
       </AbsoluteFill>
-      {f >= -2 && <SpeedLines f={f + 200} seed={81} color={P.surface} count={16} opacity={mv(f, -2, 4)} />}
+      {f >= -4 && <SpeedLines f={f + 200} seed={81} color={P.surface} count={18} opacity={mv(f, -4, 2)} />}
       <svg width={W} height={H} style={{ position: "absolute", inset: 0 }}>
         {m <= 0 ? (
-          <circle
-            cx={RING.x}
-            cy={RING.y}
-            r={RING.r}
-            fill="none"
-            stroke={P.accent}
-            strokeWidth={24 + 80 * fade}
-            strokeDasharray={c}
-            strokeDashoffset={c * (1 - draw)}
-            transform={`rotate(-90 ${RING.x} ${RING.y})`}
-          />
+          <circle cx={v.x} cy={v.y} r={RING_R} fill="none" stroke={P.accent} strokeWidth={24 + 20 * fade} strokeDasharray={c} strokeDashoffset={c * (1 - draw)} transform={`rotate(-90 ${v.x} ${v.y})`} />
         ) : (
-          <path d={toPath(pts)} fill="none" stroke={P.accent} strokeWidth={104} strokeLinejoin="round" />
+          <path d={`M${pts.map(([x, y]) => `${x.toFixed(1)} ${y.toFixed(1)}`).join("L")}Z`} fill="none" stroke={P.accent} strokeWidth={44 * (1 - fill)} strokeLinejoin="round" />
         )}
+        {fill > 0 && <path d={EIGHT_D} fill={P.accent} opacity={fill} transform={eightAt(E8.cx, E8.cy, E8.size)} />}
       </svg>
     </AbsoluteFill>
   );
@@ -643,7 +710,7 @@ const WINDOWS: Record<number, [number, number, React.FC<{ f: number }>]> = {
 };
 
 // ─── Chip: the small numbered label naming the move as it happens ─────────────────────────────────
-const CHIP_AT = [0, 14, 137, 257, 377, 497, 617, 733, 859];
+const CHIP_AT = [0, 14, 153, 278, 391, 509, 637, 733, 859];
 const Chip: React.FC<{ frame: number }> = ({ frame }) => {
   if (frame < CHIP_AT[1] || frame >= RECAP) return null;
   let k = 1;
@@ -651,7 +718,7 @@ const Chip: React.FC<{ frame: number }> = ({ frame }) => {
   const since = frame - CHIP_AT[k];
   const enter = mv(frame, CHIP_AT[1], CHIP_AT[1] + 8, 0, 1, OUT);
   const roll = k === 1 ? 1 : mv(since, 0, 8, 0, 1, OUT);
-  const wipe = mv(since, 2, 12, 0, 1, OUT);
+  const wipe = mv(since, 0, 6, 0, 1, OUT);
   const exitP = mv(frame, RECAP - 8, RECAP, 0, 1, IN);
   const num = (n: number) => String(n).padStart(2, "0");
   return (
@@ -791,10 +858,12 @@ const SFX: { name: Parameters<typeof Sfx>[0]["name"]; at: number; volume?: numbe
   { name: "shutter", at: L[2], volume: 0.7 },
   { name: "sub-drop", at: L[2], volume: 0.45 },
   // 3 whip pan
-  { name: "whoosh-short", at: L[3] - 7, volume: 0.75 },
+  { name: "whoosh-short", at: L[3] - 7, volume: 0.95 },
+  { name: "impact", at: L[3], volume: 0.5 },
   { name: "swish-reverse", at: L[3] - 16, volume: 0.25 },
   // 4 paper tear
-  { name: "tear", at: L[4] - 12, volume: 0.8 },
+  { name: "tear", at: L[4] - 12, volume: 1.0 },
+  { name: "sub-drop", at: L[4], volume: 0.4 },
   { name: "paper", at: L[4] - 2, volume: 0.5 },
   // 5 ink bleed
   { name: "swish-reverse", at: L[5] - 20, volume: 0.35 },
@@ -809,6 +878,8 @@ const SFX: { name: Parameters<typeof Sfx>[0]["name"]; at: number; volume?: numbe
   // 8 morph
   { name: "swish-reverse", at: L[8] - 18, volume: 0.45 },
   { name: "pop", at: L[8], volume: 0.6 },
+  { name: "impact", at: L[8], volume: 0.6 },
+  { name: "sub-drop", at: L[8], volume: 0.45 },
   // recap + payoff
   ...RECAP_AT.slice(0, 8).map((at) => ({ name: "tick" as const, at, volume: 0.55 })),
   { name: "riser", at: PAYOFF - 72, volume: 0.45 },
@@ -821,6 +892,8 @@ const SFX: { name: Parameters<typeof Sfx>[0]["name"]; at: number; volume?: numbe
 // type hits: a tick on every hero line
 const HERO_LINES = [0, 2, 2, 2, 0, 2, 3, 2, 2];
 for (let k = 1; k <= 8; k++) for (let i = 0; i < HERO_LINES[k]; i++) SFX.push({ name: "click", at: L[k] + 15 + i * 15, volume: 0.35 });
+// beat 3: the re-smash
+for (let k = 1; k <= 8; k++) SFX.push({ name: "tick", at: L[k] + 45, volume: 0.45 });
 
 // ─── Main ──────────────────────────────────────────────────────────────────────────────────────────
 export const TransitionsToSteal: React.FC = () => {
@@ -833,8 +906,8 @@ export const TransitionsToSteal: React.FC = () => {
         system={S}
         align="left"
         motif={
-          <svg width={120} height={170} viewBox="0 0 1080 1920">
-            <path d={toPath(eightPts(540, 960, 760, 440))} fill="none" stroke={P.accent} strokeWidth={170} strokeLinejoin="round" />
+          <svg width={110} height={170}>
+            <path d={EIGHT_D} fill={P.accent} transform={eightAt(55, 85, 180)} />
           </svg>
         }
       />
