@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { AbsoluteFill, Audio, Img, interpolate, Sequence, staticFile, useCurrentFrame } from "remotion";
+import { AbsoluteFill, Audio, interpolate, Sequence, staticFile, useCurrentFrame } from "remotion";
 import { systems } from "../design/systems";
 import { EndCard, END_CARD_FRAMES } from "../kit/EndCard";
 import { clamp, ease, rand } from "../kit/motion";
@@ -270,6 +270,27 @@ const Stamp: React.FC<{ at: number; f: number; x: number; y: number; rot?: numbe
   );
 };
 
+/** Dashed "stamp here" box, shown from the cut until the stamp lands, so the frame is never half-empty. */
+const StampGhost: React.FC<{ at: number; f: number; x: number; y: number; w: number; h: number; rot?: number }> = ({ at, f, x, y, w, h, rot = -6 }) => {
+  const o = 0.55 * (1 - m(f, at, at + 3));
+  if (o <= 0) return null;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: x - w / 2,
+        top: y - h / 2,
+        width: w,
+        height: h,
+        transform: `rotate(${rot}deg) scale(${1 + 0.02 * Math.sin(f / 5)})`,
+        border: `4px dashed ${P.muted}`,
+        borderRadius: 18,
+        opacity: o,
+      }}
+    />
+  );
+};
+
 /** Typed text (mono), `cps` characters per second from `at`. */
 const Typed: React.FC<{ text: string; at: number; f: number; cps?: number; style?: React.CSSProperties }> = ({ text, at, f, cps = 30, style }) => {
   const n = Math.max(0, Math.min(text.length, Math.floor(((f - at) / 30) * cps)));
@@ -294,6 +315,13 @@ const Tab: React.FC<{ num: string; label: string; at: number; f: number }> = ({ 
     </Scrap>
   );
 };
+
+/** Assumptions line under a section tab. */
+const Kicker: React.FC<{ f: number; at: number }> = ({ f, at }) => (
+  <div style={{ position: "absolute", left: 80, top: 334, ...MONO, fontWeight: 400, fontSize: 44, color: P.muted, opacity: m(f, at, at + 8), whiteSpace: "nowrap" }}>
+    $1 at 10% · compounded yearly
+  </div>
+);
 
 /** Slide-in progress for a cut-out: 0 → 1. */
 const slide = (f: number, at: number, dur = 12) => m(f, at, at + dur);
@@ -330,17 +358,143 @@ const Coin: React.FC<{ x: number; y: number; d: number; rot?: number; style?: Re
   </svg>
 );
 
-const NOTE1 = { src: "assets/CompoundInterest/note-1.jpg", ratio: 1500 / 661 };
-const NOTE1000 = { src: "assets/CompoundInterest/note-1000.jpg", ratio: 1444 / 711 };
+// ─── Drawn bank notes: a fictional "Bank of Patience", line-engraved in Newsprint ink ──────────
+
+const gcd = (a: number, b: number): number => (b ? gcd(b, a % b) : a);
+/** Hypotrochoid scaled to unit radius: the classic guilloche line of engraved bank notes. */
+const troch = (R: number, r: number, d: number, steps = 1400) => {
+  const turns = r / gcd(R, r);
+  const max = R - r + d;
+  const pts: string[] = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = (i / steps) * Math.PI * 2 * turns;
+    const x = ((R - r) * Math.cos(t) + d * Math.cos(((R - r) / r) * t)) / max;
+    const y = ((R - r) * Math.sin(t) - d * Math.sin(((R - r) / r) * t)) / max;
+    pts.push(`${i ? "L" : "M"}${x.toFixed(4)} ${y.toFixed(4)}`);
+  }
+  return pts.join("");
+};
+const GUILLOCHE = [troch(24, 7, 6), troch(30, 11, 9), troch(36, 13, 5)];
+
+const Rosette: React.FC<{ cx: number; cy: number; rad: number; label: string; fs: number }> = ({ cx, cy, rad, label, fs }) => (
+  <g>
+    {GUILLOCHE.map((d, i) => (
+      <path
+        key={i}
+        d={d}
+        transform={`translate(${cx} ${cy}) scale(${rad * (1 - i * 0.14)}) rotate(${i * 11})`}
+        fill="none"
+        stroke={P.ink}
+        strokeWidth={i === 0 ? 1.1 : 0.8}
+        vectorEffect="non-scaling-stroke"
+        strokeOpacity={0.9}
+      />
+    ))}
+    <circle cx={cx} cy={cy} r={rad * 0.44} fill={P.bg} stroke={P.ink} strokeWidth={3} />
+    <circle cx={cx} cy={cy} r={rad * 0.44 - 7} fill="none" stroke={P.ink} strokeWidth={1} />
+    <text x={cx} y={cy + fs * 0.35} textAnchor="middle" fontFamily={T.display} fontSize={fs} fill={P.ink}>
+      {label}
+    </text>
+  </g>
+);
+
+const Hourglass: React.FC<{ cx: number; cy: number }> = ({ cx, cy }) => (
+  <g transform={`translate(${cx} ${cy})`}>
+    <rect x={-36} y={-52} width={72} height={9} fill={P.ink} />
+    <rect x={-36} y={43} width={72} height={9} fill={P.ink} />
+    <line x1={-31} y1={-43} x2={-31} y2={43} stroke={P.ink} strokeWidth={3} />
+    <line x1={31} y1={-43} x2={31} y2={43} stroke={P.ink} strokeWidth={3} />
+    <path d="M -24 -43 L 24 -43 L 4 -3 L 4 3 L 24 43 L -24 43 L -4 3 L -4 -3 Z" fill="url(#noteHatch)" stroke={P.ink} strokeWidth={2.4} strokeLinejoin="round" />
+    <path d="M -15 -30 L 15 -30 L 0 -6 Z" fill={P.ink} />
+    <path d="M -19 43 Q 0 22 19 43 Z" fill={P.ink} />
+  </g>
+);
+
+const NOTE_VB_W = 1000;
+const NOTE_VB_H = 450;
+type NoteKind = "one" | "thousand";
+
+/** A fully drawn fictional note: guilloche rosettes, engraved border, numeral panel, serials, seal, no portraits. */
+const DrawnNote: React.FC<{ kind: NoteKind; w: number; h: number; stretch?: boolean }> = ({ kind, w, h, stretch }) => {
+  const one = kind === "one";
+  const strip = one ? "ONE DOLLAR \u2726 ONE DOLLAR \u2726 ONE DOLLAR \u2726 ONE DOLLAR" : "ONE THOUSAND DOLLARS \u2726 ONE THOUSAND DOLLARS";
+  const teeth = Array.from({ length: 48 }, (_, i) => {
+    const a = (i / 48) * Math.PI * 2;
+    const r = i % 2 ? 26 : 32;
+    return `${(Math.cos(a) * r).toFixed(2)},${(Math.sin(a) * r).toFixed(2)}`;
+  }).join(" ");
+  return (
+    <svg viewBox={`0 0 ${NOTE_VB_W} ${NOTE_VB_H}`} width={w} height={h} preserveAspectRatio={stretch ? "none" : "xMidYMid meet"} style={{ display: "block" }}>
+      <defs>
+        <pattern id="noteEngrave" width="4" height="4" patternUnits="userSpaceOnUse">
+          <line x1="1" y1="0" x2="1" y2="4" stroke={P.ink} strokeWidth="1.4" />
+        </pattern>
+        <pattern id="noteHatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="5" stroke={P.ink} strokeWidth="1.1" />
+        </pattern>
+      </defs>
+      <rect width={NOTE_VB_W} height={NOTE_VB_H} fill={P.bg} />
+      {/* line-engraved border band */}
+      <rect x={10} y={10} width={980} height={430} fill="url(#noteEngrave)" />
+      <rect x={42} y={42} width={916} height={366} fill={P.bg} stroke={P.ink} strokeWidth={3} />
+      <rect x={50} y={50} width={900} height={350} fill="none" stroke={P.ink} strokeWidth={1} />
+      <rect x={10} y={10} width={980} height={430} fill="none" stroke={P.ink} strokeWidth={4} />
+      {[13, 413].map((y) => (
+        <g key={y}>
+          <rect x={160} y={y} width={680} height={24} fill={P.ink} />
+          <text x={500} y={y + 18} textAnchor="middle" fontFamily={T.mono} fontWeight={600} fontSize={15} fill={P.bg} textLength={650} lengthAdjust="spacingAndGlyphs">
+            {strip}
+          </text>
+        </g>
+      ))}
+      <Rosette cx={172} cy={226} rad={112} label={one ? "1" : "1000"} fs={one ? 70 : 30} />
+      <Rosette cx={828} cy={226} rad={112} label={one ? "1" : "1000"} fs={one ? 70 : 30} />
+      {/* centre column */}
+      <text x={500} y={88} textAnchor="middle" fontFamily={T.mono} fontWeight={600} fontSize={16} letterSpacing={5} fill={P.ink}>
+        TOWN OF THRIFT
+      </text>
+      <Hourglass cx={500} cy={152} />
+      <text x={500} y={250} textAnchor="middle" fontFamily={T.display} fontSize={54} fill={P.ink}>
+        Bank of Patience
+      </text>
+      <line x1={318} x2={682} y1={268} y2={268} stroke={P.ink} strokeWidth={1.5} />
+      <rect x={322} y={280} width={356} height={56} fill={P.ink} />
+      <text x={500} y={319} textAnchor="middle" fontFamily={T.display} fontSize={one ? 36 : 29} fill={P.bg}>
+        {one ? "One Dollar" : "One Thousand Dollars"}
+      </text>
+      <text x={500} y={368} textAnchor="middle" fontFamily={T.mono} fontWeight={600} fontSize={13} letterSpacing={2} fill={P.ink}>
+        WILL PAY THE BEARER ON DEMAND
+      </text>
+      {/* second printing in red, slightly off register */}
+      <g transform="translate(1.8 -1.3) rotate(0.3 500 225)" opacity={0.92}>
+        <text x={66} y={78} fontFamily={T.mono} fontWeight={600} fontSize={18} fill={RED}>
+          {one ? "N\u00ba A 000072" : "N\u00ba M 000956"}
+        </text>
+        <text x={934} y={392} textAnchor="end" fontFamily={T.mono} fontWeight={600} fontSize={18} fill={RED}>
+          {one ? "N\u00ba A 000072" : "N\u00ba M 000956"}
+        </text>
+        <g transform="translate(712 360)">
+          <polygon points={teeth} fill={RED} />
+          <circle r={21} fill="none" stroke={P.bg} strokeWidth={2} />
+          <text y={6} textAnchor="middle" fontFamily={T.mono} fontWeight={600} fontSize={14} fill={P.bg}>
+            TIME
+          </text>
+        </g>
+      </g>
+    </svg>
+  );
+};
+
+const NOTE1 = { kind: "one" as NoteKind, ratio: NOTE_VB_W / NOTE_VB_H };
+const NOTE1000 = { kind: "thousand" as NoteKind, ratio: NOTE_VB_W / NOTE_VB_H };
 
 const Note: React.FC<{ note: typeof NOTE1; x: number; y: number; w: number; rot?: number; seed?: number }> = ({ note, x, y, w, rot = 0, seed = 5 }) => {
   const h = w / note.ratio;
   return (
     <div style={{ position: "absolute", left: x, top: y, width: w, height: h, transform: `rotate(${rot}deg)`, filter: SHADOW }}>
-      <Img
-        src={staticFile(note.src)}
-        style={{ position: "absolute", inset: 0, width: w, height: h, clipPath: torn(w, h, seed, { top: true, bottom: true, left: true, right: true }, 5, 18) }}
-      />
+      <div style={{ position: "absolute", inset: 0, clipPath: torn(w, h, seed, { top: true, bottom: true, left: true, right: true }, 4, 18) }}>
+        <DrawnNote kind={note.kind} w={w} h={h} />
+      </div>
     </div>
   );
 };
@@ -438,7 +592,9 @@ export const CompoundInterest: React.FC = () => (
     {/* The end card arrives on a torn sheet that starts sliding 6 frames before the cut, so the cut frame is never blank. */}
     <Sequence from={END - END_LEAD}>
       <Sheet from="bottom" color={P.bg} seed={18}>
-        <EndCard system={S} motif={<EndMotif />} />
+        <EndDrift>
+          <EndCard system={S} motif={<EndMotif />} />
+        </EndDrift>
       </Sheet>
     </Sequence>
     <SystemTexture system={S} />
@@ -446,6 +602,12 @@ export const CompoundInterest: React.FC = () => (
     <SoundDesign />
   </AbsoluteFill>
 );
+
+/** Slow 1.00 → 1.03 drift so the end card is never a frozen frame. */
+const EndDrift: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const f = useCurrentFrame();
+  return <AbsoluteFill style={{ transform: `scale(${1 + 0.03 * m(f, 0, END_LEAD + END_CARD_FRAMES, 0, 1, lin)})` }}>{children}</AbsoluteFill>;
+};
 
 /** The red growth line returns above the studio wordmark. */
 const EndMotif: React.FC = () => {
@@ -482,7 +644,7 @@ const InkFilter: React.FC = () => (
 
 // ─── 1. Front page (hook, and the callback at the end) ───────────────────────────────────────
 
-const PAGE = { x: 50, y: 150, w: 980, h: 1640 };
+const PAGE = { x: 50, y: 162, w: 980, h: 1640 };
 const HEAD_Y = 214; // page-local top of the headline block
 
 const FrontPage: React.FC<{ mode: "hook" | "clock" }> = ({ mode }) => {
@@ -491,7 +653,7 @@ const FrontPage: React.FC<{ mode: "hook" | "clock" }> = ({ mode }) => {
   // Camera: slow push; smash-in on "$1,000" at ZOOM (hook only); slow push at the end.
   let cam = { k: 1 + 0.03 * m(f, 0, ZOOM, 0, 1, lin), cx: 540, cy: 860, tx: 540, ty: 860 };
   if (hook && f >= ZOOM) cam = { k: 1.21 + 0.025 * m(f, ZOOM, LUCK, 0, 1, lin), cx: 104, cy: 900, tx: 94, ty: 960 };
-  if (!hook) cam = { k: 1.0 + 0.05 * m(f, CLOCK, END, 0, 1, lin), cx: 540, cy: 900, tx: 540, ty: 900 };
+  if (!hook) cam = { k: 1.0 + 0.03 * m(f, CLOCK, END, 0, 1, lin), cx: 540, cy: 900, tx: 540, ty: 900 };
 
   const swap = (a: number) => (f >= a ? 1 : 0);
   const headline = hook ? null : f < CLOCK + 26 ? "Same dollar." : f < CLOCK + 44 ? "Less time." : "Start the clock.";
@@ -522,7 +684,7 @@ const FrontPage: React.FC<{ mode: "hook" | "clock" }> = ({ mode }) => {
                 justifyContent: "space-between",
                 ...MONO,
                 fontWeight: 400,
-                fontSize: 36,
+                fontSize: 44,
                 color: P.muted,
               }}
             >
@@ -560,7 +722,10 @@ const FrontPage: React.FC<{ mode: "hook" | "clock" }> = ({ mode }) => {
             <Greek x={508} y={hook ? 1450 : 1450} w={420} lines={4} seed={9} />
             {/* fig. 1 — the red growth line */}
             <div style={{ position: "absolute", left: 508, top: 900, width: 420, height: 420, borderTop: `1px solid ${P.ink}`, borderBottom: `1px solid ${P.ink}` }}>
-              <svg width={420} height={350} style={{ position: "absolute", top: 14 }} viewBox="0 0 420 350">
+              <div style={{ position: "absolute", left: 0, top: 8, ...MONO, fontWeight: 400, fontSize: 44, letterSpacing: "0", color: P.muted, whiteSpace: "nowrap", opacity: hook && f >= ZOOM ? 0 : 1 }}>
+                Fig. 1: $1, 10%
+              </div>
+              <svg width={420} height={340} style={{ position: "absolute", top: 70 }} viewBox="0 0 420 350">
                 {[0, 1, 2, 3].map((i) => (
                   <line key={i} x1={0} x2={420} y1={50 + i * 90} y2={50 + i * 90} stroke={P.muted} strokeOpacity={0.35} strokeWidth={2} />
                 ))}
@@ -576,7 +741,6 @@ const FrontPage: React.FC<{ mode: "hook" | "clock" }> = ({ mode }) => {
                   strokeDashoffset={1 - draw}
                 />
               </svg>
-              <div style={{ position: "absolute", left: 0, bottom: 10, ...MONO, fontWeight: 400, fontSize: 36, color: P.muted }}>Fig. 1 — $1 at 10%</div>
             </div>
             <Note note={NOTE1} x={hook ? 30 : 36} y={hook ? 1090 : 1060} w={470} rot={-7} seed={4} />
           </Scrap>
@@ -622,6 +786,7 @@ const LuckTime: React.FC = () => {
           </div>
         </Scrap>
         <div style={{ position: "absolute", left: 128, top: 900, ...MONO, fontSize: 44, color: P.ink, opacity: m(f, L.l02 + 30, L.l02 + 36) }}>Just</div>
+        <StampGhost at={timeAt} f={f} x={540} y={1150} w={690} h={330} rot={-5} />
         <Stamp at={timeAt} f={f} x={540} y={1150} rot={-5} size={230}>
           Time
         </Stamp>
@@ -799,7 +964,7 @@ const OnTheInterest: React.FC = () => {
   return (
     <>
       <Cam k={k} cx={540} cy={900}>
-        <div style={{ position: "absolute", left: 80, top: 350, width: 920, ...DISPLAY, fontSize: 150 }}>
+        <div style={{ position: "absolute", left: 80, top: 410, width: 920, ...DISPLAY, fontSize: 150 }}>
           Interest on
           <br />
           <Hi at={L.l05 + 42} dur={14} f={f}>the interest.</Hi>
@@ -824,6 +989,7 @@ const OnTheInterest: React.FC = () => {
         </svg>
       </Cam>
       <Tab num="02" label="Compound interest" at={COMPOUND} f={f} />
+      <Kicker f={f} at={COMPOUND + 8} />
     </>
   );
 };
@@ -856,7 +1022,7 @@ const Ladder: React.FC = () => {
     <>
       <Cam k={k} cx={cam.cx} cy={cam.cy} tx={cam.tx} ty={cam.ty}>
         {!cu && (
-          <div style={{ position: "absolute", left: 80, top: 330, ...DISPLAY, fontSize: 230, lineHeight: 1 }}>
+          <div style={{ position: "absolute", left: 80, top: 400, ...DISPLAY, fontSize: 230, lineHeight: 1 }}>
             <span style={{ display: "inline-block", transform: `scale(${idx > 0 ? m(f, hit, hit + 6, 1.14, 1) : 1})`, transformOrigin: "0 70%" }}>
               {LADDER_BARS[idx].label}
             </span>
@@ -865,7 +1031,7 @@ const Ladder: React.FC = () => {
         <LedgerBars bars={LADDER_BARS} perDollar={LADDER_PER} base={LADDER_BASE} x0={LADDER_X0} w={LADDER_W} gap={LADDER_GAP} f={f} line="red" years={["0", "1", "2", "3"]} />
       </Cam>
       {cu && (
-        <div style={{ position: "absolute", left: 80, top: 330, width: 460, opacity: callout, transform: `translateX(${(1 - callout) * -60}px)` }}>
+        <div style={{ position: "absolute", left: 80, top: 410, width: 460, opacity: callout, transform: `translateX(${(1 - callout) * -60}px)` }}>
           <div style={{ ...MONO, fontSize: 56, color: P.ink, lineHeight: 1.15 }}>
             Interest
             <br />
@@ -875,6 +1041,7 @@ const Ladder: React.FC = () => {
       )}
       {cu && <CalloutArrow p={m(f, LADDER_CU + 8, LADDER_CU + 18)} />}
       <Tab num="02" label="Compound interest" at={COMPOUND} f={LADDER + 40} />
+      <Kicker f={LADDER + 40} at={COMPOUND} />
     </>
   );
 };
@@ -888,7 +1055,7 @@ const CalloutArrow: React.FC<{ p: number }> = ({ p }) => {
   return (
     <svg width={1080} height={1920} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
       <path
-        d={`M 300 488 C 380 520, ${c2.x} ${c2.y}, ${end.x} ${end.y}`}
+        d={`M 300 560 C 380 590, ${c2.x} ${c2.y}, ${end.x} ${end.y}`}
         fill="none"
         stroke={RED}
         strokeWidth={8}
@@ -955,7 +1122,7 @@ const RuleOf72: React.FC = () => {
   const f = useF();
   const at72 = L.l08 + 45;
   const k = 1 + 0.04 * m(f, RULE, CARD, 0, 1, lin);
-  const ruleIn = m(f, L.l08 + 25, L.l08 + 35);
+  const ruleIn = m(f, L.l08 + 10, L.l08 + 20);
   return (
     <>
       <Cam k={k} cx={540} cy={1000}>
@@ -966,6 +1133,7 @@ const RuleOf72: React.FC = () => {
           <div style={{ position: "absolute", left: 80, top: 520, overflow: "hidden", ...DISPLAY, fontSize: 170, paddingBottom: 20 }}>
             <div style={{ transform: `translateY(${(1 - ruleIn) * 110}%)` }}>The rule of</div>
           </div>
+          <StampGhost at={at72} f={f} x={540} y={1080} w={700} h={540} rot={-7} />
           <Stamp at={at72} f={f} x={540} y={1080} rot={-7} size={400}>
             72
           </Stamp>
@@ -1006,7 +1174,7 @@ const IndexCard: React.FC = () => {
 
 const SixPercent: React.FC = () => {
   const f = useF();
-  const k = 1 + 0.03 * m(f, SIX, TEN, 0, 1, lin);
+  const k = 1 + 0.07 * m(f, SIX, TEN, 0, 1, ease.sineInOut);
   const dbl = m(f, L.l10 + 37, L.l10 + 47, 0, 1, ease.backOut);
   const twelve = L.l10 + 63;
   const eq2 = m(f, twelve - 4, twelve + 4);
@@ -1098,29 +1266,26 @@ const simpleV = (t: number) => 1 + 0.1 * t;
 const compV = (t: number) => Math.pow(1.1, t);
 const redYears = (f: number) => 72 * m(f, RED_START, RED_END, 0, 1, (t) => t * t * (3 - 2 * t) * 0.5 + t * 0.5);
 /** The plot's top tracks the red line, so the curve never flattens against the top and the dot never detaches. */
-const ymaxAt = (f: number) => Math.max(10, compV(redYears(f)) * 1.08);
+const ymaxAt = (f: number) => Math.max(10, Math.min(1000, compV(redYears(f)) * 1.08));
 /** Frame where the y-axis starts to rescale (for the whoosh). */
 const RESCALE_AT = (() => {
   for (let f = RED_START; f < RED_END; f++) if (ymaxAt(f) > 10.01) return f;
   return RED_START;
 })();
-/** Candidate tick steps; a step's ticks show while their spacing on screen is comfortable, and neighbours crossfade. */
-const TICK_STEPS = [2.5, 5, 10, 25, 50, 100, 250];
 const smooth = (t: number) => {
   const c = Math.max(0, Math.min(1, t));
   return c * c * (3 - 2 * c);
 };
-const tickWeights = (ymax: number) => {
-  const w = new Map<number, number>();
-  for (const st of TICK_STEPS) {
-    const sp = (st / ymax) * (Y0 - Y1);
-    // the coarse set fades in exactly as the fine set (2.5x finer) fades out, so labels never crowd or vanish
-    const o = smooth((sp - 105) / 25) * (1 - smooth((sp - 262) / 63));
-    if (o <= 0.001) continue;
-    for (let k = 1; k * st <= ymax * 1.001; k++) w.set(k * st, Math.max(w.get(k * st) ?? 0, o));
-  }
-  return w;
+/** Gridlines stay put at quarters of the plot; their labels roll with the scale like the counter does. */
+const GRID = [0.25, 0.5, 0.75, 1];
+const fmtTick = (v: number) => {
+  if (Math.abs(v - Math.round(v)) < 0.005 && v < 10) return `$${Math.round(v)}`;
+  if (v < 10) return `$${v.toFixed(2)}`;
+  return `$${Math.round(v).toLocaleString("en-US")}`;
 };
+const CU_IN = beat(72); // 1080: close-up on the simple line reaching $8.20
+const CU_OUT = beat(78); // 1170: back wide for the compound climb
+const PUSH = beat(83); // 1245: push in on the note and stamp
 
 const BigChart: React.FC = () => {
   const f = useF();
@@ -1143,16 +1308,24 @@ const BigChart: React.FC = () => {
   const counter = counterV < 100 ? `$${counterV.toFixed(2)}` : `$${Math.round(counterV).toLocaleString("en-US")}`;
   const landed = f >= RED_END;
   const punch = landed ? m(f, RED_END, RED_END + 8, 1.12, 1) : 1;
-  const k = (f < L.l14 ? 1 + 0.02 * m(f, CHART, L.l14, 0, 1, lin) : 1.0 + 0.02 * m(f, L.l14, EARLY, 0, 1, lin)) * (landed ? 1 + 0.02 * m(f, RED_END, RED_END + 6) : 1);
-  const ticks = [...tickWeights(ymax).entries()];
-  const fmt = (v: number) => (v >= 100 ? `$${v.toLocaleString("en-US")}` : `$${v % 1 ? v.toFixed(2) : v}`);
+  const cu = f >= CU_IN && f < CU_OUT;
+  const cam = cu
+    ? { k: 1.55 + 0.06 * m(f, CU_IN, CU_OUT, 0, 1, lin), cx: 820, cy: 790, tx: 560, ty: 860 }
+    : f < CU_IN
+      ? { k: 1 + 0.02 * m(f, CHART, CU_IN, 0, 1, lin), cx: 540, cy: 900, tx: 540, ty: 900 }
+      : { k: (1 + 0.015 * m(f, CU_OUT, EARLY, 0, 1, lin)) * (landed ? 1 + 0.02 * m(f, RED_END, RED_END + 6) : 1), cx: 540, cy: 900, tx: 540, ty: 900 };
+  const axisIn = (i: number) => m(f, CHART + 6 + i * 4, CHART + 14 + i * 4);
+  // In the close-up only the line, its dot and its label are in frame; the edge text is hidden rather than sliced.
+  const wide = cu ? 0 : 1;
+  const pushP = m(f, PUSH, PUSH + 45, 0, 1, ease.sineInOut);
   const note = slide(f, NOTE_IN, 12);
   const simpleLabel = m(f, SIMPLE_END + 2, SIMPLE_END + 8);
   const compLabel = m(f, RED_END + 4, RED_END + 10);
   const mode = redOn ? "compound" : "simple";
 
   return (
-    <Cam k={k} cx={540} cy={900}>
+    <>
+    <Cam k={cam.k} cx={cam.cx} cy={cam.cy} tx={cam.tx} ty={cam.ty}>
       <div style={{ position: "absolute", inset: 0, transform: `translate(${shake(f, RED_END, 8)}px, 0)` }}>
         <Scrap x={60} y={250} w={960} h={1280} rot={-0.8} seed={61} edges={{ top: true, bottom: true }}>
           <div
@@ -1165,10 +1338,10 @@ const BigChart: React.FC = () => {
           />
         </Scrap>
         {/* header */}
-        <div style={{ position: "absolute", left: 100, top: 290, ...MONO, fontSize: 44 }}>
+        <div style={{ position: "absolute", left: 100, top: 290, ...MONO, fontSize: 44, opacity: wide }}>
           $1 at 10% · <span style={{ color: redOn ? RED : P.ink }}>{mode}</span>
         </div>
-        <div style={{ position: "absolute", right: 100, top: 290, ...MONO, fontSize: 44, color: P.muted }}>
+        <div style={{ position: "absolute", right: 100, top: 290, ...MONO, fontSize: 44, color: P.muted, opacity: wide }}>
           Year <span style={{ color: P.ink, display: "inline-block", minWidth: 56, textAlign: "right" }}>{year}</span>
         </div>
         <div
@@ -1182,6 +1355,7 @@ const BigChart: React.FC = () => {
             color: redOn ? RED : P.ink,
             transform: `scale(${punch})`,
             transformOrigin: "0 80%",
+            opacity: wide,
           }}
         >
           {counter}
@@ -1193,26 +1367,24 @@ const BigChart: React.FC = () => {
               <rect x={X0 - 10} y={Y1 - 60} width={X1 - X0 + 40} height={Y0 - Y1 + 66} />
             </clipPath>
           </defs>
-          {ticks.map(([v, w]) => {
-            const y = yOf(v);
-            const o = w * smooth((y - (Y1 - 30)) / 30) * smooth((Y0 - 40 - y) / 20);
-            if (o <= 0.01) return null;
+          {GRID.map((q, i) => {
+            const y = Y0 - q * (Y0 - Y1);
             return (
-              <g key={v} opacity={o}>
+              <g key={q} opacity={axisIn(i)}>
                 <line x1={X0} x2={X1} y1={y} y2={y} stroke={P.ink} strokeOpacity={0.25} strokeWidth={2} strokeDasharray="6 8" />
-                <text x={X0 - 18} y={y + 14} textAnchor="end" fontFamily={T.mono} fontWeight={600} fontSize={40} fill={P.muted}>
-                  {fmt(v)}
+                <text x={X0 - 18} y={y + 15} textAnchor="end" fontFamily={T.mono} fontWeight={600} fontSize={44} fill={P.muted} opacity={wide}>
+                  {fmtTick(ymax * q)}
                 </text>
               </g>
             );
           })}
-          <line x1={X0} x2={X1 + 20} y1={Y0} y2={Y0} stroke={P.ink} strokeWidth={4} />
-          {[0, 24, 48].map((t) => (
-            <text key={t} x={xOf(t)} y={Y0 + 56} textAnchor="middle" fontFamily={T.mono} fontWeight={600} fontSize={44} fill={P.muted}>
+          <line x1={X0} x2={X0 + (X1 + 20 - X0) * m(f, CHART + 2, CHART + 22)} y1={Y0} y2={Y0} stroke={P.ink} strokeWidth={4} />
+          {[0, 24, 48].map((t, i) => (
+            <text key={t} x={xOf(t)} y={Y0 + 56} textAnchor="middle" fontFamily={T.mono} fontWeight={600} fontSize={44} fill={P.muted} opacity={axisIn(i) * (t === 48 ? 1 : wide)}>
               {t}
             </text>
           ))}
-          <text x={X1 + 24} y={Y0 + 56} textAnchor="end" fontFamily={T.mono} fontWeight={600} fontSize={44} fill={P.muted}>
+          <text x={X1 + 24} y={Y0 + 56} textAnchor="end" fontFamily={T.mono} fontWeight={600} fontSize={44} fill={P.muted} opacity={axisIn(3)}>
             72 YRS
           </text>
           <g clipPath="url(#plot)">
@@ -1236,7 +1408,7 @@ const BigChart: React.FC = () => {
             opacity: simpleLabel,
           }}
         >
-          <span style={{ color: P.muted, fontSize: 36 }}>Simple</span>
+          <span style={{ color: P.muted }}>Simple</span>
           <br />
           $8.20
         </div>
@@ -1259,22 +1431,36 @@ const BigChart: React.FC = () => {
           </span>
         </div>
         {/* the $1,000 note lands in the empty upper-left of the plot */}
-        {f >= NOTE_IN && (
-          <div style={{ position: "absolute", inset: 0, transform: `translate(${(1 - note) * -1100}px, ${(1 - note) * 80}px) rotate(${(1 - note) * -10}deg)` }}>
-            <Note note={NOTE1000} x={300} y={850} w={480} rot={-5} seed={9} />
-          </div>
-        )}
-        <Stamp at={APPROX_AT} f={f} x={545} y={1085} rot={-8} size={84}>
-          ≈ $1,000
-        </Stamp>
+        <div style={{ position: "absolute", inset: 0, transform: `translate(${10 * pushP}px, ${-6 * pushP}px) scale(${1 + 0.12 * pushP})`, transformOrigin: "540px 990px" }}>
+          {f >= NOTE_IN && (
+            <div style={{ position: "absolute", inset: 0, transform: `translate(${(1 - note) * -1100}px, ${(1 - note) * 80}px) rotate(${(1 - note) * -10}deg)` }}>
+              <Note note={NOTE1000} x={300} y={850} w={480} rot={-5} seed={9} />
+            </div>
+          )}
+          <Stamp at={APPROX_AT} f={f} x={515} y={1085} rot={-8} size={84}>
+            ≈ $1,000
+          </Stamp>
+        </div>
         {/* footnote */}
-        <div style={{ position: "absolute", left: 100, top: 1378, ...MONO, fontWeight: 400, fontSize: 38, letterSpacing: "0.01em", color: P.muted, lineHeight: 1.12 }}>
+        <div style={{ position: "absolute", left: 100, top: 1372, ...MONO, fontWeight: 400, fontSize: 44, letterSpacing: "0", color: P.muted, lineHeight: 1.08, opacity: wide }}>
           Illustrative. {redOn ? "Compounded yearly;" : "Simple interest;"}
           <br />
           no fees, tax or inflation.
         </div>
       </div>
     </Cam>
+    {/* close-up: the counter rides in screen space, top-left, while the camera sits on the line's end */}
+    {cu && (
+      <div style={{ position: "absolute", left: 80, top: 300 }}>
+        <div style={{ ...MONO, fontSize: 44, color: P.muted }}>
+          Simple · year <span style={{ color: P.ink }}>{year}</span>
+        </div>
+        <div style={{ ...DISPLAY, fontSize: 230, lineHeight: 1, marginTop: 6, transform: `translateY(${(1 - m(f, CU_IN - 2, CU_IN + 6)) * 30}px)` }}>
+          <Hi at={L.l13 + 52} dur={12} f={f}>{counter}</Hi>
+        </div>
+      </div>
+    )}
+    </>
   );
 };
 
@@ -1300,12 +1486,13 @@ const StartEarly: React.FC = () => {
 
 const STACK_BASE = 1340;
 const NOTE_W = 230;
-const NOTE_H = NOTE_W / NOTE1.ratio; // ≈ 101px per dollar
+const NOTE_H = NOTE_W / NOTE1.ratio; // ≈ 104px per note
 const STACK_A = 10.29; // 1.06^40
 const STACK_B = 5.11; // 1.06^28
 
+const TILE = NOTE_H * 0.72; // each note in the stack, slightly foreshortened
 const NoteStack: React.FC<{ x: number; value: number; grow: number }> = ({ x, value, grow }) => {
-  const h = value * NOTE_H * 0.76 * grow;
+  const h = value * TILE * grow;
   return (
     <div
       style={{
@@ -1314,14 +1501,17 @@ const NoteStack: React.FC<{ x: number; value: number; grow: number }> = ({ x, va
         top: STACK_BASE - h,
         width: NOTE_W,
         height: h,
-        backgroundImage: `url(${staticFile(NOTE1.src)})`,
-        backgroundSize: `${NOTE_W}px ${NOTE_H * 0.76}px`,
-        backgroundRepeat: "repeat-y",
-        backgroundPosition: "bottom",
+        overflow: "hidden",
         boxShadow: `0 0 0 3px ${P.ink}`,
         filter: SHADOW,
       }}
-    />
+    >
+      {Array.from({ length: Math.ceil(value) }, (_, i) => (
+        <div key={i} style={{ position: "absolute", left: 0, bottom: i * TILE, width: NOTE_W, height: TILE, borderTop: `1px solid ${P.ink}` }}>
+          <DrawnNote kind="one" w={NOTE_W} h={TILE} stretch />
+        </div>
+      ))}
+    </div>
   );
 };
 
@@ -1332,15 +1522,15 @@ const Stacks: React.FC = () => {
   const gB = m(f, L.l16 + 16, L.l16 + 32);
   const halfAt = L.l16 + 88;
   const dash = m(f, halfAt - 14, halfAt - 2, 0, 1, ease.sineInOut);
-  const hA = STACK_A * NOTE_H * 0.76;
-  const hB = STACK_B * NOTE_H * 0.76;
+  const hA = STACK_A * TILE;
+  const hB = STACK_B * TILE;
   const xa = 150;
   const xb = 560;
   return (
     <>
       <Cam k={k} cx={540} cy={1000}>
         <div style={{ position: "absolute", left: 80, top: 352, ...MONO, fontSize: 48 }}>Each $1 at 6% a year</div>
-        <div style={{ position: "absolute", left: 80, top: 414, ...MONO, fontWeight: 400, fontSize: 36, color: P.muted }}>Illustrative · compounded yearly</div>
+        <div style={{ position: "absolute", left: 80, top: 412, ...MONO, fontWeight: 400, fontSize: 44, letterSpacing: "0", color: P.muted }}>Illustrative · compounded yearly</div>
         <NoteStack x={xa} value={STACK_A} grow={gA} />
         <NoteStack x={xb} value={STACK_B} grow={gB} />
         <div style={{ position: "absolute", left: xa, width: NOTE_W, top: STACK_BASE - hA * gA - 70, textAlign: "center", ...MONO, fontSize: 52, opacity: gA }}>
@@ -1470,6 +1660,8 @@ const SoundDesign: React.FC = () => (
     <Sfx name="click" at={SIMPLE_END + 2} volume={0.45} />
     {/* the riser ends 6 frames before the payoff hit, and the music drops out under it */}
     <Sfx name="riser" at={RED_END - 6 - 72} volume={0.45} />
+    <Sfx name="whoosh-short" at={CU_IN - 2} volume={0.35} />
+    <Sfx name="whoosh-short" at={CU_OUT - 2} volume={0.35} />
     <Sfx name="whoosh" at={RESCALE_AT} volume={0.35} />
     <Sfx name="impact" at={RED_END} volume={0.7} />
     <Sfx name="sub-drop" at={RED_END} volume={0.55} />
