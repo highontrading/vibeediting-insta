@@ -330,8 +330,9 @@ const Words: React.FC<{
                   position: "relative",
                   color: i === pinkWord ? P.accent : color,
                   textShadow: i === pinkWord ? `6px 6px 0 ${P.ink}` : undefined,
-                  transform: `translate(${j.x}px, ${j.y + (1 - p) * size * 0.5 - gone * 1400}px) rotate(${(rand(seed * 3 + i) - 0.5) * 2.4 + j.r}deg)`,
+                  transform: `translate(${j.x}px, ${j.y + (1 - p) * size * 0.5 - gone * 40}px) rotate(${(rand(seed * 3 + i) - 0.5) * 2.4 + j.r}deg)`,
                   filter: shadow(1 - p, 0.6),
+                  opacity: 1 - gone,
                   marginRight: wi < line.split(" ").length - 1 ? "0.22em" : 0,
                 }}
               >
@@ -603,6 +604,7 @@ const SceneObscura: React.FC = () => {
           </div>
         </Paper>
         <Label text="LATIN: “DARK ROOM”" f={f} at={L3 + 14} x={80} y={1320} color={P.surface} seed={52} rot={1.5} />
+        <Label text="19TH-C. INSTRUMENT" f={f} at={L3 + 30} x={460} y={600} color={P.accent3} seed={55} rot={2} size={44} from="right" />
         <Label text="2,000+ YEARS AGO" f={f} at={L3 + 23} x={430} y={1420} color={P.accent} seed={53} rot={-3} from="right" />
       </AbsoluteFill>
     );
@@ -896,7 +898,7 @@ const Scene35: React.FC = () => {
       <AbsoluteFill>
         <FilmStrip f={f} advance={advance} />
         <Words text="35mm" f={f} at={L9 + 7} x={80} y={250} size={250} seed={17} lh={0.9} />
-        <Label text="MOVIE FILM, FOR STILLS" f={f} at={L9 + 27} x={80} y={510} color={P.accent3} seed={175} rot={-2} />
+        <Label text="MOVIE FILM · ILLUSTRATIVE" f={f} at={L9 + 27} x={80} y={510} color={P.accent3} seed={175} rot={-2} />
         {/* the date spine: 35mm stills cameras arrive in 1925 */}
         <Year year="1925" f={f} at={YEAR_35} y={1160} colors={[P.accent2, P.accent3, P.accent, P.accent2]} />
       </AbsoluteFill>
@@ -1077,7 +1079,7 @@ const RAIN = Array.from({ length: 44 }, (_, i) => {
     name,
     snap: name.startsWith("snap"),
     x: -40 + rand(i * 3.1) * 900,
-    y: 820 + rand(i * 5.7) * 760 - (i / 44) * 300,
+    y: 780 + rand(i * 5.7) * 520 - (i / 44) * 300, // tops ≤ 1300: the pile stays above the caption zone
     rot: (rand(i * 7.3) - 0.5) * 50,
     s: 0.75 + rand(i * 2.2) * 0.45,
     t: i < 8 ? Math.round(-10 + i * 1.2) : Math.floor(i * 1.1), // a pile has already landed on the cut
@@ -1099,7 +1101,7 @@ const SceneNow: React.FC = () => {
         <Stage k={k} fx={PHONE_SCREEN[0]} fy={PHONE_SCREEN[1]} tx={540 + (PHONE_SCREEN[0] - 540) * q} ty={735 + (PHONE_SCREEN[1] - 735) * q}>
           <CandyBar f={f} shot={shot} x={560} y={640} />
         </Stage>
-        <Label text="110,000 PIXELS" f={f} at={L12 + 46} x={80} y={1290} color={P.accent3} size={48} seed={252} rot={-2} />
+        <Label text="110,000 PIXELS · ILLUSTRATIVE" f={f} at={L12 + 46} x={80} y={1290} color={P.accent3} size={48} seed={252} rot={-2} />
         <Words text={"Phones\ntake\nphotos."} f={f} at={L12 + 37} x={80} y={760} size={128} seed={22} lh={0.92} pinkWord={2} />
       </AbsoluteFill>
     );
@@ -1119,9 +1121,9 @@ const SceneNow: React.FC = () => {
           </Paper>
         );
       })}
-      {lf >= 26 && <Paper x={50} y={220 - (1 - mv(lf, 26, 33, 0, 1, E)) * 700} w={980} h={520} color={P.bg} seed={330} torn="b" lift={1 + (1 - mv(lf, 26, 33, 0, 1, E)) * 2} rot={-1} amp={7}>
-        <Words text={"Over a\ntrillion"} f={f} at={L13 + 30} x={30} y={30} size={170} seed={23} lh={0.88} pinkWord={2} />
-        <Words text="PHOTOS A YEAR" f={f} at={L13 + 57} x={34} y={366} size={56} font={T.mono!} weight={700} tracking={0.04} seed={24} />
+      {lf >= 10 && <Paper x={50} y={220 - (1 - mv(lf, 10, 17, 0, 1, E)) * 700} w={980} h={520} color={P.bg} seed={330} torn="b" lift={1 + (1 - mv(lf, 10, 17, 0, 1, E)) * 2} rot={-1} amp={7}>
+        <Words text={"Over a\ntrillion"} f={f} at={L13 + 14} x={30} y={30} size={170} seed={23} lh={0.88} pinkWord={2} />
+        <Words text="PHOTOS A YEAR" f={f} at={L13 + 40} x={34} y={366} size={56} font={T.mono!} weight={700} tracking={0.04} seed={24} />
       </Paper>}
     </AbsoluteFill>
   );
@@ -1157,14 +1159,14 @@ const ScenePayoff: React.FC = () => {
   if (f < INSIDE) {
     const lf = f - PAYOFF;
     const enter = 1; // revealed by the torn-paper wipe, already in place
-    const k = f < PUSH ? 1 + 0.03 * (sf(lf) / (PUSH - PAYOFF)) : mv(f, PUSH, INSIDE, 1.03, 9, (t) => t * t);
+    const k = f < PUSH ? 1 + 0.03 * (sf(lf) / (PUSH - PAYOFF)) : interpolate(f, [PUSH, INSIDE], [1.03, 9], { ...clamp, easing: (t) => t * t });
     return (
       <AbsoluteFill>
         <Stage k={k} fx={LENS_C[0]} fy={LENS_C[1]} tx={f < PUSH ? LENS_C[0] : interpolate(k, [1.03, 9], [LENS_C[0], 540])} ty={(f < PUSH ? LENS_C[1] : interpolate(k, [1.03, 9], [LENS_C[1], 960])) + (1 - enter) * 1500}>
           <PhoneBack />
           <Lens cx={LENS_C[0]} cy={LENS_C[1]} r={70} />
         </Stage>
-        <Words text="Look closer." f={f} at={L14} x={80} y={250} size={128} seed={25} out={PUSH} />
+        <Words text="Look closer." f={f} at={L14} x={80} y={250} size={128} seed={25} out={PUSH - 8} />
       </AbsoluteFill>
     );
   }
@@ -1384,7 +1386,8 @@ const SoundDesign: React.FC = () => (
     {RAIN.filter((_, i) => i % 4 === 0).map((r, i) => (
       <Sfx key={`r${i}`} name="paper" at={at("l13") + Math.max(0, r.t)} volume={0.22} />
     ))}
-    <Sfx name="impact" at={at("l13") + 30} volume={0.4} />
+    <Sfx name="whoosh-short" at={at("l13") - 2} volume={0.4} />
+    <Sfx name="impact" at={at("l13") + 14} volume={0.4} />
     {/* payoff */}
     <Sfx name="riser" at={at("l14") + 21 - 50} volume={0.45} />
     <Sfx name="whoosh" at={at("l14") + 19} volume={0.45} />
