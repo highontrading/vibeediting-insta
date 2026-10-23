@@ -649,7 +649,7 @@ const ZoomThrough: React.FC<{ f: number }> = ({ f }) => {
   const z = zAt(f);
   // zoom blur while the scale grows faster than 1.2x per frame (the blur is in layer pixels, so divide by z)
   const ratio = z / zAt(f - 1);
-  const zBlur = ratio > 1.15 ? Math.min(10, (ratio - 1) * 14) / z : 0;
+  const zBlur = ratio > 1.12 ? Math.min(24, (ratio - 1) * 60) / z : 0;
   const inner = interpolate(f, [-10, 8], [1.7, 1], { ...clamp, easing: OUT });
   const glyphIn = `translate(${(1 - slam) * -500}px, 0) skewX(${(1 - slam) * 16}deg) scale(${1 + (1 - slam) * 0.3})`;
   return (
@@ -723,13 +723,14 @@ const Counters: React.FC<{ x: number; y: number; size: number; p: number }> = ({
     ))}
   </g>
 );
+const EIGHT_OUTER_PATH = morphPath(1, 0, 0, 1, E8.cx, E8.cy, E8.size);
 const Morph: React.FC<{ f: number }> = ({ f }) => {
   const draw = mv(f, -26, -16, 0, 1, OUT);
   const iris = mv(f, -20, -8, 0, 1, E);
   const fade = mv(f, -14, -6, 0, 1, E);
   // the outline lands exactly on the glyph's own outline at f-4, holds a beat, then fills on the hit
   const m = mv(f, -16, -4, 0, 1, E);
-  const fill = mv(f, -4, 2, 0, 1, E);
+  const fill = mv(f, -5, 0, 0, 1, OUT);
   const v = visor(f + 120);
   const c = 2 * Math.PI * RING_R;
   const holeR = interpolate(iris, [0, 1], [1500, RING_R - 2]);
@@ -743,19 +744,19 @@ const Morph: React.FC<{ f: number }> = ({ f }) => {
         {m <= 0 ? (
           <circle cx={v.x} cy={v.y} r={RING_R} fill="none" stroke={P.accent} strokeWidth={24 + 20 * fade} strokeDasharray={c} strokeDashoffset={c * (1 - draw)} transform={`rotate(-90 ${v.x} ${v.y})`} />
         ) : (
-          <path d={morphPath(m, v.x, v.y, RING_R, E8.cx, E8.cy, E8.size)} fill="none" stroke={P.accent} strokeWidth={(f < -4 ? 30 - 16 * mv(f, -8, -4) : 14) * (1 - fill)} strokeLinejoin="round" />
+          <path d={morphPath(m, v.x, v.y, RING_R, E8.cx, E8.cy, E8.size)} fill="none" stroke={P.accent} strokeWidth={f < -4 ? 30 - 16 * mv(f, -8, -4) : 14} strokeLinejoin="round" />
         )}
-        {fill > 0 && (
+        {fill > 0 && f < 0 && (
           <>
-            <clipPath id={`fillwipe${f}`}>
-              <rect x={0} y={E8.cy + E8.size * 0.47 - fill * E8.size * 0.96} width={W} height={E8.size} />
+            <clipPath id={`g8clip${f}`}>
+              <path d={EIGHT_OUTER_D} transform={eightAt(E8.cx, E8.cy, E8.size)} />
             </clipPath>
-            <g clipPath={`url(#fillwipe${f})`}>
-              <path d={EIGHT_OUTER_D} fill={P.accent} transform={eightAt(E8.cx, E8.cy, E8.size)} />
-            </g>
-            <Counters x={E8.cx} y={E8.cy} size={E8.size} p={fill} />
+            {/* the stroke thickens inward until it closes into the solid glyph; the counters stay open */}
+            <path d={EIGHT_OUTER_PATH} fill="none" stroke={P.accent} strokeWidth={14 + 300 * fill} strokeLinejoin="round" clipPath={`url(#g8clip${f})`} />
+            <Counters x={E8.cx} y={E8.cy} size={E8.size} p={1} />
           </>
         )}
+        {f >= 0 && <path d={EIGHT_D} fill={P.accent} transform={eightAt(E8.cx, E8.cy, E8.size)} />}
       </svg>
     </AbsoluteFill>
   );
@@ -775,14 +776,14 @@ const WINDOWS: Record<number, [number, number, React.FC<{ f: number }>]> = {
 // ─── Chip: the small numbered label naming the move as it happens ─────────────────────────────────
 const CHIP_AT = [0, 14, 153, 278, 391, 509, 637, 733, 859];
 const Chip: React.FC<{ frame: number }> = ({ frame }) => {
-  if (frame < CHIP_AT[1] || frame >= RECAP) return null;
+  if (frame < CHIP_AT[1] || frame >= RECAP - 2) return null;
   let k = 1;
   for (let i = 1; i <= 8; i++) if (frame >= CHIP_AT[i]) k = i;
   const since = frame - CHIP_AT[k];
   const enter = mv(frame, CHIP_AT[1], CHIP_AT[1] + 8, 0, 1, OUT);
   const roll = k === 1 ? 1 : mv(since, 0, 8, 0, 1, OUT);
   const wipe = mv(since, 0, 6, 0, 1, OUT);
-  const exitP = mv(frame, RECAP - 8, RECAP, 0, 1, IN);
+  const exitP = 0;
   const num = (n: number) => String(n).padStart(2, "0");
   // steps aside while the hook irises and spins (f28-41), so it never notches the circle
   const aside = frame < 28 || frame >= 41 ? 1 : frame < 34 ? mv(frame, 28, 30, 1, 0) : mv(frame, 38, 41, 0, 1);
