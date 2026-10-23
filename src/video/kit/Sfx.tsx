@@ -24,7 +24,7 @@ export type SfxName =
   | "ding"
   | "steam"
   | "sniff"
-  | "hop";
+  | "hop"
   | "paper"
   | "tear"
   | "shutter";
