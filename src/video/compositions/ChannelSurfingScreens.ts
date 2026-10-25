@@ -408,7 +408,7 @@ const frond = (ctx: Ctx, bx: number, by: number, heading: number, length: number
   pts.forEach(([px, py, pa], i) => {
     if (i < 3) return;
     const u = i / N;
-    const size = (1 - u * 0.78) * 70 * Math.min(1, g * 1.4) * Math.min(1, (1 - (1 - g) * 1.2) + 0.15);
+    const size = Math.max(0.5, (1 - u * 0.78) * 70 * Math.min(1, g * 1.4) * Math.max(0, Math.min(1, (1 - (1 - g) * 1.2) + 0.15)));
     for (const side of [-1, 1]) {
       const la = pa + side * (1.15 - (1 - g) * 0.7);
       ctx.beginPath();
