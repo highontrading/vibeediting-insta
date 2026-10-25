@@ -12,6 +12,8 @@ import { CameraHistoryPaper, CAMERA_HISTORY_PAPER_DURATION } from "./composition
 import { WhyYouCantStopScrolling, WHY_YOU_CANT_STOP_SCROLLING_DURATION } from "./compositions/WhyYouCantStopScrolling";
 import { TransitionsToSteal, TRANSITIONS_TO_STEAL_DURATION } from "./compositions/TransitionsToSteal";
 
+import { ChannelSurfing, CHANNEL_SURFING_DURATION } from "./compositions/ChannelSurfing";
+
 // Every Reel is 1080x1920 (9:16) at 30fps.
 export const REEL = { width: 1080, height: 1920, fps: 30 } as const;
 
@@ -28,5 +30,6 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="CameraHistoryPaper" component={CameraHistoryPaper} durationInFrames={CAMERA_HISTORY_PAPER_DURATION} {...REEL} />
     <Composition id="WhyYouCantStopScrolling" component={WhyYouCantStopScrolling} durationInFrames={WHY_YOU_CANT_STOP_SCROLLING_DURATION} {...REEL} />
     <Composition id="TransitionsToSteal" component={TransitionsToSteal} durationInFrames={TRANSITIONS_TO_STEAL_DURATION} {...REEL} />
+    <Composition id="ChannelSurfing" component={ChannelSurfing} durationInFrames={CHANNEL_SURFING_DURATION} {...REEL} />
   </>
 );

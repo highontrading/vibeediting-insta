@@ -30,7 +30,7 @@ const browserExecutable =
   null;
 
 const serveUrl = await bundle({ entryPoint: path.resolve("src/video/index.ts") });
-const composition = await selectComposition({ serveUrl, id, browserExecutable, chromiumOptions: { gl: "angle" } });
+const composition = await selectComposition({ serveUrl, id, browserExecutable, chromiumOptions: { gl: (process.env.REMOTION_GL as "angle" | "swangle") || "angle" } });
 const frames = values.frames
   ? values.frames.split(",").map((f) => Number(f.trim()))
   : Array.from({ length: Number(values.count) }, (_, i) =>
@@ -43,7 +43,7 @@ mkdirSync(dir, { recursive: true });
 const files: string[] = [];
 for (const frame of frames) {
   const output = path.join(dir, `f${String(frame).padStart(4, "0")}.png`);
-  await renderStill({ serveUrl, composition, frame, output, scale: Number(values.scale), browserExecutable, overwrite: true, chromiumOptions: { gl: "angle" } });
+  await renderStill({ serveUrl, composition, frame, output, scale: Number(values.scale), browserExecutable, overwrite: true, chromiumOptions: { gl: (process.env.REMOTION_GL as "angle" | "swangle") || "angle" } });
   files.push(output);
   console.log(`frame ${frame} → ${path.relative(process.cwd(), output)}`);
 }
