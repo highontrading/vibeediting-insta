@@ -103,9 +103,9 @@ const testCard = (ctx: Ctx, t: number) => {
   ctx.lineTo(cx, cy + 130);
   ctx.stroke();
   rect(ctx, cx - 14, cy - 14, 28, 28, ACC);
-  text(ctx, "PLEASE STAND BY", cx, 53, 38, INK, { font: MONO, weight: 700, align: "center", track: 0.1 });
-  text(ctx, "NO SIGNAL YET", 70, 724, 30, INK, { font: MONO, weight: 700, track: 0.08 });
-  text(ctx, "TEST CARD 00", SW - 70, 724, 30, INK, { font: MONO, weight: 700, align: "right", track: 0.08 });
+  text(ctx, "PLEASE STAND BY", cx, 56, 44, INK, { font: MONO, weight: 700, align: "center", track: 0.1 });
+  text(ctx, "NO SIGNAL YET", 70, 730, 36, INK, { font: MONO, weight: 700, track: 0.08 });
+  text(ctx, "TEST CARD 00", SW - 70, 730, 36, INK, { font: MONO, weight: 700, align: "right", track: 0.08 });
   // a slow sweep line so even a held frame is alive
   const sy = (t * 3) % SH;
   rect(ctx, 0, sy, SW, 6, "rgba(233,220,201,0.5)");
@@ -185,13 +185,13 @@ const weather = (ctx: Ctx, t: number) => {
     ctx.beginPath();
     ctx.arc(x, y, 10 * g, 0, Math.PI * 2);
     ctx.fill();
-    text(ctx, nm, x + 22, y - 6, 28, INK, { font: MONO, weight: 700, track: 0.04 });
+    text(ctx, nm, x + 22, y - 6, 36, INK, { font: MONO, weight: 700, track: 0.04 });
     text(ctx, `${Math.round(deg * pr(t, 40 + i * 8, 86 + i * 8, IO))}°`, x + 22, y + 44, 56, INK, { weight: 900 });
   });
   // header bar + lower strip
   rect(ctx, 0, 0, SW, 74, INK);
   text(ctx, "THE WEEK AHEAD", 40, 52, 40, BG, { weight: 900, track: 0.02 });
-  text(ctx, "ISOBARS IN HPA", SW - 40, 50, 28, BG, { font: MONO, weight: 700, align: "right" });
+  text(ctx, "ISOBARS", SW - 40, 52, 36, BG, { font: MONO, weight: 700, align: "right" });
   const sl = pr(t, 70, 90);
   rect(ctx, 0, SH - 74, SW, 74, ACC);
   text(ctx, "FRONT ARRIVES TUESDAY", 40, SH - 22 + (1 - sl) * 40, 38, BG, { weight: 900, track: 0.02 });
@@ -221,13 +221,13 @@ const news = (ctx: Ctx, t: number) => {
   ctx.restore();
   // lower third
   const l3 = pr(t, 26, 46);
-  rect(ctx, 0, 520, 760 * l3, 76, BG);
+  rect(ctx, 0, 520, 960 * l3, 84, BG);
   ctx.save();
   ctx.beginPath();
-  ctx.rect(0, 520, 760 * l3, 76);
+  ctx.rect(0, 520, 960 * l3, 84);
   ctx.clip();
-  text(ctx, "Marta Oyelaran", 36, 575, 46, INK, { weight: 900 });
-  text(ctx, "reporting live from the sofa", 400, 572, 28, MUTED, { font: BODY, weight: 500 });
+  text(ctx, "Marta Oyelaran", 36, 582, 46, INK, { weight: 900 });
+  text(ctx, "live from the sofa", 470, 580, 34, INK, { font: BODY, weight: 500 });
   ctx.restore();
   // LIVE chip + clock
   const blink = Math.floor(t / 10) % 2 === 0;
@@ -453,10 +453,10 @@ const nature = (ctx: Ctx, t: number) => {
   }
   const ti = pr(t, 40, 70);
   ctx.globalAlpha = ti;
-  text(ctx, "The quiet life", 56, 100, 52, BG, { weight: 300, italic: true });
-  text(ctx, "of ferns", 56, 152, 52, BG, { weight: 300, italic: true });
+  text(ctx, "The quiet life", 56, 104, 60, BG, { weight: 600, italic: true });
+  text(ctx, "of ferns", 56, 166, 60, BG, { weight: 600, italic: true });
   ctx.globalAlpha = 1;
-  text(ctx, "A NATURAL HISTORY", SW - 50, SH - 40, 24, BG, { font: MONO, weight: 700, align: "right", track: 0.12 });
+  text(ctx, "A NATURAL HISTORY", SW - 50, SH - 40, 34, BG, { font: MONO, weight: 700, align: "right", track: 0.12 });
 };
 
 // ─── CH 07 · music video ───────────────────────────────────────────────────────────────────
@@ -495,7 +495,7 @@ const music = (ctx: Ctx, t: number) => {
   ctx.save();
   ctx.translate(SW / 2, SH / 2 + 56);
   ctx.scale(sc, sc);
-  text(ctx, wd, 0, 0, wd.length > 3 ? 150 : 230, ac, { weight: 900, align: "center", track: -0.03 });
+  text(ctx, wd, 0, 0, wd.length > 3 ? 128 : 220, ac, { weight: 900, align: "center", track: -0.03 });
   ctx.restore();
   rect(ctx, 0, SH - 80, SW, 80, INK);
   text(ctx, "VIDEO HITS · THE COUNTDOWN", 36, SH - 28, 34, BG, { font: MONO, weight: 700, track: 0.06 });
@@ -570,16 +570,15 @@ const shop = (ctx: Ctx, t: number) => {
   ctx.ellipse(28 * sp, -260 * sp - 12, 30 * sp, 14 * sp, -0.4, 0, Math.PI * 2);
   ctx.ellipse(-26 * sp, -245 * sp - 10, 26 * sp, 12 * sp, 0.4, 0, Math.PI * 2);
   ctx.fill();
-  text(ctx, "PLANT-O-MATIC", 0, 92, 40, INK, { weight: 900, align: "center", track: 0.01 });
   ctx.restore();
   // headline
   rect(ctx, 0, 0, SW, 100, INK);
-  text(ctx, "GROW ANYTHING.", 40, 68, 46, BG, { weight: 900, track: 0.02 });
+  text(ctx, "PLANT-O-MATIC", 40, 70, 52, BG, { weight: 900, track: 0.02 });
   // "But wait…"
   const bw = pr(t, 48, 62, BACK);
   if (t >= 48 && t < 82) {
     ctx.save();
-    ctx.translate(290, 600);
+    ctx.translate(330, 600);
     ctx.rotate(-0.08);
     ctx.scale(bw, bw);
     rect(ctx, -170, -52, 340, 104, INK);
@@ -590,7 +589,7 @@ const shop = (ctx: Ctx, t: number) => {
   if (t >= 84) {
     const sl = pr(t, 84, 94, BACK);
     ctx.save();
-    ctx.translate(SW - 250, 580);
+    ctx.translate(SW - 250, 560);
     ctx.rotate(0.07);
     const s = 0.4 + 0.6 * sl;
     ctx.scale(s, s);
@@ -603,7 +602,7 @@ const shop = (ctx: Ctx, t: number) => {
     ctx.restore();
   }
   rect(ctx, 0, SH - 70, SW, 70, ACC);
-  text(ctx, "CALL NOW · OPERATORS ARE STANDING BY A FERN", SW / 2, SH - 24, 32, BG, { font: MONO, weight: 700, align: "center", track: 0.04 });
+  text(ctx, "CALL NOW · A FERN IS STANDING BY", SW / 2, SH - 22, 36, BG, { font: MONO, weight: 700, align: "center", track: 0.04 });
 };
 
 // ─── CH 09 · space broadcast ───────────────────────────────────────────────────────────────
@@ -673,15 +672,15 @@ const space = (ctx: Ctx, t: number) => {
   });
   // telemetry
   const live = Math.floor(t / 15) % 2 === 0;
-  text(ctx, "LIVE FEED", 70, 90, 30, BG, { font: MONO, weight: 700, track: 0.12 });
+  text(ctx, "LIVE FEED", 70, 92, 36, BG, { font: MONO, weight: 700, track: 0.12 });
   if (live) {
     ctx.fillStyle = ACC;
     ctx.beginPath();
     ctx.arc(48, 79, 9, 0, Math.PI * 2);
     ctx.fill();
   }
-  text(ctx, "DIST 384 400 KM", SW - 50, 90, 30, BG, { font: MONO, weight: 700, align: "right", track: 0.06 });
-  text(ctx, `T+${String(Math.floor(t / 30)).padStart(2, "0")}:${String(Math.floor((t % 30) * 2)).padStart(2, "0")}`, SW - 50, 134, 30, BG, { font: MONO, weight: 700, align: "right" });
+  text(ctx, "384 400 KM", SW - 50, 92, 36, BG, { font: MONO, weight: 700, align: "right", track: 0.06 });
+  text(ctx, `T+${String(Math.floor(t / 30)).padStart(2, "0")}:${String(Math.floor((t % 30) * 2)).padStart(2, "0")}`, SW - 50, 140, 36, BG, { font: MONO, weight: 700, align: "right" });
   // crosshair
   ctx.strokeStyle = "rgba(233,220,201,0.6)";
   ctx.lineWidth = 3;
@@ -715,7 +714,7 @@ const studio = (ctx: Ctx, t: number) => {
   ctx.restore();
   rect(ctx, SW / 2 - 130, 548, 260 * pr(t, 10, 30) * fade, 8, ACC);
   ctx.globalAlpha = fade;
-  text(ctx, "CH 01 · OUR OWN CHANNEL", SW / 2, 640, 30, MUTED, { font: MONO, weight: 700, align: "center", track: 0.1 });
+  text(ctx, "CH 01 · OUR OWN CHANNEL", SW / 2, 650, 36, INK, { font: MONO, weight: 700, align: "center", track: 0.1 });
   ctx.globalAlpha = 1;
 };
 

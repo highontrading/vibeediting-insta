@@ -73,13 +73,13 @@ const staticAmount = (f: number) => {
 
 // ─── Camera ─────────────────────────────────────────────────────────────────────────────────
 type V3 = [number, number, number];
-type Cam = { p: V3; l: V3; f: number };
+type Cam = { p: V3; l: V3; f: number; r?: number };
 const SCREEN_C: V3 = [-0.3, 0.95, 0.8];
 
 const CAM: Record<string, Cam> = {
-  front: { p: [0, 1.35, 8.8], l: [0, 0.95, 0], f: 36 },
-  frontPush: { p: [0, 1.2, 7.7], l: [0, 0.95, 0], f: 36 },
-  frontEnd: { p: [0, 1.05, 6.5], l: [0, 0.95, 0], f: 36 },
+  front: { p: [0, 1.75, 8.3], l: [0, 1.75, 0], f: 36 },
+  frontPush: { p: [0, 1.6, 7.4], l: [0, 1.5, 0], f: 36 },
+  frontEnd: { p: [0, 1.3, 6.3], l: [0, 1.15, 0], f: 36 },
   screen: { p: [-0.3, 0.95, 5.55], l: SCREEN_C, f: 36 },
   screenIn: { p: [-0.3, 0.95, 5.05], l: SCREEN_C, f: 36 },
   screenClose: { p: [-0.3, 0.95, 4.75], l: SCREEN_C, f: 36 },
@@ -87,12 +87,12 @@ const CAM: Record<string, Cam> = {
   screenR: { p: [0.8, 0.8, 6.3], l: SCREEN_C, f: 36 },
   wide34: { p: [3.1, 1.9, 7.6], l: [-0.2, 0.8, 0], f: 38 },
   wide34b: { p: [2.7, 1.7, 6.7], l: [-0.1, 0.85, 0], f: 38 },
-  low: { p: [1.7, 0.1, 4.8], l: [-0.2, 1.0, 0.3], f: 44 },
-  lowB: { p: [1.4, 0.1, 4.3], l: [-0.15, 1.0, 0.3], f: 44 },
+  low: { p: [2.0, 0.1, 6.6], l: [-0.1, 1.0, 0.3], f: 42 },
+  lowB: { p: [1.6, 0.1, 5.9], l: [-0.1, 1.0, 0.3], f: 42 },
   top: { p: [-2.3, 3.4, 5.4], l: [-0.2, 0.9, 0.4], f: 38 },
   topB: { p: [-1.9, 3.1, 4.9], l: [-0.2, 0.9, 0.4], f: 38 },
-  fern: { p: [-2.9, 1.2, 5.6], l: [-1.0, 0.85, 0.5], f: 40 },
-  fernB: { p: [-2.5, 1.1, 5.2], l: [-0.8, 0.85, 0.6], f: 40 },
+  fern: { p: [-3.3, 1.6, 7.5], l: [-0.3, 0.85, 0], f: 38 },
+  fernB: { p: [-2.7, 1.5, 6.7], l: [-0.2, 0.85, 0], f: 38 },
   dial: { p: [0.6, 1.1, 3.7], l: [0.8, 1.06, 0.8], f: 34 },
   dialIn: { p: [0.7, 1.1, 3.2], l: [0.85, 1.06, 0.8], f: 34 },
 };
@@ -135,10 +135,27 @@ for (let k = 0; k < 7; k++) {
 // space is five seconds long: settle on the screen and push in slowly
 addShot(916, 954, "screenR", "screen");
 addShot(954, 984, "screen", "screenIn");
-// the surf and the payoff
-addShot(984, 1020, "screen", "screenIn");
-addShot(1020, 1048, "screenL", "screen");
-addShot(1048, 1080, "screenIn", "screenClose");
+// the surf: a new angle on every flip, tilting and pushing as the cadence tightens
+addShot(984, 990, "screen", "screenIn");
+const SURF_CUTS: [keyof typeof CAM, keyof typeof CAM, number][] = [
+  ["screenIn", "screenClose", 0],
+  ["screenL", "screen", 0.07],
+  ["screenR", "screenIn", -0.07],
+  ["screenClose", "screenClose", 0.1],
+  ["screenL", "screenIn", -0.09],
+  ["screenR", "screenClose", 0.09],
+  ["screen", "screenClose", 0],
+  ["screenClose", "screenClose", -0.11],
+  ["screenL", "screenIn", 0.11],
+  ["screenR", "screenClose", 0],
+  ["screenIn", "screenClose", -0.08],
+  ["screenClose", "screenClose", 0.06],
+];
+for (let i = 0; i < 12; i++) {
+  const a = { ...CAM[SURF_CUTS[i][0]], r: SURF_CUTS[i][2] };
+  const b = { ...CAM[SURF_CUTS[i][1]], r: SURF_CUTS[i][2] * 0.5 };
+  shots.push({ from: FLIPS[7 + i], to: FLIPS[8 + i], a, b });
+}
 addShot(1080, 1125, "front", "frontPush");
 addShot(1125, 1170, "frontPush", "frontEnd");
 // the push through the glass lives in cameraAt()
@@ -161,7 +178,7 @@ const cameraAt = (f: number): Cam => {
   // tiny handheld breath so no framing is dead still
   p[0] += Math.sin(f * 0.11) * 0.012;
   p[1] += Math.cos(f * 0.13) * 0.01;
-  return { p, l: lerp3(sh.a.l, sh.b.l, u), f: sh.a.f + (sh.b.f - sh.a.f) * u };
+  return { p, l: lerp3(sh.a.l, sh.b.l, u), f: sh.a.f + (sh.b.f - sh.a.f) * u, r: (sh.a.r ?? 0) + ((sh.b.r ?? 0) - (sh.a.r ?? 0)) * u };
 };
 
 // ─── Materials / textures ───────────────────────────────────────────────────────────────────
@@ -197,7 +214,7 @@ const woodDraw = (base: string, streak: string) => (ctx: CanvasRenderingContext2
 };
 
 const wallDraw = (ctx: CanvasRenderingContext2D, s: number) => {
-  ctx.fillStyle = "#A9502F";
+  ctx.fillStyle = "#B3705A";
   ctx.fillRect(0, 0, s, s);
   // wallpaper: faint vertical stripes with a small diamond motif, 70s den
   for (let x = 0; x < s; x += 64) {
@@ -360,27 +377,61 @@ const Screen: React.FC<{ f: number; scanAmt: number }> = ({ f, scanAmt }) => {
 const WALNUT = "#5C3F34";
 const TEAK = "#8A4B32";
 
-const Knob: React.FC<{ r: number; angle: number; y: number; color: string }> = ({ r, angle, y, color }) => (
-  <group position={[0.95, y, 0.77]} rotation={[Math.PI / 2, 0, 0]}>
-    <mesh rotation={[0, angle, 0]} castShadow>
-      <cylinderGeometry args={[r, r * 1.08, 0.13, 40]} />
-      <meshStandardMaterial color={color} roughness={0.55} />
-    </mesh>
-    {/* grip ridges and the pointer */}
-    <group rotation={[0, angle, 0]}>
-      {Array.from({ length: 16 }).map((_, i) => (
-        <mesh key={i} position={[Math.cos((i / 16) * Math.PI * 2) * r * 1.02, 0, Math.sin((i / 16) * Math.PI * 2) * r * 1.02]}>
-          <boxGeometry args={[0.02, 0.12, 0.02]} />
-          <meshStandardMaterial color={color} roughness={0.6} />
-        </mesh>
-      ))}
-      <mesh position={[0, 0.07, -r * 0.62]}>
-        <boxGeometry args={[0.03, 0.02, r * 0.55]} />
-        <meshStandardMaterial color={P.accent} roughness={0.5} />
+// Printed dial plate behind a knob: tick marks and numbers on cream, so the close-ups read as a real set.
+const plateDraw = (numbers: boolean) => (ctx: CanvasRenderingContext2D, s: number) => {
+  ctx.fillStyle = P.surface;
+  ctx.fillRect(0, 0, s, s);
+  ctx.translate(s / 2, s / 2);
+  ctx.strokeStyle = P.ink;
+  ctx.fillStyle = P.ink;
+  ctx.lineCap = "round";
+  const n = numbers ? 12 : 8;
+  for (let i = 0; i < n; i++) {
+    const a = -Math.PI * 0.85 + (i / (n - 1)) * Math.PI * 1.7 - Math.PI / 2;
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(a) * s * 0.36, Math.sin(a) * s * 0.36);
+    ctx.lineTo(Math.cos(a) * s * 0.43, Math.sin(a) * s * 0.43);
+    ctx.stroke();
+    if (numbers) {
+      ctx.font = `800 ${s * 0.07}px ${T.body}`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(String(i + 1), Math.cos(a) * s * 0.48, Math.sin(a) * s * 0.48);
+    }
+  }
+};
+
+const Knob: React.FC<{ r: number; angle: number; y: number; color: string; numbers: boolean }> = ({ r, angle, y, color, numbers }) => {
+  const plate = useCanvasTexture(plateDraw(numbers), 512);
+  const geo = useMemo(
+    () =>
+      new THREE.LatheGeometry(
+        [[0, 0.075], [r * 0.82, 0.075], [r * 0.95, 0.06], [r * 1.0, 0.03], [r * 1.07, -0.01], [r * 1.12, -0.07], [r * 1.12, -0.09], [0, -0.09]].map(([x, yy]) => new THREE.Vector2(x, yy)),
+        48,
+      ),
+    [r],
+  );
+  return (
+    <>
+      <mesh position={[0.95, y, 0.778]}>
+        <circleGeometry args={[r * 2.05, 48]} />
+        <meshStandardMaterial map={plate} roughness={0.6} />
       </mesh>
-    </group>
-  </group>
-);
+      <group position={[0.95, y, 0.8]} rotation={[Math.PI / 2, 0, 0]}>
+        <group rotation={[0, angle, 0]}>
+          <mesh geometry={geo} castShadow>
+            <meshStandardMaterial color={color} roughness={0.32} metalness={0.15} />
+          </mesh>
+          <mesh position={[0, 0.08, -r * 0.55]}>
+            <boxGeometry args={[0.035, 0.02, r * 0.7]} />
+            <meshStandardMaterial color={P.accent} roughness={0.4} />
+          </mesh>
+        </group>
+      </group>
+    </>
+  );
+};
 
 const useFern = () =>
   useMemo(() => {
@@ -430,6 +481,7 @@ const Scene: React.FC<{ f: number }> = ({ f }) => {
     camera.near = 0.05;
     camera.far = 80;
     camera.lookAt(...cam.l);
+    camera.rotateZ(cam.r ?? 0);
     camera.updateProjectionMatrix();
   });
 
@@ -474,7 +526,7 @@ const Scene: React.FC<{ f: number }> = ({ f }) => {
       <directionalLight
         position={[-3.5, 6, 6]}
         intensity={2.4}
-        color="#ffd9a8"
+        color="#ffe6c6"
         castShadow
         shadow-mapSize={[2048, 2048]}
         shadow-camera-left={-6}
@@ -485,7 +537,7 @@ const Scene: React.FC<{ f: number }> = ({ f }) => {
       />
       {/* the screen throws its colour on the room */}
       <pointLight position={[SCREEN_C[0], SCREEN_C[1], 2.1]} intensity={4.5 + st * 4} distance={7} decay={1.6} color={glow} />
-      <pointLight position={[2.45, 1.45, 0.4]} intensity={2.4 * lampFlicker} distance={5} decay={1.6} color="#ffb870" />
+      <pointLight position={[2.45, 1.45, 0.4]} intensity={2.0 * lampFlicker} distance={5} decay={1.6} color="#ffc890" />
 
       {/* wall, floor, rug */}
       <mesh position={[0, 3, -1.7]} receiveShadow>
@@ -565,8 +617,8 @@ const Scene: React.FC<{ f: number }> = ({ f }) => {
           <boxGeometry args={[0.62, 1.4, 0.04]} />
           <meshStandardMaterial color={P.surface} roughness={0.5} />
         </mesh>
-        <Knob r={0.17} angle={knob} y={1.3} color={P.bg} />
-        <Knob r={0.115} angle={vol} y={0.86} color={P.bg} />
+        <Knob r={0.17} angle={knob} y={1.3} color={P.bg} numbers />
+        <Knob r={0.115} angle={vol} y={0.86} color={P.bg} numbers={false} />
         {Array.from({ length: 7 }).map((_, i) => (
           <mesh key={i} position={[0.95, 0.5 - i * 0.07 + 0.0, 0.78]}>
             <boxGeometry args={[0.4, 0.025, 0.02]} />
@@ -591,11 +643,11 @@ const Scene: React.FC<{ f: number }> = ({ f }) => {
         </mesh>
         {[-1, 1].map((s) => (
           <group key={s} position={[0, 1.9, -0.1]} rotation={[0, 0, -s * 0.55]}>
-            <mesh position={[0, 0.7, 0]} castShadow>
-              <cylinderGeometry args={[0.013, 0.013, 1.4, 8]} />
+            <mesh position={[0, 0.45, 0]} castShadow>
+              <cylinderGeometry args={[0.013, 0.013, 0.9, 8]} />
               <meshStandardMaterial color={P.surface} roughness={0.25} metalness={0.7} />
             </mesh>
-            <mesh position={[0, 1.4, 0]}>
+            <mesh position={[0, 0.9, 0]}>
               <sphereGeometry args={[0.04, 10, 8]} />
               <meshStandardMaterial color={P.surface} roughness={0.25} metalness={0.7} />
             </mesh>
@@ -764,11 +816,11 @@ export const ChannelSurfing: React.FC = () => {
           </ThreeCanvas>
         </AbsoluteFill>
         <Vignette />
-        {frame < 44 && <Headline lines={["Don't touch", "that dial."]} at={-22} out={40} top={236} />}
-        {frame >= 1080 && frame < 1172 && (
+        {frame < 44 && <Headline lines={["Don't touch", "that dial."]} at={-22} out={40} top={226} size={150} />}
+        {frame >= 1080 && frame < 1146 && (
           <>
-            <Headline lines={["Every channel."]} at={1080} out={1166} top={236} size={122} stagger={0} />
-            <Headline lines={["One studio."]} at={1095} out={1168} top={1380} size={122} stagger={0} />
+            <Headline lines={["Every channel."]} at={1080} out={1142} top={226} size={104} stagger={0} />
+            <Headline lines={["One studio."]} at={1095} out={1144} top={338} size={170} stagger={0} />
           </>
         )}
         <Grain opacity={0.07} />
