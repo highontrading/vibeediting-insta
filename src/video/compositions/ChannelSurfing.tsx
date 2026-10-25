@@ -85,14 +85,14 @@ const CAM: Record<string, Cam> = {
   screenClose: { p: [-0.3, 0.95, 4.75], l: SCREEN_C, f: 36 },
   screenL: { p: [-1.2, 1.2, 6.3], l: SCREEN_C, f: 36 },
   screenR: { p: [0.8, 0.8, 6.3], l: SCREEN_C, f: 36 },
-  wide34: { p: [3.1, 1.9, 7.6], l: [-0.2, 0.8, 0], f: 38 },
-  wide34b: { p: [2.7, 1.7, 6.7], l: [-0.1, 0.85, 0], f: 38 },
-  low: { p: [2.0, 0.1, 6.6], l: [-0.1, 1.0, 0.3], f: 42 },
-  lowB: { p: [1.6, 0.1, 5.9], l: [-0.1, 1.0, 0.3], f: 42 },
-  top: { p: [-2.3, 3.4, 5.4], l: [-0.2, 0.9, 0.4], f: 38 },
-  topB: { p: [-1.9, 3.1, 4.9], l: [-0.2, 0.9, 0.4], f: 38 },
-  fern: { p: [-3.3, 1.6, 7.5], l: [-0.3, 0.85, 0], f: 38 },
-  fernB: { p: [-2.7, 1.5, 6.7], l: [-0.2, 0.85, 0], f: 38 },
+  wide34: { p: [2.3, 1.7, 6.0], l: [-0.1, 0.95, 0], f: 38 },
+  wide34b: { p: [2.0, 1.6, 5.6], l: [-0.1, 0.95, 0], f: 38 },
+  low: { p: [1.7, 0.2, 5.4], l: [-0.1, 1.0, 0.3], f: 42 },
+  lowB: { p: [1.4, 0.2, 5.0], l: [-0.1, 1.0, 0.3], f: 42 },
+  top: { p: [-1.8, 2.6, 5.4], l: [-0.2, 0.95, 0.4], f: 38 },
+  topB: { p: [-1.6, 2.4, 5.0], l: [-0.2, 0.95, 0.4], f: 38 },
+  fern: { p: [-2.4, 1.5, 6.0], l: [-0.2, 0.9, 0], f: 38 },
+  fernB: { p: [-2.1, 1.4, 5.6], l: [-0.2, 0.9, 0], f: 38 },
   macro: { p: [-0.3, 0.95, 4.2], l: SCREEN_C, f: 36 },
   dial: { p: [0.6, 1.1, 3.7], l: [0.8, 1.06, 0.8], f: 34 },
   dialIn: { p: [0.7, 1.1, 3.2], l: [0.85, 1.06, 0.8], f: 34 },
@@ -128,8 +128,8 @@ const Y: [keyof typeof CAM, keyof typeof CAM][] = [
 for (let k = 0; k < 7; k++) {
   const s = 120 + k * 120;
   addShot(s - 10, s + 6, "dial", "dialIn");
-  addShot(s + 6, s + 40, "screen", "screenIn");
-  addShot(s + 40, s + 70, X[k][0], X[k][1]);
+  addShot(s + 6, s + 46, "screen", "screenIn");
+  addShot(s + 46, s + 70, X[k][0], X[k][1]);
   const end = k === 6 ? s + 36 : s + 110;
   addShot(s + 70, end, Y[k][0], Y[k][1]);
 }
@@ -391,14 +391,14 @@ const plateDraw = (numbers: boolean) => (ctx: CanvasRenderingContext2D, s: numbe
     const a = -Math.PI * 0.85 + (i / (n - 1)) * Math.PI * 1.7 - Math.PI / 2;
     ctx.lineWidth = 6;
     ctx.beginPath();
-    ctx.moveTo(Math.cos(a) * s * 0.36, Math.sin(a) * s * 0.36);
-    ctx.lineTo(Math.cos(a) * s * 0.43, Math.sin(a) * s * 0.43);
+    ctx.moveTo(Math.cos(a) * s * 0.27, Math.sin(a) * s * 0.27);
+    ctx.lineTo(Math.cos(a) * s * 0.33, Math.sin(a) * s * 0.33);
     ctx.stroke();
     if (numbers) {
-      ctx.font = `800 ${s * 0.07}px ${T.body}`;
+      ctx.font = `800 ${s * 0.075}px ${T.body}`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText(String(i + 1), Math.cos(a) * s * 0.48, Math.sin(a) * s * 0.48);
+      ctx.fillText(String(i + 1), Math.cos(a) * s * 0.41, Math.sin(a) * s * 0.41);
     }
   }
 };

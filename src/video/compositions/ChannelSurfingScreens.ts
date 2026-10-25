@@ -584,11 +584,11 @@ const shop = (ctx: Ctx, t: number) => {
   const bw = pr(t, 48, 62, BACK);
   if (t >= 48 && t < 82) {
     ctx.save();
-    ctx.translate(420, 610);
+    ctx.translate(480, 620);
     ctx.rotate(-0.08);
     ctx.scale(bw, bw);
-    rect(ctx, -170, -52, 340, 104, INK);
-    text(ctx, "BUT WAIT…", 0, 24, 62, BG, { weight: 900, align: "center" });
+    rect(ctx, -150, -46, 300, 92, INK);
+    text(ctx, "BUT WAIT…", 0, 22, 54, BG, { weight: 900, align: "center" });
     ctx.restore();
   }
   // price slam
@@ -685,7 +685,7 @@ const space = (ctx: Ctx, t: number) => {
     ctx.arc(SW - 80, 86, 14, 0, Math.PI * 2);
     ctx.fill();
   }
-  text(ctx, "384 400 KM", SW - 60, SH - 36, 54, BG, { font: MONO, weight: 700, align: "right", track: 0.04 });
+  text(ctx, "384 400 KM", SW - 60, SH - 36, 66, BG, { font: MONO, weight: 700, align: "right", track: 0.04 });
   // crosshair
   ctx.strokeStyle = "rgba(233,220,201,0.6)";
   ctx.lineWidth = 3;
@@ -712,7 +712,7 @@ const studio = (ctx: Ctx, t: number) => {
     ctx.arc(SW / 2, SH / 2 - 10, (i * 118 + Math.sin(t * 0.06 + i) * 8) * p, 0, Math.PI * 2);
     ctx.stroke();
   }
-  const fade = 1 - pr(t, 84, 104, IO);
+  const fade = 1 - pr(t, 68, 88, IO);
   ctx.save();
   ctx.translate(0, (1 - p) * 40);
   ctx.globalAlpha = p * fade;
