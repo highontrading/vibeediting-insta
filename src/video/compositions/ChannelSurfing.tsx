@@ -77,9 +77,9 @@ type Cam = { p: V3; l: V3; f: number; r?: number };
 const SCREEN_C: V3 = [-0.3, 0.95, 0.8];
 
 const CAM: Record<string, Cam> = {
-  front: { p: [0, 1.75, 8.3], l: [0, 1.75, 0], f: 36 },
-  frontPush: { p: [0, 1.6, 7.4], l: [0, 1.5, 0], f: 36 },
-  frontEnd: { p: [0, 1.3, 6.3], l: [0, 1.15, 0], f: 36 },
+  front: { p: [0, 2.0, 8.0], l: [0, 2.0, 0], f: 36 },
+  frontPush: { p: [0, 1.85, 7.2], l: [0, 1.75, 0], f: 36 },
+  frontEnd: { p: [0, 1.5, 6.0], l: [0, 1.35, 0], f: 36 },
   screen: { p: [-0.3, 0.95, 5.55], l: SCREEN_C, f: 36 },
   screenIn: { p: [-0.3, 0.95, 5.05], l: SCREEN_C, f: 36 },
   screenClose: { p: [-0.3, 0.95, 4.75], l: SCREEN_C, f: 36 },
@@ -93,6 +93,7 @@ const CAM: Record<string, Cam> = {
   topB: { p: [-1.9, 3.1, 4.9], l: [-0.2, 0.9, 0.4], f: 38 },
   fern: { p: [-3.3, 1.6, 7.5], l: [-0.3, 0.85, 0], f: 38 },
   fernB: { p: [-2.7, 1.5, 6.7], l: [-0.2, 0.85, 0], f: 38 },
+  macro: { p: [-0.3, 0.95, 4.2], l: SCREEN_C, f: 36 },
   dial: { p: [0.6, 1.1, 3.7], l: [0.8, 1.06, 0.8], f: 34 },
   dialIn: { p: [0.7, 1.1, 3.2], l: [0.85, 1.06, 0.8], f: 34 },
 };
@@ -139,16 +140,16 @@ addShot(954, 984, "screen", "screenIn");
 addShot(984, 990, "screen", "screenIn");
 const SURF_CUTS: [keyof typeof CAM, keyof typeof CAM, number][] = [
   ["screenIn", "screenClose", 0],
-  ["screenL", "screen", 0.07],
-  ["screenR", "screenIn", -0.07],
-  ["screenClose", "screenClose", 0.1],
-  ["screenL", "screenIn", -0.09],
+  ["low", "lowB", 0.05],
+  ["top", "topB", -0.06],
+  ["macro", "macro", 0.1],
+  ["fern", "fernB", -0.07],
   ["screenR", "screenClose", 0.09],
-  ["screen", "screenClose", 0],
-  ["screenClose", "screenClose", -0.11],
-  ["screenL", "screenIn", 0.11],
-  ["screenR", "screenClose", 0],
-  ["screenIn", "screenClose", -0.08],
+  ["lowB", "lowB", -0.1],
+  ["macro", "screenClose", -0.12],
+  ["topB", "top", 0.1],
+  ["screenL", "screenClose", 0],
+  ["macro", "macro", -0.08],
   ["screenClose", "screenClose", 0.06],
 ];
 for (let i = 0; i < 12; i++) {
@@ -214,14 +215,14 @@ const woodDraw = (base: string, streak: string) => (ctx: CanvasRenderingContext2
 };
 
 const wallDraw = (ctx: CanvasRenderingContext2D, s: number) => {
-  ctx.fillStyle = "#B3705A";
+  ctx.fillStyle = "#CDAF92";
   ctx.fillRect(0, 0, s, s);
   // wallpaper: faint vertical stripes with a small diamond motif, 70s den
   for (let x = 0; x < s; x += 64) {
-    ctx.fillStyle = "rgba(61,44,41,0.10)";
+    ctx.fillStyle = "rgba(125,107,93,0.16)";
     ctx.fillRect(x, 0, 32, s);
   }
-  ctx.fillStyle = "rgba(233,220,201,0.20)";
+  ctx.fillStyle = "rgba(198,93,59,0.22)";
   for (let y = 32; y < s; y += 128) {
     for (let x = 16; x < s; x += 64) {
       ctx.beginPath();
@@ -375,7 +376,7 @@ const Screen: React.FC<{ f: number; scanAmt: number }> = ({ f, scanAmt }) => {
 
 // ─── The set ────────────────────────────────────────────────────────────────────────────────
 const WALNUT = "#5C3F34";
-const TEAK = "#8A4B32";
+const TEAK = "#7B4D3A";
 
 // Printed dial plate behind a knob: tick marks and numbers on cream, so the close-ups read as a real set.
 const plateDraw = (numbers: boolean) => (ctx: CanvasRenderingContext2D, s: number) => {
@@ -521,12 +522,12 @@ const Scene: React.FC<{ f: number }> = ({ f }) => {
 
   return (
     <>
-      <ambientLight intensity={0.5} color="#ffe6c8" />
+      <ambientLight intensity={0.62} color="#fff0dc" />
       <hemisphereLight args={["#ffe8cf", "#4a2c22", 0.35]} />
       <directionalLight
         position={[-3.5, 6, 6]}
         intensity={2.4}
-        color="#ffe6c6"
+        color="#fff1dc"
         castShadow
         shadow-mapSize={[2048, 2048]}
         shadow-camera-left={-6}
@@ -536,7 +537,7 @@ const Scene: React.FC<{ f: number }> = ({ f }) => {
         shadow-bias={-0.0004}
       />
       {/* the screen throws its colour on the room */}
-      <pointLight position={[SCREEN_C[0], SCREEN_C[1], 2.1]} intensity={4.5 + st * 4} distance={7} decay={1.6} color={glow} />
+      <pointLight position={[SCREEN_C[0], SCREEN_C[1], 2.1]} intensity={3.0 + st * 4} distance={7} decay={1.6} color={glow} />
       <pointLight position={[2.45, 1.45, 0.4]} intensity={2.0 * lampFlicker} distance={5} decay={1.6} color="#ffc890" />
 
       {/* wall, floor, rug */}
@@ -546,7 +547,7 @@ const Scene: React.FC<{ f: number }> = ({ f }) => {
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.12, 2]} receiveShadow>
         <planeGeometry args={[24, 16]} />
-        <meshStandardMaterial color="#3a251d" roughness={0.9} />
+        <meshStandardMaterial color="#4a3228" roughness={0.9} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0.2, -1.11, 3.2]} receiveShadow>
         <circleGeometry args={[4.6, 48]} />
@@ -715,7 +716,7 @@ const Headline: React.FC<{ lines: string[]; at: number; out: number; top: number
                 fontSize: size,
                 lineHeight: 1.0,
                 letterSpacing: "-0.03em",
-                color: P.bg,
+                color: P.ink,
                 transform: `translateY(${(1 - a * o) * 108}%)`,
                 whiteSpace: "nowrap",
               }}
@@ -787,6 +788,7 @@ const SoundDesign: React.FC = () => {
         );
       })}
       {/* hook: dial click before the first flip is already covered; payoff and push */}
+      <Sfx name="riser" at={1052} volume={0.6} />
       <Sfx name="impact" at={1080} volume={0.8} />
       <Sfx name="sub-drop" at={1080} volume={0.6} />
       <Sfx name="swish-reverse" at={1160} volume={0.6} />
@@ -816,11 +818,11 @@ export const ChannelSurfing: React.FC = () => {
           </ThreeCanvas>
         </AbsoluteFill>
         <Vignette />
-        {frame < 44 && <Headline lines={["Don't touch", "that dial."]} at={-22} out={40} top={226} size={150} />}
-        {frame >= 1080 && frame < 1146 && (
+        {frame < 44 && <Headline lines={["Don't touch", "that dial."]} at={-22} out={40} top={226} size={168} />}
+        {frame >= 1074 && frame < 1146 && (
           <>
-            <Headline lines={["Every channel."]} at={1080} out={1142} top={226} size={104} stagger={0} />
-            <Headline lines={["One studio."]} at={1095} out={1144} top={338} size={170} stagger={0} />
+            <Headline lines={["Every channel."]} at={1074} out={1142} top={226} size={92} stagger={0} />
+            <Headline lines={["One studio."]} at={1089} out={1144} top={318} size={176} stagger={0} />
           </>
         )}
         <Grain opacity={0.07} />

@@ -103,9 +103,7 @@ const testCard = (ctx: Ctx, t: number) => {
   ctx.lineTo(cx, cy + 130);
   ctx.stroke();
   rect(ctx, cx - 14, cy - 14, 28, 28, ACC);
-  text(ctx, "PLEASE STAND BY", cx, 56, 44, INK, { font: MONO, weight: 700, align: "center", track: 0.1 });
-  text(ctx, "NO SIGNAL YET", 70, 730, 36, INK, { font: MONO, weight: 700, track: 0.08 });
-  text(ctx, "TEST CARD 00", SW - 70, 730, 36, INK, { font: MONO, weight: 700, align: "right", track: 0.08 });
+  text(ctx, "STAND BY", cx, 58, 56, INK, { font: MONO, weight: 700, align: "center", track: 0.1 });
   // a slow sweep line so even a held frame is alive
   const sy = (t * 3) % SH;
   rect(ctx, 0, sy, SW, 6, "rgba(233,220,201,0.5)");
@@ -175,9 +173,8 @@ const weather = (ctx: Ctx, t: number) => {
   }
   // city temperatures tick up
   const cities: [string, number, number, number][] = [
-    ["HARBOUR", 210, 320, 11],
-    ["MILLTOWN", 470, 545, 14],
-    ["PINE END", 780, 480, 9],
+    ["HARBOUR", 200, 330, 11],
+    ["MILLTOWN", 500, 540, 14],
   ];
   cities.forEach(([nm, x, y, deg], i) => {
     const g = pr(t, 30 + i * 8, 56 + i * 8);
@@ -185,13 +182,12 @@ const weather = (ctx: Ctx, t: number) => {
     ctx.beginPath();
     ctx.arc(x, y, 10 * g, 0, Math.PI * 2);
     ctx.fill();
-    text(ctx, nm, x + 22, y - 6, 36, INK, { font: MONO, weight: 700, track: 0.04 });
-    text(ctx, `${Math.round(deg * pr(t, 40 + i * 8, 86 + i * 8, IO))}°`, x + 22, y + 44, 56, INK, { weight: 900 });
+    text(ctx, nm, x + 22, y - 6, 40, INK, { font: MONO, weight: 700, track: 0.04 });
+    text(ctx, `${Math.round(deg * pr(t, 40 + i * 8, 86 + i * 8, IO))}°`, x + 22, y + 56, 72, INK, { weight: 900 });
   });
   // header bar + lower strip
   rect(ctx, 0, 0, SW, 74, INK);
   text(ctx, "THE WEEK AHEAD", 40, 52, 40, BG, { weight: 900, track: 0.02 });
-  text(ctx, "ISOBARS", SW - 40, 52, 36, BG, { font: MONO, weight: 700, align: "right" });
   const sl = pr(t, 70, 90);
   rect(ctx, 0, SH - 74, SW, 74, ACC);
   text(ctx, "FRONT ARRIVES TUESDAY", 40, SH - 22 + (1 - sl) * 40, 38, BG, { weight: 900, track: 0.02 });
@@ -252,6 +248,16 @@ const news = (ctx: Ctx, t: number) => {
   const off = -(t * 9);
   text(ctx, msg + msg, 220 + off, SH - 34, 38, INK, { font: BODY, weight: 800 });
   ctx.restore();
+  const fadeL = ctx.createLinearGradient(190, 0, 290, 0);
+  fadeL.addColorStop(0, BG);
+  fadeL.addColorStop(1, "rgba(233,220,201,0)");
+  ctx.fillStyle = fadeL;
+  ctx.fillRect(190, SH - 96, 100, 96);
+  const fadeR = ctx.createLinearGradient(SW - 100, 0, SW, 0);
+  fadeR.addColorStop(0, "rgba(233,220,201,0)");
+  fadeR.addColorStop(1, BG);
+  ctx.fillStyle = fadeR;
+  ctx.fillRect(SW - 100, SH - 96, 100, 96);
 };
 
 // ─── CH 05 · Saturday cartoon ──────────────────────────────────────────────────────────────
@@ -456,7 +462,6 @@ const nature = (ctx: Ctx, t: number) => {
   text(ctx, "The quiet life", 56, 104, 60, BG, { weight: 600, italic: true });
   text(ctx, "of ferns", 56, 166, 60, BG, { weight: 600, italic: true });
   ctx.globalAlpha = 1;
-  text(ctx, "A NATURAL HISTORY", SW - 50, SH - 40, 34, BG, { font: MONO, weight: 700, align: "right", track: 0.12 });
 };
 
 // ─── CH 07 · music video ───────────────────────────────────────────────────────────────────
@@ -497,9 +502,8 @@ const music = (ctx: Ctx, t: number) => {
   ctx.scale(sc, sc);
   text(ctx, wd, 0, 0, wd.length > 3 ? 128 : 220, ac, { weight: 900, align: "center", track: -0.03 });
   ctx.restore();
-  rect(ctx, 0, SH - 80, SW, 80, INK);
-  text(ctx, "VIDEO HITS · THE COUNTDOWN", 36, SH - 28, 34, BG, { font: MONO, weight: 700, track: 0.06 });
-  text(ctx, `#${String(8 - (beat % 8)).padStart(2, "0")}`, SW - 36, SH - 24, 44, ACC === bg ? BG : ACC, { weight: 900, align: "right" });
+  rect(ctx, 0, SH - 100, SW, 100, INK);
+  text(ctx, `NO. ${8 - (beat % 8)}`, SW / 2, SH - 26, 72, BG, { weight: 900, align: "center", track: 0.04 });
 };
 
 // ─── CH 08 · infomercial ───────────────────────────────────────────────────────────────────
@@ -578,7 +582,7 @@ const shop = (ctx: Ctx, t: number) => {
   const bw = pr(t, 48, 62, BACK);
   if (t >= 48 && t < 82) {
     ctx.save();
-    ctx.translate(330, 600);
+    ctx.translate(400, 610);
     ctx.rotate(-0.08);
     ctx.scale(bw, bw);
     rect(ctx, -170, -52, 340, 104, INK);
@@ -602,7 +606,7 @@ const shop = (ctx: Ctx, t: number) => {
     ctx.restore();
   }
   rect(ctx, 0, SH - 70, SW, 70, ACC);
-  text(ctx, "CALL NOW · A FERN IS STANDING BY", SW / 2, SH - 22, 36, BG, { font: MONO, weight: 700, align: "center", track: 0.04 });
+  text(ctx, "CALL NOW", SW / 2, SH - 18, 52, BG, { weight: 900, align: "center", track: 0.08 });
 };
 
 // ─── CH 09 · space broadcast ───────────────────────────────────────────────────────────────
@@ -672,29 +676,30 @@ const space = (ctx: Ctx, t: number) => {
   });
   // telemetry
   const live = Math.floor(t / 15) % 2 === 0;
-  text(ctx, "LIVE FEED", 70, 92, 36, BG, { font: MONO, weight: 700, track: 0.12 });
+  text(ctx, "LIVE", 80, 100, 48, BG, { font: MONO, weight: 700, track: 0.12 });
   if (live) {
     ctx.fillStyle = ACC;
     ctx.beginPath();
-    ctx.arc(48, 79, 9, 0, Math.PI * 2);
+    ctx.arc(52, 84, 11, 0, Math.PI * 2);
     ctx.fill();
   }
-  text(ctx, "384 400 KM", SW - 50, 92, 36, BG, { font: MONO, weight: 700, align: "right", track: 0.06 });
-  text(ctx, `T+${String(Math.floor(t / 30)).padStart(2, "0")}:${String(Math.floor((t % 30) * 2)).padStart(2, "0")}`, SW - 50, 140, 36, BG, { font: MONO, weight: 700, align: "right" });
+  text(ctx, "384 400 KM", SW - 50, 100, 48, BG, { font: MONO, weight: 700, align: "right", track: 0.06 });
   // crosshair
   ctx.strokeStyle = "rgba(233,220,201,0.6)";
   ctx.lineWidth = 3;
-  ctx.strokeRect(70, 120, 60, 60);
-  ctx.beginPath();
-  ctx.moveTo(100, 100);
-  ctx.lineTo(100, 200);
-  ctx.moveTo(50, 150);
-  ctx.lineTo(150, 150);
-  ctx.stroke();
+  
 };
 
 // ─── CH 01 · the studio channel ────────────────────────────────────────────────────────────
 const studio = (ctx: Ctx, t: number) => {
+  // "Every channel": a one-second montage of the earlier looks resolves into the studio card
+  if (t < 30) {
+    const order = [weather, news, cartoon, nature, music, shop];
+    const k = Math.floor(t / 5);
+    order[k](ctx, 30 + (k * 17) + (t % 5));
+    return;
+  }
+  t -= 30;
   rect(ctx, 0, 0, SW, SH, BG);
   const p = pr(t, 0, 22);
   // concentric rings breathe behind the wordmark
@@ -713,9 +718,6 @@ const studio = (ctx: Ctx, t: number) => {
   text(ctx, "EDITING", SW / 2, 490, 160, INK, { weight: 600, align: "center", track: -0.03 });
   ctx.restore();
   rect(ctx, SW / 2 - 130, 548, 260 * pr(t, 10, 30) * fade, 8, ACC);
-  ctx.globalAlpha = fade;
-  text(ctx, "CH 01 · OUR OWN CHANNEL", SW / 2, 650, 36, INK, { font: MONO, weight: 700, align: "center", track: 0.1 });
-  ctx.globalAlpha = 1;
 };
 
 const DRAW: Record<ChannelId, (ctx: Ctx, t: number) => void> = {
