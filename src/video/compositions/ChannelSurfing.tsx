@@ -150,7 +150,7 @@ const cameraAt = (f: number): Cam => {
     // push through the glass: the camera dives at the screen and lands filling the frame
     const u = interpolate(f, [1170, END], [0, 1], { ...clamp, easing: ease.quintInOut });
     const a = CAM.frontEnd;
-    const endP: V3 = [-0.3, 0.95, 3.9];
+    const endP: V3 = [-0.3, 0.95, 2.6];
     return { p: lerp3(a.p, endP, u), l: lerp3(a.l, SCREEN_C, Math.min(1, u * 1.6)), f: 36 };
   }
   let sh = shots[0];
@@ -251,6 +251,8 @@ void main() {
   c = c + c * off * off;
   vec2 uv = c * 0.5 + 0.5;
   float inside = step(0.0, uv.x) * step(uv.x, 1.0) * step(0.0, uv.y) * step(uv.y, 1.0);
+  // zoom out a touch so the curvature never crops edge-anchored type
+  uv = (uv - 0.5) * 1.07 + 0.5;
   // vertical roll during the static burst
   uv.y = fract(uv.y + uRoll);
   float ab = 0.0016 * uScan + uStatic * 0.012;

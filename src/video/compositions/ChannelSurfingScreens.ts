@@ -194,7 +194,7 @@ const weather = (ctx: Ctx, t: number) => {
   text(ctx, "ISOBARS IN HPA", SW - 40, 50, 28, BG, { font: MONO, weight: 700, align: "right" });
   const sl = pr(t, 70, 90);
   rect(ctx, 0, SH - 74, SW, 74, ACC);
-  text(ctx, "FRONT ARRIVES TUESDAY", 40 + (1 - sl) * -60, SH - 22, 38, BG, { weight: 900, track: 0.02 });
+  text(ctx, "FRONT ARRIVES TUESDAY", 40, SH - 22 + (1 - sl) * 40, 38, BG, { weight: 900, track: 0.02 });
 };
 
 // ─── CH 04 · news package ──────────────────────────────────────────────────────────────────
@@ -216,8 +216,8 @@ const news = (ctx: Ctx, t: number) => {
   ctx.beginPath();
   ctx.rect(0, 180, SW * w, 300);
   ctx.clip();
-  text(ctx, "LOCAL FERN", 54, 330, 138, BG, { weight: 900, track: -0.03 });
-  text(ctx, "REACHES WINDOW", 54, 450, 108, BG, { weight: 900, track: -0.03 });
+  text(ctx, "LOCAL FERN", 54, 330, 130, BG, { weight: 900, track: -0.03 });
+  text(ctx, "REACHES WINDOW", 54, 450, 90, BG, { weight: 900, track: -0.03 });
   ctx.restore();
   // lower third
   const l3 = pr(t, 26, 46);
@@ -408,7 +408,7 @@ const frond = (ctx: Ctx, bx: number, by: number, heading: number, length: number
   pts.forEach(([px, py, pa], i) => {
     if (i < 3) return;
     const u = i / N;
-    const size = Math.max(0.5, (1 - u * 0.78) * 70 * Math.min(1, g * 1.4) * Math.max(0, Math.min(1, (1 - (1 - g) * 1.2) + 0.15)));
+    const size = Math.max(0.5, (1 - u * 0.7) * 36 * Math.max(0, Math.min(1, g * 1.5 - u * 0.8)));
     for (const side of [-1, 1]) {
       const la = pa + side * (1.15 - (1 - g) * 0.7);
       ctx.beginPath();
@@ -436,9 +436,9 @@ const nature = (ctx: Ctx, t: number) => {
   ctx.fillStyle = "#33332a";
   ctx.fillRect(0, 640, SW, 128);
   // three fronds unfurl, staggered
-  const g1 = pr(t, 4, 88, IO);
-  const g2 = pr(t, 16, 100, IO);
-  const g3 = pr(t, 28, 110, IO);
+  const g1 = 0.1 + 0.9 * pr(t, 0, 88, IO);
+  const g2 = 0.08 + 0.92 * pr(t, 10, 100, IO);
+  const g3 = 0.06 + 0.94 * pr(t, 20, 110, IO);
   frond(ctx, 330, 700, -Math.PI / 2 - 0.35, 520, g1, 5.5, -1);
   frond(ctx, 520, 710, -Math.PI / 2, 600, g2, 5, 0);
   frond(ctx, 700, 700, -Math.PI / 2 + 0.4, 500, g3, 5.5, 1);
@@ -495,7 +495,7 @@ const music = (ctx: Ctx, t: number) => {
   ctx.save();
   ctx.translate(SW / 2, SH / 2 + 56);
   ctx.scale(sc, sc);
-  text(ctx, wd, 0, 0, wd.length > 3 ? 190 : 250, ac, { weight: 900, align: "center", track: -0.03 });
+  text(ctx, wd, 0, 0, wd.length > 3 ? 150 : 230, ac, { weight: 900, align: "center", track: -0.03 });
   ctx.restore();
   rect(ctx, 0, SH - 80, SW, 80, INK);
   text(ctx, "VIDEO HITS · THE COUNTDOWN", 36, SH - 28, 34, BG, { font: MONO, weight: 700, track: 0.06 });
@@ -545,7 +545,7 @@ const shop = (ctx: Ctx, t: number) => {
   ctx.fill();
   ctx.stroke();
   ctx.save();
-  ctx.translate(175, 0);
+  ctx.translate(175, -40);
   ctx.rotate(t * 0.18);
   ctx.beginPath();
   ctx.moveTo(0, 0);
@@ -570,16 +570,16 @@ const shop = (ctx: Ctx, t: number) => {
   ctx.ellipse(28 * sp, -260 * sp - 12, 30 * sp, 14 * sp, -0.4, 0, Math.PI * 2);
   ctx.ellipse(-26 * sp, -245 * sp - 10, 26 * sp, 12 * sp, 0.4, 0, Math.PI * 2);
   ctx.fill();
-  text(ctx, "PLANT-O-MATIC", 0, 40, 46, INK, { weight: 900, align: "center", track: 0.01 });
+  text(ctx, "PLANT-O-MATIC", 0, 92, 40, INK, { weight: 900, align: "center", track: 0.01 });
   ctx.restore();
   // headline
   rect(ctx, 0, 0, SW, 100, INK);
-  text(ctx, "GROW ANYTHING. EFFORTLESSLY.", SW / 2, 70, 44, BG, { weight: 900, align: "center", track: 0.02 });
+  text(ctx, "GROW ANYTHING.", 40, 68, 46, BG, { weight: 900, track: 0.02 });
   // "But wait…"
   const bw = pr(t, 48, 62, BACK);
   if (t >= 48 && t < 82) {
     ctx.save();
-    ctx.translate(210, 590);
+    ctx.translate(290, 600);
     ctx.rotate(-0.08);
     ctx.scale(bw, bw);
     rect(ctx, -170, -52, 340, 104, INK);
@@ -706,14 +706,17 @@ const studio = (ctx: Ctx, t: number) => {
     ctx.arc(SW / 2, SH / 2 - 10, (i * 118 + Math.sin(t * 0.06 + i) * 8) * p, 0, Math.PI * 2);
     ctx.stroke();
   }
+  const fade = 1 - pr(t, 112, 134, IO);
   ctx.save();
   ctx.translate(0, (1 - p) * 40);
-  ctx.globalAlpha = p;
-  text(ctx, "VIBE", SW / 2, 330, 190, INK, { weight: 600, align: "center", track: -0.03 });
-  text(ctx, "EDITING", SW / 2, 500, 190, INK, { weight: 600, align: "center", track: -0.03 });
+  ctx.globalAlpha = p * fade;
+  text(ctx, "VIBE", SW / 2, 330, 160, INK, { weight: 600, align: "center", track: -0.03 });
+  text(ctx, "EDITING", SW / 2, 490, 160, INK, { weight: 600, align: "center", track: -0.03 });
   ctx.restore();
-  rect(ctx, SW / 2 - 130, 548, 260 * pr(t, 10, 30), 8, ACC);
+  rect(ctx, SW / 2 - 130, 548, 260 * pr(t, 10, 30) * fade, 8, ACC);
+  ctx.globalAlpha = fade;
   text(ctx, "CH 01 · OUR OWN CHANNEL", SW / 2, 640, 30, MUTED, { font: MONO, weight: 700, align: "center", track: 0.1 });
+  ctx.globalAlpha = 1;
 };
 
 const DRAW: Record<ChannelId, (ctx: Ctx, t: number) => void> = {
