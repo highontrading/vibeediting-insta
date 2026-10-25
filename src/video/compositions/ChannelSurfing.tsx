@@ -375,8 +375,8 @@ const Screen: React.FC<{ f: number; scanAmt: number }> = ({ f, scanAmt }) => {
 };
 
 // ─── The set ────────────────────────────────────────────────────────────────────────────────
-const WALNUT = "#5C3F34";
-const TEAK = "#7B4D3A";
+const WALNUT = "#584238";
+const TEAK = "#6E5242";
 
 // Printed dial plate behind a knob: tick marks and numbers on cream, so the close-ups read as a real set.
 const plateDraw = (numbers: boolean) => (ctx: CanvasRenderingContext2D, s: number) => {
@@ -821,8 +821,8 @@ export const ChannelSurfing: React.FC = () => {
         {frame < 44 && <Headline lines={["Don't touch", "that dial."]} at={-22} out={40} top={226} size={168} />}
         {frame >= 1074 && frame < 1146 && (
           <>
-            <Headline lines={["Every channel."]} at={1074} out={1142} top={226} size={92} stagger={0} />
-            <Headline lines={["One studio."]} at={1089} out={1144} top={318} size={176} stagger={0} />
+            <Headline lines={["Every channel."]} at={1074} out={1142} top={222} size={124} stagger={0} />
+            <Headline lines={["One studio."]} at={1089} out={1144} top={340} size={164} stagger={0} />
           </>
         )}
         <Grain opacity={0.07} />

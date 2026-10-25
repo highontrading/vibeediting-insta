@@ -182,15 +182,15 @@ const weather = (ctx: Ctx, t: number) => {
     ctx.beginPath();
     ctx.arc(x, y, 10 * g, 0, Math.PI * 2);
     ctx.fill();
-    text(ctx, nm, x + 22, y - 6, 40, INK, { font: MONO, weight: 700, track: 0.04 });
-    text(ctx, `${Math.round(deg * pr(t, 40 + i * 8, 86 + i * 8, IO))}°`, x + 22, y + 56, 72, INK, { weight: 900 });
+    text(ctx, nm, x + 22, y - 6, 48, INK, { font: MONO, weight: 700, track: 0.04 });
+    text(ctx, `${Math.round(deg * pr(t, 40 + i * 8, 86 + i * 8, IO))}°`, x + 22, y + 66, 92, INK, { weight: 900 });
   });
   // header bar + lower strip
-  rect(ctx, 0, 0, SW, 74, INK);
-  text(ctx, "THE WEEK AHEAD", 40, 52, 40, BG, { weight: 900, track: 0.02 });
+  rect(ctx, 0, 0, SW, 96, INK);
+  text(ctx, "THE WEEK AHEAD", 40, 68, 60, BG, { weight: 900, track: 0.01 });
   const sl = pr(t, 70, 90);
-  rect(ctx, 0, SH - 74, SW, 74, ACC);
-  text(ctx, "FRONT ARRIVES TUESDAY", 40, SH - 22 + (1 - sl) * 40, 38, BG, { weight: 900, track: 0.02 });
+  rect(ctx, 0, SH - 96, SW, 96, ACC);
+  text(ctx, "RAIN BY TUESDAY", 40, SH - 28 + (1 - sl) * 40, 56, BG, { weight: 900, track: 0.02 });
 };
 
 // ─── CH 04 · news package ──────────────────────────────────────────────────────────────────
@@ -382,10 +382,8 @@ const cartoon = (ctx: Ctx, t0: number) => {
   ctx.stroke();
   ctx.restore();
   // title card chip
-  rect(ctx, 40, 40, 330, 70, INK);
-  text(ctx, "POT PALS", 205, 94, 50, BG, { weight: 900, align: "center", track: 0.04 });
-  const bounce = Math.sin(t * 0.5) * 3;
-  text(ctx, "SATURDAY 8:00", SW - 40, 90 + bounce, 38, INK, { font: BODY, weight: 800, align: "right" });
+  rect(ctx, 40, 40, 440, 96, INK);
+  text(ctx, "POT PALS", 260, 113, 70, BG, { weight: 900, align: "center", track: 0.04 });
 };
 
 // ─── CH 06 · nature film ───────────────────────────────────────────────────────────────────
@@ -428,8 +426,8 @@ const nature = (ctx: Ctx, t: number) => {
   // dusk: ink sky with an olive hill, soft sun
   rect(ctx, 0, 0, SW, SH, INK);
   const sun = ctx.createRadialGradient(780, 230, 10, 780, 230, 360);
-  sun.addColorStop(0, "rgba(198,93,59,0.85)");
-  sun.addColorStop(1, "rgba(198,93,59,0)");
+  sun.addColorStop(0, "rgba(221,203,179,0.35)");
+  sun.addColorStop(1, "rgba(221,203,179,0)");
   ctx.fillStyle = sun;
   ctx.fillRect(0, 0, SW, SH);
   ctx.fillStyle = "#4a4a3c";
@@ -457,11 +455,15 @@ const nature = (ctx: Ctx, t: number) => {
     ctx.arc(fx, fy, 3.5, 0, Math.PI * 2);
     ctx.fill();
   }
-  const ti = pr(t, 40, 70);
-  ctx.globalAlpha = ti;
-  text(ctx, "The quiet life", 56, 104, 60, BG, { weight: 600, italic: true });
-  text(ctx, "of ferns", 56, 166, 60, BG, { weight: 600, italic: true });
-  ctx.globalAlpha = 1;
+  const ti = pr(t, 6, 30);
+  rect(ctx, 0, 70, 700 * ti, 210, BG);
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(0, 70, 700 * ti, 210);
+  ctx.clip();
+  text(ctx, "The quiet life", 80, 164, 84, INK, { weight: 600, italic: true });
+  text(ctx, "of ferns", 80, 250, 84, INK, { weight: 600, italic: true });
+  ctx.restore();
 };
 
 // ─── CH 07 · music video ───────────────────────────────────────────────────────────────────
@@ -582,7 +584,7 @@ const shop = (ctx: Ctx, t: number) => {
   const bw = pr(t, 48, 62, BACK);
   if (t >= 48 && t < 82) {
     ctx.save();
-    ctx.translate(400, 610);
+    ctx.translate(420, 610);
     ctx.rotate(-0.08);
     ctx.scale(bw, bw);
     rect(ctx, -170, -52, 340, 104, INK);
@@ -601,8 +603,8 @@ const shop = (ctx: Ctx, t: number) => {
     ctx.beginPath();
     ctx.roundRect(-210, -110, 420, 220, 22);
     ctx.fill();
-    text(ctx, "ONLY", -150, -40, 34, BG, { font: MONO, weight: 700, track: 0.12 });
-    text(ctx, "$19.99", 0, 70, 112, ACC === INK ? BG : BG, { weight: 900, align: "center" });
+    text(ctx, "ONLY", -160, -34, 50, BG, { font: MONO, weight: 700, track: 0.12 });
+    text(ctx, "$19.99", 0, 78, 128, ACC === INK ? BG : BG, { weight: 900, align: "center" });
     ctx.restore();
   }
   rect(ctx, 0, SH - 70, SW, 70, ACC);
@@ -619,9 +621,9 @@ const space = (ctx: Ctx, t: number) => {
   }
   // Earth rises slowly over the lunar horizon
   const rise = pr(t, 0, 150, IO);
-  const ex = 590;
-  const ey = 560 - rise * 250;
-  const er = 150;
+  const ex = 520;
+  const ey = 640 - rise * 230;
+  const er = 235;
   ctx.fillStyle = OLV;
   ctx.beginPath();
   ctx.arc(ex, ey, er, 0, Math.PI * 2);
@@ -676,14 +678,14 @@ const space = (ctx: Ctx, t: number) => {
   });
   // telemetry
   const live = Math.floor(t / 15) % 2 === 0;
-  text(ctx, "LIVE", 80, 100, 48, BG, { font: MONO, weight: 700, track: 0.12 });
+  text(ctx, "EARTHRISE", 60, 120, 84, BG, { weight: 600, italic: true });
   if (live) {
     ctx.fillStyle = ACC;
     ctx.beginPath();
-    ctx.arc(52, 84, 11, 0, Math.PI * 2);
+    ctx.arc(SW - 80, 86, 14, 0, Math.PI * 2);
     ctx.fill();
   }
-  text(ctx, "384 400 KM", SW - 50, 100, 48, BG, { font: MONO, weight: 700, align: "right", track: 0.06 });
+  text(ctx, "384 400 KM", SW - 60, SH - 36, 54, BG, { font: MONO, weight: 700, align: "right", track: 0.04 });
   // crosshair
   ctx.strokeStyle = "rgba(233,220,201,0.6)";
   ctx.lineWidth = 3;
@@ -701,7 +703,7 @@ const studio = (ctx: Ctx, t: number) => {
   }
   t -= 30;
   rect(ctx, 0, 0, SW, SH, BG);
-  const p = pr(t, 0, 22);
+  const p = 0.35 + 0.65 * pr(t, 0, 22);
   // concentric rings breathe behind the wordmark
   ctx.strokeStyle = SURF;
   ctx.lineWidth = 26;
@@ -710,7 +712,7 @@ const studio = (ctx: Ctx, t: number) => {
     ctx.arc(SW / 2, SH / 2 - 10, (i * 118 + Math.sin(t * 0.06 + i) * 8) * p, 0, Math.PI * 2);
     ctx.stroke();
   }
-  const fade = 1 - pr(t, 112, 134, IO);
+  const fade = 1 - pr(t, 84, 104, IO);
   ctx.save();
   ctx.translate(0, (1 - p) * 40);
   ctx.globalAlpha = p * fade;
