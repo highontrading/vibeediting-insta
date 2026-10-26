@@ -222,37 +222,37 @@ const news = (ctx: Ctx, t: number) => {
   ctx.beginPath();
   ctx.rect(0, 520, 960 * l3, 84);
   ctx.clip();
-  text(ctx, "Marta Oyelaran", 36, 582, 46, INK, { weight: 900 });
-  text(ctx, "live from the sofa", 470, 580, 34, INK, { font: BODY, weight: 500 });
+  text(ctx, "Marta Oyelaran", 36, 586, 50, INK, { weight: 900 });
+  text(ctx, "live from the sofa", 500, 586, 50, INK, { font: BODY, weight: 600 });
   ctx.restore();
   // LIVE chip + clock
   const blink = Math.floor(t / 10) % 2 === 0;
-  rect(ctx, 40, 40, 150, 56, ACC);
-  text(ctx, "LIVE", 115, 82, 36, BG, { font: MONO, weight: 700, align: "center", track: 0.1 });
+  rect(ctx, 56, 40, 170, 62, ACC);
+  text(ctx, "LIVE", 148, 88, 50, BG, { font: MONO, weight: 700, align: "center", track: 0.1 });
   if (blink) {
     ctx.fillStyle = BG;
     ctx.beginPath();
-    ctx.arc(66, 68, 8, 0, Math.PI * 2);
+    ctx.arc(80, 71, 8, 0, Math.PI * 2);
     ctx.fill();
   }
-  text(ctx, "09:41", SW - 40, 82, 44, BG, { font: MONO, weight: 700, align: "right" });
+  text(ctx, "09:41", SW - 56, 88, 50, BG, { font: MONO, weight: 700, align: "right" });
   // ticker
-  rect(ctx, 0, SH - 96, SW, 96, BG);
-  rect(ctx, 0, SH - 96, 190, 96, OLV);
-  text(ctx, "NEWS", 95, SH - 34, 38, BG, { weight: 900, align: "center", track: 0.04 });
+  rect(ctx, 0, SH - 130, SW, 100, BG);
+  rect(ctx, 0, SH - 130, 200, 100, OLV);
+  text(ctx, "NEWS", 100, SH - 62, 50, BG, { weight: 900, align: "center", track: 0.04 });
   const msg = "LOCAL FERN REACHES WINDOW   •   SOFA CUSHION RECOVERS FROM DENT   •   TUESDAY CANCELLED DUE TO LACK OF INTEREST   •   ";
   ctx.save();
   ctx.beginPath();
-  ctx.rect(190, SH - 96, SW - 190, 96);
+  ctx.rect(200, SH - 130, SW - 200, 100);
   ctx.clip();
-  const off = -(t * 9);
-  text(ctx, msg + msg, 220 + off, SH - 34, 38, INK, { font: BODY, weight: 800 });
+  const off = -(t * 11);
+  text(ctx, msg + msg, 230 + off, SH - 62, 50, INK, { font: BODY, weight: 800 });
   ctx.restore();
-  const fadeL = ctx.createLinearGradient(190, 0, 290, 0);
+  const fadeL = ctx.createLinearGradient(200, 0, 300, 0);
   fadeL.addColorStop(0, BG);
   fadeL.addColorStop(1, "rgba(233,220,201,0)");
   ctx.fillStyle = fadeL;
-  ctx.fillRect(190, SH - 96, 100, 96);
+  ctx.fillRect(200, SH - 130, 100, 100);
   const fadeR = ctx.createLinearGradient(SW - 100, 0, SW, 0);
   fadeR.addColorStop(0, "rgba(233,220,201,0)");
   fadeR.addColorStop(1, BG);
@@ -402,43 +402,46 @@ const frond = (ctx: Ctx, bx: number, by: number, heading: number, length: number
     y += Math.sin(a) * seg;
     pts.push([x, y, a]);
   }
-  ctx.strokeStyle = OLV;
-  ctx.lineWidth = 7;
+  ctx.strokeStyle = "#3F4A2E";
+  ctx.lineWidth = 5;
   ctx.lineCap = "round";
   ctx.beginPath();
   pts.forEach(([px, py], i) => (i ? ctx.lineTo(px, py) : ctx.moveTo(px, py)));
   ctx.stroke();
-  ctx.fillStyle = OLV;
+  ctx.fillStyle = "#4F5A3A";
   pts.forEach(([px, py, pa], i) => {
     if (i < 3) return;
     const u = i / N;
-    const size = Math.max(0.5, (1 - u * 0.7) * 36 * Math.max(0, Math.min(1, g * 1.5 - u * 0.8)));
+    const size = Math.max(0.5, (1 - u * 0.7) * 54 * Math.max(0, Math.min(1, g * 1.5 - u * 0.8)));
     for (const side of [-1, 1]) {
       const la = pa + side * (1.15 - (1 - g) * 0.7);
       ctx.beginPath();
-      ctx.ellipse(px + Math.cos(la) * size * 0.5, py + Math.sin(la) * size * 0.5, size * 0.55, size * 0.17, la, 0, Math.PI * 2);
+      ctx.ellipse(px + Math.cos(la) * size * 0.5, py + Math.sin(la) * size * 0.5, size * 0.62, size * 0.27, la, 0, Math.PI * 2);
       ctx.fill();
     }
   });
 };
 
 const nature = (ctx: Ctx, t: number) => {
-  // dusk: ink sky with an olive hill, soft sun
-  rect(ctx, 0, 0, SW, SH, INK);
-  const sun = ctx.createRadialGradient(780, 230, 10, 780, 230, 360);
-  sun.addColorStop(0, "rgba(221,203,179,0.35)");
-  sun.addColorStop(1, "rgba(221,203,179,0)");
-  ctx.fillStyle = sun;
+  // golden hour: warm sky, big low sun, dark olive hill; the fronds read as clear silhouettes
+  const sky = ctx.createLinearGradient(0, 0, 0, 600);
+  sky.addColorStop(0, "#E9DCC9");
+  sky.addColorStop(1, "#E8B58F");
+  ctx.fillStyle = sky;
   ctx.fillRect(0, 0, SW, SH);
-  ctx.fillStyle = "#4a4a3c";
+  ctx.fillStyle = ACC;
+  ctx.beginPath();
+  ctx.arc(760, 470, 150, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = OLV;
   ctx.beginPath();
   ctx.moveTo(0, 560);
-  ctx.bezierCurveTo(260, 470, 520, 600, SW, 500);
+  ctx.bezierCurveTo(260, 500, 520, 600, SW, 520);
   ctx.lineTo(SW, SH);
   ctx.lineTo(0, SH);
   ctx.fill();
-  ctx.fillStyle = "#33332a";
-  ctx.fillRect(0, 640, SW, 128);
+  ctx.fillStyle = INK;
+  ctx.fillRect(0, 650, SW, 118);
   // three fronds unfurl, staggered
   const g1 = 0.1 + 0.9 * pr(t, 0, 88, IO);
   const g2 = 0.08 + 0.92 * pr(t, 10, 100, IO);
@@ -450,19 +453,19 @@ const nature = (ctx: Ctx, t: number) => {
   for (let i = 0; i < 14; i++) {
     const fx = rand(i * 3.1) * SW + Math.sin(t * 0.03 + i) * 24;
     const fy = 120 + rand(i * 7.7) * 460 - t * 0.12 * (0.4 + rand(i));
-    ctx.fillStyle = `rgba(233,220,201,${0.3 + 0.5 * Math.abs(Math.sin(t * 0.06 + i))})`;
+    ctx.fillStyle = `rgba(198,93,59,${0.3 + 0.5 * Math.abs(Math.sin(t * 0.06 + i))})`;
     ctx.beginPath();
     ctx.arc(fx, fy, 3.5, 0, Math.PI * 2);
     ctx.fill();
   }
   const ti = pr(t, 6, 30);
-  rect(ctx, 0, 70, 700 * ti, 210, BG);
+  rect(ctx, 0, 70, 700 * ti, 210, INK);
   ctx.save();
   ctx.beginPath();
   ctx.rect(0, 70, 700 * ti, 210);
   ctx.clip();
-  text(ctx, "The quiet life", 80, 164, 84, INK, { weight: 600, italic: true });
-  text(ctx, "of ferns", 80, 250, 84, INK, { weight: 600, italic: true });
+  text(ctx, "The quiet life", 80, 164, 84, BG, { weight: 600, italic: true });
+  text(ctx, "of ferns", 80, 250, 84, BG, { weight: 600, italic: true });
   ctx.restore();
 };
 
@@ -617,14 +620,19 @@ const space = (ctx: Ctx, t: number) => {
   for (let i = 0; i < 90; i++) {
     const tw = 0.35 + 0.65 * Math.abs(Math.sin(t * 0.03 + i * 1.7));
     ctx.fillStyle = `rgba(233,220,201,${tw * 0.9})`;
-    ctx.fillRect(rand(i * 2.3) * SW, rand(i * 5.9) * 520, 2 + (i % 3 === 0 ? 1 : 0), 2 + (i % 3 === 0 ? 1 : 0));
+    ctx.fillRect(rand(i * 2.3) * SW, rand(i * 5.9) * 520, 3 + (i % 3 === 0 ? 2 : 0), 3 + (i % 3 === 0 ? 2 : 0));
   }
   // Earth rises slowly over the lunar horizon
   const rise = pr(t, 0, 150, IO);
   const ex = 520;
   const ey = 640 - rise * 230;
   const er = 235;
-  ctx.fillStyle = OLV;
+  const halo = ctx.createRadialGradient(ex, ey, er * 0.95, ex, ey, er * 1.35);
+  halo.addColorStop(0, "rgba(233,220,201,0.55)");
+  halo.addColorStop(1, "rgba(233,220,201,0)");
+  ctx.fillStyle = halo;
+  ctx.fillRect(0, 0, SW, SH);
+  ctx.fillStyle = "#9AA27C";
   ctx.beginPath();
   ctx.arc(ex, ey, er, 0, Math.PI * 2);
   ctx.fill();
@@ -663,7 +671,7 @@ const space = (ctx: Ctx, t: number) => {
   ctx.fillRect(ex - er, ey - er, er * 2, er * 2);
   ctx.restore();
   // moon surface
-  ctx.fillStyle = MUTED;
+  ctx.fillStyle = "#CDB89E";
   ctx.beginPath();
   ctx.moveTo(0, 640);
   ctx.quadraticCurveTo(SW / 2, 560, SW, 640);
@@ -685,7 +693,7 @@ const space = (ctx: Ctx, t: number) => {
     ctx.arc(SW - 80, 86, 14, 0, Math.PI * 2);
     ctx.fill();
   }
-  text(ctx, "384 400 KM", SW - 60, SH - 36, 66, BG, { font: MONO, weight: 700, align: "right", track: 0.04 });
+  text(ctx, "384 400 KM", SW - 60, SH - 36, 66, INK, { font: MONO, weight: 700, align: "right", track: 0.04 });
   // crosshair
   ctx.strokeStyle = "rgba(233,220,201,0.6)";
   ctx.lineWidth = 3;

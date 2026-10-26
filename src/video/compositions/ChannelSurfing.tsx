@@ -80,9 +80,9 @@ const CAM: Record<string, Cam> = {
   front: { p: [0, 2.0, 8.0], l: [0, 2.0, 0], f: 36 },
   frontPush: { p: [0, 1.85, 7.2], l: [0, 1.75, 0], f: 36 },
   frontEnd: { p: [0, 1.5, 6.0], l: [0, 1.35, 0], f: 36 },
-  screen: { p: [-0.3, 0.95, 5.55], l: SCREEN_C, f: 36 },
-  screenIn: { p: [-0.3, 0.95, 5.05], l: SCREEN_C, f: 36 },
-  screenClose: { p: [-0.3, 0.95, 4.75], l: SCREEN_C, f: 36 },
+  screen: { p: [-0.3, 0.95, 6.15], l: SCREEN_C, f: 36 },
+  screenIn: { p: [-0.3, 0.95, 5.8], l: SCREEN_C, f: 36 },
+  screenClose: { p: [-0.3, 0.95, 5.5], l: SCREEN_C, f: 36 },
   screenL: { p: [-1.2, 1.2, 6.3], l: SCREEN_C, f: 36 },
   screenR: { p: [0.8, 0.8, 6.3], l: SCREEN_C, f: 36 },
   wide34: { p: [2.3, 1.7, 6.0], l: [-0.1, 0.95, 0], f: 38 },
@@ -93,9 +93,9 @@ const CAM: Record<string, Cam> = {
   topB: { p: [-1.6, 2.4, 5.0], l: [-0.2, 0.95, 0.4], f: 38 },
   fern: { p: [-2.4, 1.5, 6.0], l: [-0.2, 0.9, 0], f: 38 },
   fernB: { p: [-2.1, 1.4, 5.6], l: [-0.2, 0.9, 0], f: 38 },
-  macro: { p: [-0.3, 0.95, 4.2], l: SCREEN_C, f: 36 },
-  dial: { p: [0.6, 1.1, 3.7], l: [0.8, 1.06, 0.8], f: 34 },
-  dialIn: { p: [0.7, 1.1, 3.2], l: [0.85, 1.06, 0.8], f: 34 },
+  macro: { p: [-0.3, 0.95, 5.25], l: SCREEN_C, f: 36 },
+  dial: { p: [0.55, 1.2, 3.1], l: [0.9, 1.17, 0.8], f: 34 },
+  dialIn: { p: [0.65, 1.2, 2.8], l: [0.92, 1.17, 0.8], f: 34 },
 };
 
 type Shot = { from: number; to: number; a: Cam; b: Cam };
@@ -419,6 +419,10 @@ const Knob: React.FC<{ r: number; angle: number; y: number; color: string; numbe
         <circleGeometry args={[r * 2.05, 48]} />
         <meshStandardMaterial map={plate} roughness={0.6} />
       </mesh>
+      <mesh position={[0.95, y, 0.776]}>
+        <ringGeometry args={[r * 2.05, r * 2.3, 48]} />
+        <meshStandardMaterial color={WALNUT} roughness={0.5} />
+      </mesh>
       <group position={[0.95, y, 0.8]} rotation={[Math.PI / 2, 0, 0]}>
         <group rotation={[0, angle, 0]}>
           <mesh geometry={geo} castShadow>
@@ -618,8 +622,8 @@ const Scene: React.FC<{ f: number }> = ({ f }) => {
           <boxGeometry args={[0.62, 1.4, 0.04]} />
           <meshStandardMaterial color={P.surface} roughness={0.5} />
         </mesh>
-        <Knob r={0.17} angle={knob} y={1.3} color={P.bg} numbers />
-        <Knob r={0.115} angle={vol} y={0.86} color={P.bg} numbers={false} />
+        <Knob r={0.14} angle={knob} y={1.38} color={P.bg} numbers />
+        <Knob r={0.095} angle={vol} y={0.84} color={P.bg} numbers={false} />
         {Array.from({ length: 7 }).map((_, i) => (
           <mesh key={i} position={[0.95, 0.5 - i * 0.07 + 0.0, 0.78]}>
             <boxGeometry args={[0.4, 0.025, 0.02]} />
