@@ -64,7 +64,7 @@ export const CuriosityNotInformation: React.FC = () => (
     <Scene range={SCENES.findOut} cut="up" out="left" origin="80px 1000px"><FindOut /></Scene>
     <Scene range={[FINAL_HOLD_END, CURIOSITY_DURATION]} cut="left">
       <Sequence from={FINAL_HOLD_END}>
-        <EndCard system={S} align="left" wordmarkSize={170} motif={<EndEye />} />
+        <EndCard system={S} align="left" wordmarkSize={230} motif={<EndEye />} />
       </Sequence>
     </Scene>
     <SoundDesign />
@@ -272,10 +272,10 @@ const Everywhere: React.FC = () => {
               letterSpacing: "-0.045em",
               color: mid ? P.ink : `${P.ink}22`,
               opacity: visible ? 1 : 0,
-              transform: `translateX(${-400 + dir * local * 7 - (mid ? 0 : dist * 90)}px)`,
+              transform: `translateX(${-1800 + dir * local * 7 - (mid ? 0 : dist * 90)}px)`,
             }}
           >
-            {"INFORMATION INFORMATION INFORMATION INFORMATION"}
+            {"INFORMATION INFORMATION INFORMATION INFORMATION INFORMATION INFORMATION INFORMATION INFORMATION"}
           </div>
         );
       })}
@@ -494,31 +494,31 @@ const Timeline: React.FC = () => {
       {(() => {
         const push = m(f, LINE_START.l09 - 2, LINE_START.l09 + 10, 0, 1, ease.quintInOut);
         return (
-          <div style={{ position: "absolute", left: 80, top: 250, width: 920, height: 320, overflow: "visible" }}>
+          <div style={{ position: "absolute", left: 80, top: 250, width: 920, height: 420, overflow: "visible" }}>
             <div style={{ position: "absolute", left: -push * 1100 }}>
-              <Hit at={SCENES.timeline[0] - LEAD} size={170}>Ask it</Hit>
-              <Hit at={w("l08", 3)} size={170}>early.</Hit>
+              <Hit at={SCENES.timeline[0] - LEAD} size={220}>Ask it</Hit>
+              <Hit at={w("l08", 3)} size={220}>early.</Hit>
             </div>
             {push > 0 && (
               <div style={{ position: "absolute", left: (1 - push) * 1100 }}>
-                <Hit at={LINE_START.l09 - 2} size={170} color={P.accent}>Answer</Hit>
-                <Hit at={w("l09", 1)} size={170} color={P.accent}>it late.</Hit>
+                <Hit at={LINE_START.l09 - 2} size={196} color={P.accent}>Answer</Hit>
+                <Hit at={w("l09", 1)} size={196} color={P.accent}>it late.</Hit>
               </div>
             )}
           </div>
         );
       })()}
-      <div style={{ position: "absolute", left: x0 + 0.06 * (x1 - x0) - 40, top: 650, fontFamily: DISPLAY, fontWeight: 900, fontSize: 470, lineHeight: 0.9, color: P.accent, transform: `scale(${q * (1 + 0.08 * m(f, qAt + 10, LINE_START.l09, 0, 1, ease.sineInOut))})`, transformOrigin: "30% 100%" }}>
+      <div style={{ position: "absolute", left: x0 + 0.06 * (x1 - x0) - 40, top: 740, fontFamily: DISPLAY, fontWeight: 900, fontSize: 470, lineHeight: 0.9, color: P.accent, transform: `scale(${q * (1 + 0.08 * m(f, qAt + 10, LINE_START.l09, 0, 1, ease.sineInOut))})`, transformOrigin: "30% 100%" }}>
         ?
       </div>
-      <div style={{ position: "absolute", left: x0 + 0.94 * (x1 - x0) - 135, top: 650, fontFamily: DISPLAY, fontWeight: 900, fontSize: 470, lineHeight: 0.9, color: P.ink, transform: `scale(${bang})`, transformOrigin: "50% 100%" }}>
+      <div style={{ position: "absolute", left: x0 + 0.94 * (x1 - x0) - 135, top: 740, fontFamily: DISPLAY, fontWeight: 900, fontSize: 470, lineHeight: 0.9, color: P.ink, transform: `scale(${bang})`, transformOrigin: "50% 100%" }}>
         !
       </div>
-      <div style={{ position: "absolute", left: x0, width: x1 - x0, top: 1160, height: 6, background: `${P.ink}33` }} />
-      <div style={{ position: "absolute", left: x0, width: (x1 - x0) * play, top: 1160, height: 6, background: P.ink }} />
-      <div style={{ position: "absolute", left: x0 + (x1 - x0) * play - 3, top: 1120, width: 6, height: 86, background: P.accent }} />
-      <Label color={P.muted} style={{ position: "absolute", left: x0, top: 1210 }}>0:00 · early</Label>
-      <Label color={P.muted} style={{ position: "absolute", right: 80, top: 1210 }}>late · 0:40</Label>
+      <div style={{ position: "absolute", left: x0, width: x1 - x0, top: 1230, height: 6, background: `${P.ink}33` }} />
+      <div style={{ position: "absolute", left: x0, width: (x1 - x0) * play, top: 1230, height: 6, background: P.ink }} />
+      <div style={{ position: "absolute", left: x0 + (x1 - x0) * play - 3, top: 1190, width: 6, height: 86, background: P.accent }} />
+      <Label color={P.muted} style={{ position: "absolute", left: x0, top: 1280 }}>0:00 · early</Label>
+      <Label color={P.muted} style={{ position: "absolute", right: 80, top: 1280 }}>late · 0:40</Label>
     </AbsoluteFill>
   );
 };
@@ -622,12 +622,12 @@ const Forget: React.FC = () => {
 /** Beat 75 (f1125): the loop opened at "Open a loop" finally closes. */
 const LOOP_CLOSE = 1125;
 const LOOP_R = 140;
-const LOOP_BOX = LOOP_R * 2 + 16;
+const LOOP_BOX = LOOP_R * 2 + 24;
 
 const FindOut: React.FC = () => {
   const f = useCurrentFrame();
   const outAt = w("l12", 7);
-  const eyeOpen = f < LOOP_CLOSE ? 1 : m(f, LOOP_CLOSE, LOOP_CLOSE + 8, 1, 0, ease.expoOut);
+  const eyeOpen = f < LOOP_CLOSE ? 1 : m(f, LOOP_CLOSE, LOOP_CLOSE + 12, 1, 0, ease.expoOut);
   const wink = blink(f, [1170]);
   const lid = Math.max(eyeOpen, wink);
   const look: [number, number] = f < LOOP_CLOSE + 12 ? [-0.7, -0.5] : f < 1150 ? [0.6, 0.2] : [0, 0];
@@ -646,7 +646,7 @@ const FindOut: React.FC = () => {
           {text}
         </Hit>
       ))}
-      <div style={{ marginTop: 30, fontFamily: DISPLAY, fontWeight: 900, fontSize: 380, letterSpacing: "-0.05em", lineHeight: 0.9, color: P.accent, opacity: f >= w("l12", 6) ? 1 : 0 }}>
+      <div style={{ marginTop: 30, fontFamily: DISPLAY, fontWeight: 900, fontSize: 380, letterSpacing: "-0.035em", lineHeight: 0.9, color: P.accent, opacity: f >= w("l12", 6) ? 1 : 0 }}>
         FIND
       </div>
       <div style={{ display: "flex", alignItems: "center", fontFamily: DISPLAY, fontWeight: 900, fontSize: 300, letterSpacing: "-0.05em", lineHeight: 0.9, color: P.accent }}>
@@ -670,10 +670,10 @@ const ClosingLoop: React.FC = () => {
   const c = 2 * Math.PI * LOOP_R;
   const draw = f < LOOP_CLOSE - 4 ? m(f, start, LOOP_CLOSE - 4, 0.3, 0.86, ease.quintInOut) : m(f, LOOP_CLOSE - 4, LOOP_CLOSE, 0.86, 1, ease.quintInOut);
   const a = draw * Math.PI * 2 - Math.PI / 2;
-  const pulse = 1 + 0.06 * m(f, LOOP_CLOSE, LOOP_CLOSE + 3, 0, 1, ease.expoOut) * (1 - m(f, LOOP_CLOSE + 3, LOOP_CLOSE + 14, 0, 1));
+  const pulse = 1 + 0.1 * m(f, LOOP_CLOSE, LOOP_CLOSE + 3, 0, 1, ease.expoOut) * (1 - m(f, LOOP_CLOSE + 3, LOOP_CLOSE + 14, 0, 1));
   return (
     <svg width={LOOP_BOX} height={LOOP_BOX} viewBox={`${-LOOP_BOX / 2} ${-LOOP_BOX / 2} ${LOOP_BOX} ${LOOP_BOX}`} style={{ position: "absolute", left: 0, top: 0, transform: `scale(${pulse})` }}>
-      <circle r={LOOP_R} fill="none" stroke={P.ink} strokeWidth={16} strokeDasharray={c} strokeDashoffset={c * (1 - draw)} transform="rotate(-90)" />
+      <circle r={LOOP_R} fill="none" stroke={P.ink} strokeWidth={24} strokeDasharray={c} strokeDashoffset={c * (1 - draw)} transform="rotate(-90)" />
       <circle cx={Math.cos(a) * LOOP_R} cy={Math.sin(a) * LOOP_R} r={20} fill={P.accent} opacity={draw < 0.999 ? 1 : 0} />
     </svg>
   );
