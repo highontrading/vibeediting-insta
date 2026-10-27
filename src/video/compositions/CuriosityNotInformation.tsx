@@ -140,7 +140,7 @@ const Hit: React.FC<{
           fontWeight: weight,
           fontSize: size,
           lineHeight: 0.92,
-          letterSpacing: "-0.045em",
+          letterSpacing: "-0.03em",
           wordSpacing: "0.12em",
           textTransform: "uppercase",
           color,
@@ -212,7 +212,7 @@ const Hook: React.FC = () => {
         <div style={{ width: 700, height: 168, background: P.accent, transform: `scaleX(${hit})`, transformOrigin: "0% 50%" }} />
         <div style={{ fontFamily: DISPLAY, fontWeight: 900, fontSize: 190, lineHeight: 0.85, color: P.accent, transform: `scale(${hit})`, transformOrigin: "0% 50%" }}>?</div>
       </div>
-      <div style={{ display: "flex", alignItems: "center", fontFamily: DISPLAY, fontWeight: 900, fontSize: 420, lineHeight: 0.9, letterSpacing: "-0.06em", marginTop: 28 }}>
+      <div style={{ display: "flex", alignItems: "center", fontFamily: DISPLAY, fontWeight: 900, fontSize: 420, lineHeight: 0.9, letterSpacing: "-0.04em", marginTop: 28 }}>
         <span>N</span>
         <span style={{ margin: "0 -6px" }}>
           <EyeO size={318} look={look} lid={blink(f, [17, 47])} />
@@ -269,7 +269,7 @@ const Everywhere: React.FC = () => {
               fontWeight: 900,
               fontSize: 128,
               lineHeight: 1,
-              letterSpacing: "-0.045em",
+              letterSpacing: "-0.03em",
               color: mid ? P.ink : `${P.ink}22`,
               opacity: visible ? 1 : 0,
               transform: `translateX(${-1800 + dir * local * 7 - (mid ? 0 : dist * 90)}px)`,
@@ -354,7 +354,7 @@ const Curiosity: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: P.ink, color: P.bg, justifyContent: "flex-start", padding: "0 80px", paddingTop: STACK_TOP }}>
       <Hit at={SCENES.curiosity[0] - LEAD} size={90} weight={300} color={P.bg}>They stay for</Hit>
-      <div style={{ position: "relative", marginTop: 26, fontFamily: DISPLAY, fontWeight: 900, fontSize: 250, lineHeight: 0.9, letterSpacing: "-0.05em", color: P.accent }}>
+      <div style={{ position: "relative", marginTop: 26, fontFamily: DISPLAY, fontWeight: 900, fontSize: 250, lineHeight: 0.9, letterSpacing: "-0.03em", color: P.accent }}>
         {/* the hook's redaction bar returns as one bar per line, then wipes away line by line */}
         {[
           { top: 0, width: 790, delay: 0 },
@@ -403,7 +403,7 @@ const Gap: React.FC = () => {
       <Grid />
       {/* same stack, same position as the Curiosity scene: only the background flips and the gap opens */}
       <div style={{ height: 90 * 0.92 + 26 }} />
-      <div style={{ fontFamily: DISPLAY, fontWeight: 900, fontSize: 250, lineHeight: 0.9, letterSpacing: "-0.05em", color: P.ink }}>
+      <div style={{ fontFamily: DISPLAY, fontWeight: 900, fontSize: 250, lineHeight: 0.9, letterSpacing: "-0.03em", color: P.ink }}>
         <div style={{ display: "flex", alignItems: "center" }}>
           <span>CURI</span>
           <span style={{ margin: "0 4px" }}>
@@ -430,11 +430,11 @@ const Know: React.FC = () => {
   const f = useCurrentFrame();
   const arrow = m(f, w("l06", 4), w("l06", 7) + 6, 0, 1, ease.expoOut);
   return (
-    <AbsoluteFill style={{ justifyContent: "center", padding: "0 80px 60px" }}>
+    <AbsoluteFill style={{ justifyContent: "center", padding: "100px 80px 0" }}>
       <Grid />
       <Label color={P.muted}>between</Label>
-      <Hit at={LINE_START.l06 - LEAD} size={140} style={{ marginTop: 18 }}>What they</Hit>
-      <Hit at={w("l06", 3)} size={140}>know,</Hit>
+      <Hit at={LINE_START.l06 - LEAD} size={146} style={{ marginTop: 18 }}>What they</Hit>
+      <Hit at={w("l06", 3)} size={146}>know,</Hit>
       <div style={{ height: 360, position: "relative", marginLeft: 6 }}>
         <div style={{ position: "absolute", left: 30, top: 30, width: 6, height: 290 * arrow, background: P.accent }} />
         <div
@@ -452,8 +452,8 @@ const Know: React.FC = () => {
         />
         <Label color={P.muted} style={{ position: "absolute", left: 80, top: 150, fontSize: 52, opacity: arrow }}>the gap</Label>
       </div>
-      <Hit at={w("l06", 5)} size={118} color={P.accent} from="left">What they</Hit>
-      <Hit at={w("l06", 7)} size={118} color={P.accent} from="left">need to know.</Hit>
+      <Hit at={w("l06", 5)} size={110} color={P.accent} from="left">What they</Hit>
+      <Hit at={w("l06", 7)} size={110} color={P.accent} from="left">need to know.</Hit>
     </AbsoluteFill>
   );
 };
@@ -553,7 +553,7 @@ const Second: React.FC = () => {
         ))}
       </div>
       <div style={{ marginTop: 20, overflow: "hidden", height: 300 * 0.92 }}>
-        <div style={{ fontFamily: DISPLAY, fontWeight: 900, fontSize: 300, lineHeight: 0.92, letterSpacing: "-0.05em", color: P.accent, transform: `translateY(${(1 - earn) * 100}%)` }}>
+        <div style={{ fontFamily: DISPLAY, fontWeight: 900, fontSize: 300, lineHeight: 0.92, letterSpacing: "-0.03em", color: P.accent, transform: `translateY(${(1 - earn) * 100}%)` }}>
           EARN
         </div>
       </div>
@@ -631,7 +631,7 @@ const FindOut: React.FC = () => {
   const wink = blink(f, [1170]);
   const lid = Math.max(eyeOpen, wink);
   const look: [number, number] = f < LOOP_CLOSE + 12 ? [-0.7, -0.5] : f < 1150 ? [0.6, 0.2] : [0, 0];
-  const push = 1 + 0.03 * m(f, outAt, FINAL_HOLD_END, 0, 1, ease.sineInOut);
+  const push = 1 + 0.03 * m(f, outAt, FINAL_HOLD_END, 0, 1, ease.sineInOut) + 0.03 * m(f, LOOP_CLOSE, LOOP_CLOSE + 2, 0, 1, ease.expoOut) * (1 - m(f, LOOP_CLOSE + 2, LOOP_CLOSE + 10, 0, 1));
   const lines: [string, number][] = [
     ["They", LINE_START.l12 - LEAD],
     ["remember", w("l12", 1)],
@@ -646,10 +646,10 @@ const FindOut: React.FC = () => {
           {text}
         </Hit>
       ))}
-      <div style={{ marginTop: 30, fontFamily: DISPLAY, fontWeight: 900, fontSize: 380, letterSpacing: "-0.035em", lineHeight: 0.9, color: P.accent, opacity: f >= w("l12", 6) ? 1 : 0 }}>
+      <div style={{ marginTop: 30, fontFamily: DISPLAY, fontWeight: 900, fontSize: 380, letterSpacing: "-0.03em", lineHeight: 0.9, color: P.ink, opacity: f >= w("l12", 6) ? 1 : 0 }}>
         FIND
       </div>
-      <div style={{ display: "flex", alignItems: "center", fontFamily: DISPLAY, fontWeight: 900, fontSize: 300, letterSpacing: "-0.05em", lineHeight: 0.9, color: P.accent }}>
+      <div style={{ display: "flex", alignItems: "center", fontFamily: DISPLAY, fontWeight: 900, fontSize: 300, letterSpacing: "-0.03em", lineHeight: 0.9, color: P.ink }}>
         <div style={{ position: "relative", width: LOOP_BOX, height: LOOP_BOX, flexShrink: 0 }}>
           <div style={{ position: "absolute", left: (LOOP_BOX - 250) / 2, top: (LOOP_BOX - 250) / 2, opacity: f >= LOOP_CLOSE - 1 ? 1 : 0 }}>
             <EyeO size={250} look={look} lid={lid} bare />
