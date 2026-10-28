@@ -1,10 +1,13 @@
 # Vibe Editing: Instagram autopilot
 
-**@vibeediting.app** is the portfolio of the *Vibe Editing system*: studio-quality 40–60s motion
-graphics, explainers, brand films and title sequences, built in code with Remotion. Every post is a
-sales piece, so quality comes before everything (`docs/CRAFT.md`). The page never shows or mentions
-how it's automated. Behind the scenes it runs on autopilot from Claude scheduled tasks, with Notion as
-the content calendar.
+**@vibeediting.app** sells **vibeediting**, the MCP that lets creators edit their own videos by talking
+to their AI agent (repo `highontrading/vibeediting-mcp`, sold at vibeediting.app), plus done-for-you
+studio work. Posts fall into three pillars (`docs/CONTENT_STRATEGY.md`): **Proof** (real before/after edits
+made with the MCP), **Studio** (40–60s motion graphics, explainers, brand films and title sequences, built
+in code with Remotion) and **High-end** (real footage cut with the MCP and finished in the studio). Every
+post is a sales piece, so quality comes before everything (`docs/CRAFT.md`). The page never shows or
+mentions how the page itself is automated. Behind the scenes it runs on autopilot from Claude scheduled
+tasks, with Notion as the content calendar.
 
 ## Notion content calendar
 
@@ -57,6 +60,8 @@ npm run tts -- <spec.json>                         # narration (Kokoro) → publ
 npm run assets -- get <nasa|met|loc|archive|openverse> "<query>" --comp <Id>   # licensed images/footage + credits
 npm run assets -- cutout <file>                    # background removal → transparent PNG
 npm run master -- out/<id>.mp4                     # audio limiter (always after render)
+npm run setup:vibe                                 # build the vibeediting MCP into .vibe-mcp/ (Proof/High-end posts)
+npm run vibe -- footage/<Id> <steps.json>          # drive the MCP like a customer's agent → footage/<Id>/exports + vibe-log.md
 ```
 
 `ig:post` and `ig:post --host-only` print one machine-readable line starting with `RESULT `. Parse that line.
@@ -75,7 +80,7 @@ What to post (series per weekday, voice, captions) lives in `docs/CONTENT_STRATE
 - `npm run review -- <Id> [--frames a,b,c | --count 16]` renders styleframes and a contact sheet for QA.
 - Imports inside `src/video/` are **extensionless** (webpack bundles them). Imports in `src/cli`,
   `src/instagram` and `src/hosting` use `.js` (tsx/Node ESM).
-- Length 40–60s, including the 2s end card. Frame 0 is the thumbnail and the hook.
+- Length 40–60s (Proof posts 30–60s), including the 2s end card. Frame 0 is the thumbnail and the hook.
 - Instagram UI covers parts of the frame. Keep text inside x 80–1000 and y 220–1500: avoid the
   bottom ~420px (caption/username), the top ~220px, and the right edge (like/comment buttons).
 - Minimum text size 44px; headline 120px+. Never more than ~12 words on screen at once.
@@ -85,8 +90,10 @@ What to post (series per weekday, voice, captions) lives in `docs/CONTENT_STRATE
 
 ## Captions
 
-Follow the caption rules in `docs/CONTENT_STRATEGY.md`, always ending with "Made with the Vibe Editing
-system." and the DM CTA. Never mention automation, APIs, Notion, Claude or AI. Max 2200 chars and 30 hashtags.
+Follow the caption rules for the row's **Pillar** in `docs/CONTENT_STRATEGY.md` (Proof → vibeediting.app CTA,
+Studio and High-end → DM "VIBE"). Proof posts may name the AI agents the tool works with (Claude Code, Codex,
+Cursor); what a post claims it was made with must be true. Never mention the page's own automation (Notion,
+scheduling, auto-posting, APIs). Max 2200 chars and 30 hashtags.
 
 ## Duplicate protection
 

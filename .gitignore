@@ -6,3 +6,5 @@ out/
 .venv/
 models/
 .claude/worktrees/
+.vibe-mcp/
+footage/

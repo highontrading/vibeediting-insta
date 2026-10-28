@@ -35,7 +35,7 @@ Also read the **Design system** of the 3 most recent rows that have one, so you 
 ## 3. For each row: work like a studio
 
 1. Set **Status** = `Producing` and **Started at** = now.
-2. Read the whole row: Topic, Series, Brief, **Notes for Claude**, the page body and its comments.
+2. Read the whole row: Topic, **Pillar**, Series, Brief, **Footage**, **Notes for Claude**, the page body and its comments.
    The owner's notes override everything else.
 3. **Treatment.** Follow docs/CRAFT.md step 1 and write the treatment into the row's page body (replace
    any older treatment). Pick a design system not used in the last 3 posts, then set the row's
@@ -72,14 +72,46 @@ Also read the **Design system** of the 3 most recent rows that have one, so you 
 9. **Duplicate check.** Host it with `npm run ig:post -- --video out/<Id>.mp4 --host-only`, then take `videoUrl`
    and `sha256` from the `RESULT` line. If any other row already has the same **Video hash**,
    something went wrong: mark this row Failed (`Error: duplicate video file`) and stop.
-10. **Caption.** Write it per the caption rules in CONTENT_STRATEGY.md. Keep an existing non-empty
-    owner caption. Never mention automation, APIs, Notion, Claude or AI.
+10. **Caption.** Write it per the caption rules for the row's **Pillar** in CONTENT_STRATEGY.md. Keep an
+    existing non-empty owner caption. Never mention the page's own automation (Notion, scheduling, APIs).
 11. **Update the row:** **Composition** = `<Id>`, **Video URL**, **Video hash** = sha256, **Caption**
     (if it was empty), **Error** = empty, **Status** = `Review`. Then add a one-line comment: what it is,
     the length, the design system and the critic's average score.
 
 If any step fails: set **Status** = `Failed`, **Error** = the short message, **Attempts** = Attempts + 1,
 then continue with the next row.
+
+### Proof and High-end rows (Pillar = Proof or High-end)
+
+These show the vibeediting MCP (the product we sell) editing real footage. Everything above still applies
+(treatment, styleframes, critic, hosting), with these differences. Read CONTENT_STRATEGY.md → Honesty rule first.
+
+1. **Tooling.** `[ -f .vibe-mcp/dist/cli.js ] || npm run setup:vibe`. If `VIBE_LICENSE_KEY` is missing or
+   the setup fails, mark the row Failed with `Error: vibeediting MCP not available: <reason>`. **Never fake a
+   Proof post** with Remotion-made captions or cuts.
+2. **Footage** goes in `footage/<Id>/` (gitignored). If the row's **Footage** property has a link (Google
+   Drive, Dropbox, a direct URL), download that: it's the owner's clip and always wins. Otherwise get the
+   public-domain source the brief names with `npm run assets -- get archive "<query>" --comp <Id>` and copy it
+   in. Check that it has clear speech and a licence in `credits.json`, with no famous people. Write the
+   source into **Footage**.
+3. **The request.** Write the exact sentence a creator would type (it goes on screen and in the caption),
+   e.g. `Cut the pauses and umms, add yellow word-by-word captions, a hook title and punch-in zooms. Make it a 9:16 reel.`
+4. **The edit.** Turn that sentence into a `steps.json` (`{"request": "...", "steps": [{"tool": ..., "args": ...}]}`)
+   with the tool calls an agent would make for exactly that request. Follow the MCP's own workflow skills in
+   `.vibe-mcp/plugin/skills/` (talking-head-reel, podcast-to-shorts, youtube-long-form, add-broll); the tool
+   reference is `.vibe-mcp/docs/tools.md`. Start with `check_setup`, `create_project`, `transcribe`,
+   `analyze_video`, and end with `export_video`. Do nothing the sentence didn't ask for. Run
+   `npm run vibe -- footage/<Id> steps.json`, then look at the export with ffmpeg frames. If the MCP's
+   result isn't good enough to show, change the *request* (and re-run), not the output. A weak result is
+   also a product bug: describe it in the row comment so the owner can fix the MCP.
+5. **The numbers** on screen and in the caption (pauses cut, fillers removed, minutes saved) come only from
+   `footage/<Id>/vibe-log.md`.
+6. **The post composition** (`src/video/compositions/<Id>.tsx`) frames the result per CONTENT_STRATEGY.md →
+   Proof posts: hook, before, the request card, the untouched export (`<OffthreadVideo>` from
+   `public/footage/<Id>/`; copy only the clips you use there and commit them, keeping them small), callouts,
+   and an end card with `vibeediting.app`. **High-end** rows use the MCP's cut as the base and build the
+   studio layers on top; there, the studio may add anything.
+7. Credit public-domain footage in the caption.
 
 ## 4. Save the source
 

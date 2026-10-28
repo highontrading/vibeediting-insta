@@ -76,8 +76,11 @@ motion designer, editor and creative director made it. Work like that team, not 
 - Facts must be true. For explainers and data stories, only use well-established facts, and put the
   source in the caption. Anything illustrative is labelled "illustrative" on screen.
 - Fictional brands and products only. Never use real logos or trademarks.
-- Never mention automation, APIs, scheduling, Notion, Claude or "AI-generated" on screen or in
-  captions. The work is "made with the Vibe Editing system".
+- Never mention the page's own automation (APIs, scheduling, Notion, auto-posting) on screen or in captions.
+- Claims about how a piece was made must be true (CONTENT_STRATEGY.md → Honesty rule). Proof posts show the
+  vibeediting MCP's real output and the exact sentence it was made from, and may name Claude Code, Codex and
+  Cursor. Studio pieces are "a Vibe Editing studio piece", never "made in one sentence".
+- Never call any piece "AI-generated": the tool edits real footage and writes motion graphics as code.
 - Every video ends with the studio end card (`src/video/kit/EndCard.tsx`), dressed in its design system.
 
 ## Lessons from past critic reviews (check these before the first render)
