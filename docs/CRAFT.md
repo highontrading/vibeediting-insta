@@ -128,13 +128,26 @@ These came up on *Curiosity, not information* (6 rounds, best 8.25; not shipped)
 
 ## Narration
 
-- Generate it with `npm run tts -- <spec.json>` (Kokoro, open source). Voices: British male `bm_george` for
-  dramatic or cinematic pieces, American female `af_heart` for explainers. One voice per piece.
+- Generate it with `npm run tts -- <spec.json>`. Use **ElevenLabs** (`"engine": "elevenlabs"`) for anything that
+  ships: its voices sound like a studio read and its word timings are real. List the account's voices with
+  `npm run tts -- --voices`. Good defaults: `George` (warm British storyteller) for dramatic or cinematic pieces,
+  `Alice` or `Matilda` for explainers, `Chris` or `Liam` for punchy social reads. Use one voice per piece.
+- Credits are limited (Starter plan: 40k characters a month). Lock the script before generating; re-runs skip
+  unchanged lines. If credits run out, fall back to Kokoro (`"engine": "kokoro"`, `bm_george` / `af_heart`) and
+  say so in the row's comment.
 - Write it for the ear: short sentences, 2.6–3 words per second, and no line longer than about 12 words.
   Each line is a separate clip. Place lines with `<Sequence>` and lock cuts to the line starts in `timings.json`.
 - Duck the music to about 0.2 under narration and bring it back up in the gaps.
 - On-screen text supports the narration and doesn't duplicate it word for word, except for deliberate type hits.
   Word-by-word captions can use the word times in `timings.json`.
+
+## Talking heads
+
+- Raw presenter clips (from Google Flow, see `docs/GOOGLE_FLOW.md`) are edited with the `/edit` skill and
+  `src/video/kit/TalkingHead.tsx`: cut pauses and fillers, alternate framings on the jump cuts, word-by-word captions.
+- Never cut inside a word. Listen at every cut and nudge `breath` or `trims` if a syllable clips.
+- Captions sit below the chin (around y 1150) and never cover the mouth. They must match the speech word for word.
+- The comparison reel shows the raw honestly. Don't degrade it to make the edit look better.
 
 ## Assets and licensing
 
@@ -144,7 +157,7 @@ These came up on *Curiosity, not information* (6 rounds, best 8.25; not shipped)
 - Credit CC BY creators in the caption (`Images: <creator> via Openverse/Flickr, CC BY`).
 - Cut-outs: `npm run assets -- cutout <file>` makes a transparent PNG. Then treat it: duotone, halftone,
   posterise, paper edge or drop shadow, so stock never looks like stock.
-- Avoid recognisable real people (likeness rights) and real brands.
+- Avoid recognisable real people (likeness rights) and real brands. Generated presenters must be invented people.
 
 ## 3D
 

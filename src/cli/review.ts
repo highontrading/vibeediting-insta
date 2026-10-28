@@ -24,7 +24,7 @@ const browserExecutable =
   (existsSync(PW)
     ? readdirSync(PW)
         .filter((d) => d.startsWith("chromium_headless_shell-"))
-        .map((d) => `${PW}/${d}/chrome-linux/headless_shell`)
+        .flatMap((d) => [`${PW}/${d}/chrome-linux/headless_shell`, `${PW}/${d}/chrome-headless-shell-linux64/chrome-headless-shell`])
         .find((p) => existsSync(p))
     : undefined) ||
   null;

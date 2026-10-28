@@ -17,7 +17,7 @@ const PW_BROWSERS = "/opt/pw-browsers";
 const cloudShell = existsSync(PW_BROWSERS)
   ? readdirSync(PW_BROWSERS)
       .filter((d) => d.startsWith("chromium_headless_shell-"))
-      .map((d) => `${PW_BROWSERS}/${d}/chrome-linux/headless_shell`)
+      .flatMap((d) => [`${PW_BROWSERS}/${d}/chrome-linux/headless_shell`, `${PW_BROWSERS}/${d}/chrome-headless-shell-linux64/chrome-headless-shell`])
       .find((p) => existsSync(p))
   : undefined;
 const browser = process.env.REMOTION_BROWSER_EXECUTABLE || cloudShell;

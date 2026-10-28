@@ -19,6 +19,16 @@ show or mention that side.
 | Sat | **Title Sequence** | Motion graphics | Cinematic opening titles for a fictional film, series, festival or conference. |
 | Sun | **Style Study** | Motion graphics | One design or editing movement executed at a pro level (Swiss, Bauhaus, risograph, VHS, editorial…). |
 
+### Owner-started formats
+
+These come from raw presenter clips the owner makes in Google Flow (`docs/GOOGLE_FLOW.md`) and are built
+with `/edit`. They can take any weekday's slot, and the series that was planned for that day moves to the next free day.
+
+| Format | Notion Format | What it is |
+|---|---|---|
+| **Talking Head** | Talking head | A presenter piece edited to studio level: tight cuts, punch-ins, word-by-word captions, sound design. |
+| **Raw vs Edit** | Talking head | The untouched clip, then a divider wipe into the finished edit. The clearest proof of what the studio does. |
+
 ## Art direction
 
 - Every video uses one design system from `src/video/design/systems.ts`, rotated so the previous 3

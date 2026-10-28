@@ -39,6 +39,10 @@ npm run ig:check        # verify the Instagram connection
 | `npm run ig:post -- --video <file> --caption "..."` | Publishes a Reel (`--caption-file`, `--no-feed`, `--thumb-offset <ms>`, `--dry-run`) |
 | `npm run ig:recent` | Lists the latest posts (`--json` for machine output) |
 | `npm run ig:refresh-token` | Extends the 60-day token and saves it to `.env` |
+| `npm run tts -- <spec.json>` | Voiceover (ElevenLabs or Kokoro) with word timings; `--voices` lists ElevenLabs voices |
+| `npm run transcribe -- public/raw/<Id>` | Word-level transcript of raw talking-head clips (pauses, fillers, trims) |
+
+New to the project? `docs/SYSTEM_BRIEF.md` explains the whole system on one page.
 
 Rendering uses the cloud session's built-in Chromium automatically. Elsewhere, Remotion downloads one,
 or you can set `REMOTION_BROWSER_EXECUTABLE=/path/to/chrome`.

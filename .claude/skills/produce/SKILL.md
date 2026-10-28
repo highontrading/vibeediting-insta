@@ -48,7 +48,8 @@ Also read the **Design system** of the 3 most recent rows that have one, so you 
      `EndCard`, `ease.of(system)`), but build the visuals bespoke for this piece.
    - Add a music bed with `<Music>` and an SFX layer with `<Sfx>` per the treatment.
    - **Narration** (if the brief asks for it): write the script for the ear, generate it with `npm run tts`
-     (spec in `scripts/tts.py`), and build the edit around `public/voice/<Id>/timings.json` (CRAFT.md → Narration).
+     (ElevenLabs engine, spec in `scripts/tts.py`), and build the edit around `public/voice/<Id>/timings.json`
+     (CRAFT.md → Narration).
    - **Real images or footage** (if the piece needs them): `npm run assets -- get …` and `cutout` (CRAFT.md →
      Assets). Commit `public/assets/<Id>/` and `public/voice/<Id>/` with the composition.
    - **Pace:** fast by default (CRAFT.md → Fast-paced edits).

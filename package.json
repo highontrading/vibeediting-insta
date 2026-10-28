@@ -19,7 +19,8 @@
     "master": "bash scripts/master.sh",
     "setup:python": "bash scripts/setup-python.sh",
     "tts": ".venv/bin/python scripts/tts.py",
-    "assets": ".venv/bin/python scripts/assets.py"
+    "assets": ".venv/bin/python scripts/assets.py",
+    "transcribe": "python3 scripts/transcribe.py"
   },
   "dependencies": {
     "@fontsource/anton": "^5.3.0",

@@ -11,6 +11,12 @@ import { MondayInClay, MONDAY_IN_CLAY_DURATION } from "./compositions/MondayInCl
 import { CameraHistoryPaper, CAMERA_HISTORY_PAPER_DURATION } from "./compositions/CameraHistoryPaper";
 import { WhyYouCantStopScrolling, WHY_YOU_CANT_STOP_SCROLLING_DURATION } from "./compositions/WhyYouCantStopScrolling";
 import { TransitionsToSteal, TRANSITIONS_TO_STEAL_DURATION } from "./compositions/TransitionsToSteal";
+import {
+  TalkingHeadDemo,
+  TalkingHeadDemoCompare,
+  TALKING_HEAD_DEMO_COMPARE_DURATION,
+  TALKING_HEAD_DEMO_DURATION,
+} from "./compositions/_TalkingHeadDemo";
 
 // Every Reel is 1080x1920 (9:16) at 30fps.
 export const REEL = { width: 1080, height: 1920, fps: 30 } as const;
@@ -18,6 +24,8 @@ export const REEL = { width: 1080, height: 1920, fps: 30 } as const;
 export const RemotionRoot: React.FC = () => (
   <>
     <Composition id="ClayTest" component={ClayTest} durationInFrames={60} {...REEL} />
+    <Composition id="TalkingHeadDemo" component={TalkingHeadDemo} durationInFrames={TALKING_HEAD_DEMO_DURATION} {...REEL} />
+    <Composition id="TalkingHeadDemoCompare" component={TalkingHeadDemoCompare} durationInFrames={TALKING_HEAD_DEMO_COMPARE_DURATION} {...REEL} />
     <Composition id="SystemSpecimen" component={SystemSpecimen} durationInFrames={SPECIMEN_DURATION} {...REEL} />
     <Composition id="HowThisWasMade" component={HowThisWasMade} durationInFrames={HOW_THIS_WAS_MADE_DURATION} {...REEL} />
     <Composition id="NobodyPostedThis" component={NobodyPostedThis} durationInFrames={NOBODY_POSTED_THIS_DURATION} {...REEL} />

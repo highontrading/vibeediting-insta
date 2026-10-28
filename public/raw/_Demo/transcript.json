@@ -1,0 +1,200 @@
+{
+ "clips": [
+  {
+   "file": "raw/_Demo/01.mp4",
+   "sha": "632497b88cf84c99",
+   "duration": 8.0,
+   "width": 720,
+   "height": 1280,
+   "fps": 24.0,
+   "in": 1.28,
+   "out": 4.54,
+   "language": "eng",
+   "words": [
+    {
+     "text": "Most",
+     "start": 1.4,
+     "end": 1.56
+    },
+    {
+     "text": "people",
+     "start": 1.6,
+     "end": 1.76
+    },
+    {
+     "text": "film",
+     "start": 1.84,
+     "end": 1.98
+    },
+    {
+     "text": "a",
+     "start": 2.02,
+     "end": 2.04
+    },
+    {
+     "text": "great",
+     "start": 2.08,
+     "end": 2.22
+    },
+    {
+     "text": "idea,",
+     "start": 2.26,
+     "end": 2.56
+    },
+    {
+     "text": "and",
+     "start": 3.1,
+     "end": 3.18
+    },
+    {
+     "text": "then",
+     "start": 3.22,
+     "end": 3.32
+    },
+    {
+     "text": "they",
+     "start": 3.36,
+     "end": 3.44
+    },
+    {
+     "text": "just",
+     "start": 3.48,
+     "end": 3.62
+    },
+    {
+     "text": "post",
+     "start": 3.66,
+     "end": 3.86
+    },
+    {
+     "text": "it",
+     "start": 3.9,
+     "end": 4.0
+    },
+    {
+     "text": "raw.",
+     "start": 4.04,
+     "end": 4.24
+    }
+   ],
+   "pauses": [
+    {
+     "start": 2.56,
+     "end": 3.1
+    }
+   ],
+   "fillers": [],
+   "events": []
+  },
+  {
+   "file": "raw/_Demo/02.mp4",
+   "sha": "c3ca375424e1cfdc",
+   "duration": 8.0,
+   "width": 720,
+   "height": 1280,
+   "fps": 24.0,
+   "in": 0.88,
+   "out": 6.26,
+   "language": "eng",
+   "words": [
+    {
+     "text": "Cut",
+     "start": 1.0,
+     "end": 1.14
+    },
+    {
+     "text": "the",
+     "start": 1.16,
+     "end": 1.26
+    },
+    {
+     "text": "pauses.",
+     "start": 1.32,
+     "end": 1.84
+    },
+    {
+     "text": "Punch",
+     "start": 2.58,
+     "end": 2.78
+    },
+    {
+     "text": "in",
+     "start": 2.82,
+     "end": 2.9
+    },
+    {
+     "text": "on",
+     "start": 2.94,
+     "end": 3.0
+    },
+    {
+     "text": "the",
+     "start": 3.04,
+     "end": 3.12
+    },
+    {
+     "text": "point.",
+     "start": 3.16,
+     "end": 3.42
+    },
+    {
+     "text": "Give",
+     "start": 4.08,
+     "end": 4.24
+    },
+    {
+     "text": "every",
+     "start": 4.3,
+     "end": 4.54
+    },
+    {
+     "text": "word",
+     "start": 4.58,
+     "end": 4.8
+    },
+    {
+     "text": "a",
+     "start": 4.86,
+     "end": 4.92
+    },
+    {
+     "text": "reason",
+     "start": 4.96,
+     "end": 5.2
+    },
+    {
+     "text": "to",
+     "start": 5.24,
+     "end": 5.3
+    },
+    {
+     "text": "be",
+     "start": 5.34,
+     "end": 5.42
+    },
+    {
+     "text": "on",
+     "start": 5.46,
+     "end": 5.58
+    },
+    {
+     "text": "screen.",
+     "start": 5.66,
+     "end": 5.96
+    }
+   ],
+   "pauses": [
+    {
+     "start": 1.84,
+     "end": 2.58
+    },
+    {
+     "start": 3.42,
+     "end": 4.08
+    }
+   ],
+   "fillers": [],
+   "events": []
+  }
+ ]
+}

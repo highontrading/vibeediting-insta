@@ -40,6 +40,10 @@ Respect the owner's edits: never overwrite a non-empty **Caption** the owner wro
 - `/plan`: fill empty calendar days with Idea rows (default the next 30 days).
 - `/produce`: make videos for upcoming rows (Idea → Review).
 - `/publish`: post rows that are due (Review → Posted).
+- `/edit`: owner-started. Turn raw talking-head clips (from Google Flow) into an edited reel and a Raw vs Edit
+  comparison reel.
+
+The whole system in one page, for briefing any agent: `docs/SYSTEM_BRIEF.md`.
 
 ## Commands
 
@@ -53,7 +57,9 @@ npm run ig:post -- --video out/<id>.mp4 --host-only               # host only �
 npm run ig:post -- --video <https url> --caption-file <file>      # publish → prints RESULT {"mediaId":…,"permalink":…}
 npm run typecheck
 npm run setup:python                               # Python tools (narration + cutouts); once per fresh session
-npm run tts -- <spec.json>                         # narration (Kokoro) → public/voice/<Id>/*.wav + timings.json
+npm run tts -- <spec.json>                         # narration (ElevenLabs or Kokoro) → public/voice/<Id>/*.wav + timings.json
+npm run tts -- --voices                            # list ElevenLabs voices
+npm run transcribe -- public/raw/<Id>              # word-level transcript of raw clips (pauses, fillers) → transcript.json
 npm run assets -- get <nasa|met|loc|archive|openverse> "<query>" --comp <Id>   # licensed images/footage + credits
 npm run assets -- cutout <file>                    # background removal → transparent PNG
 npm run master -- out/<id>.mp4                     # audio limiter (always after render)
@@ -101,8 +107,8 @@ system." and the DM CTA. Never mention automation, APIs, Notion, Claude or AI. M
 
 - Instagram fetches videos by URL. `--host-only` commits the MP4 to the `media` branch and returns a
   `raw.githubusercontent.com/...` URL pinned to that commit.
-- Secrets live in the environment (`IG_ACCESS_TOKEN`, `IG_USER_ID`, `IG_LOGIN_TYPE`). Never print,
-  commit or write them to Notion.
+- Secrets live in the environment (`IG_ACCESS_TOKEN`, `IG_USER_ID`, `IG_LOGIN_TYPE`, `ELEVENLABS_API_KEY`).
+  Never print, commit or write them to Notion.
 - The token was generated 2026-10-22 and expires around **2026-12-21**. If any call fails with code
   190 (invalid/expired token), mark the row Failed with `Error: Instagram token expired — owner must
   generate a new one` and say so in the final message.
